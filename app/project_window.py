@@ -22,6 +22,7 @@ from PySide6.QtWidgets import (
 from .settings import apply_theme
 from .geometry import Square, Cube
 from .rendering import Viewport2D, Viewport3D
+from .code_highlighter import PythonHighlighter
 
 
 class ParameterAPI:
@@ -297,6 +298,7 @@ class ProjectWindow(QMainWindow):
     editor_layout.addWidget(title)
 
     self.editor = QPlainTextEdit()
+    self.highlighter = PythonHighlighter(self.editor.document())
     self.editor.setPlaceholderText(
         "Введите код здесь..."
     )
@@ -708,11 +710,7 @@ def update(Time):
     if self.project["mode"] == "2D":
       self.viewport.graph.clear()
     else:
-      self.viewport.plotter.clear()
-      self.viewport.plotter.set_background("#20232b")
-      self.viewport.plotter.add_axes()
-      self.viewport.plotter.show_grid(color="#777777")
-      self.viewport.plotter.view_isometric()
+      self.viewport.clear_scene()
 
   def _update_scene(self):
     pass
