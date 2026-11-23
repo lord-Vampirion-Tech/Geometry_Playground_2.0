@@ -96,8 +96,13 @@ class Viewport3D(QWidget):
         )
 
     def set_fps(self, value):
-        if self._fps_actor is not None:
-            self._fps_actor.SetInput(f"FPS: {value:.0f}")
+        self.plotter.add_text(
+            f"FPS: {value:.0f}",
+            position="upper_right",
+            font_size=10,
+            color="#d7e0ea",
+            name="fps_counter"
+        )
 
     def begin_update(self):
         self._render_batch_depth += 1
