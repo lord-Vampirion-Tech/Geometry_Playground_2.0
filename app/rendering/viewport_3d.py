@@ -27,6 +27,9 @@ class Viewport3D(QWidget):
         self._camera_drag_mode = None
         self._last_mouse_pos = None
         self._camera_initialized = True
+        self._render_batch_depth = 0
+        self._render_pending = False
+        self._create_fps_counter()
 
         self.plotter.installEventFilter(self)
         self.plotter.setFocusPolicy(Qt.StrongFocus)
@@ -86,6 +89,27 @@ class Viewport3D(QWidget):
             name="world_axis_y"
         )
 
+    def _create_fps_counter(self):
+        self._fps_actor = self.plotter.add_text(
+            "FPS: --", position="upper_right", font_size=10,
+            color="#d7e0ea", name="fps_counter"
+        )
+
+    def set_fps(self, value):
+        if self._fps_actor is not None:
+            self._fps_actor.SetInput(f"FPS: {value:.0f}")
+
+    def begin_update(self):
+        self._render_batch_depth += 1
+
+    def end_update(self):
+        if self._render_batch_depth <= 0:
+            return
+        self._render_batch_depth -= 1
+        if self._render_batch_depth == 0 and self._render_pending:
+            self._render_pending = False
+            self.plotter.render()
+
     def add_object(self, obj):
         return self.plotter.add_mesh(
             obj.to_polydata(),
@@ -100,7 +124,10 @@ class Viewport3D(QWidget):
         actor.mapper.SetInputData(obj.to_polydata())
         actor.prop.color = obj.color
         actor.prop.opacity = obj.opacity
-        self.plotter.render()
+        if self._render_batch_depth:
+            self._render_pending = True
+        else:
+            self.plotter.render()
 
     def clear_scene(self):
         camera_state = self._save_camera_state() if self._camera_initialized else None
@@ -109,6 +136,7 @@ class Viewport3D(QWidget):
         self.plotter.set_background("#20232b")
         self.plotter.add_axes()
         self._create_floor(size=1000, step=10)
+        self._create_fps_counter()
 
         if camera_state is not None:
             self._restore_camera_state(camera_state)
