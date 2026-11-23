@@ -20,6 +20,8 @@ from PySide6.QtWidgets import (
 )
 
 from .settings import apply_theme
+from .geometry import Square, Cube
+from .rendering import Viewport2D, Viewport3D
 
 
 class ParameterAPI:
@@ -166,9 +168,8 @@ class ProjectWindow(QMainWindow):
 
     self.resize(int(size[0]), int(size[1]))
 
-    self.execution_context = {
-        "__name__": "__main__"
-    }
+    self.execution_context = {"__name__": "__main__"}
+    self.geometry_objects = []
 
     central = QWidget()
     root_layout = QVBoxLayout(central)
@@ -389,15 +390,12 @@ def update(Time):
     title.setObjectName("sectionTitle")
     scene_layout.addWidget(title)
 
-    self.scene_label = QLabel(
-        f"Рабочая область {self.project['mode']}"
-    )
+    if self.project["mode"] == "2D":
+      self.viewport = Viewport2D(self.scene_container)
+    else:
+      self.viewport = Viewport3D(self.scene_container)
 
-    self.scene_label.setAlignment(
-        Qt.AlignmentFlag.AlignCenter
-    )
-
-    scene_layout.addWidget(self.scene_label, 1)
+    scene_layout.addWidget(self.viewport, 1)
 
   def _build_parameters_panel(self, layout):
     self.parameters_container = QWidget()
@@ -483,6 +481,7 @@ def update(Time):
   def _execute_code(self):
     self._stop_playback()
     self.clear_parameter_widgets()
+    self._clear_scene()
 
     source = self.editor.toPlainText()
 
@@ -499,7 +498,9 @@ def update(Time):
 
     namespace = {
         "__name__": "__main__",
-        "ui": self.parameter_api
+        "ui": self.parameter_api,
+        "New_SQUARE": self._new_square,
+        "New_CUBE": self._new_cube
     }
 
     try:
@@ -539,9 +540,7 @@ def update(Time):
       self._stop_playback()
       self.execution_status.setText("Ошибка выполнения")
 
-      self.scene_label.setText(
-          traceback.format_exc()
-      )
+      self.execution_status.setToolTip(traceback.format_exc())
 
       print(traceback.format_exc())
 
@@ -738,6 +737,39 @@ def update(Time):
       )
 
       print(traceback.format_exc())
+
+  def _new_square(self, **kwargs):
+    if self.project["mode"] != "2D":
+      raise RuntimeError("New_SQUARE доступен только в 2D-проекте.")
+    obj = Square(
+        **kwargs,
+        draw_callback=lambda item: self.viewport.add_object(item),
+        update_callback=lambda item, handle: self.viewport.update_object(item, handle)
+    )
+    self.geometry_objects.append(obj)
+    return obj
+
+  def _new_cube(self, **kwargs):
+    if self.project["mode"] != "3D":
+      raise RuntimeError("New_CUBE доступен только в 3D-проекте.")
+    obj = Cube(
+        **kwargs,
+        draw_callback=lambda item: self.viewport.add_object(item),
+        update_callback=lambda item, handle: self.viewport.update_object(item, handle)
+    )
+    self.geometry_objects.append(obj)
+    return obj
+
+  def _clear_scene(self):
+    self.geometry_objects.clear()
+    if self.project["mode"] == "2D":
+      self.viewport.graph.clear()
+    else:
+      self.viewport.plotter.clear()
+      self.viewport.plotter.set_background("#20232b")
+      self.viewport.plotter.add_axes()
+      self.viewport.plotter.show_grid(color="#777777")
+      self.viewport.plotter.view_isometric()
 
   def _update_scene(self):
     pass
