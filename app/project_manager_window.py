@@ -257,8 +257,7 @@ class ProjectManagerWindow(QMainWindow):
       close_manager = self.settings.get(
           "manager", "close_on_open", default=False
       )
-      if close_manager:
-        window.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
+      window.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
 
       set_crash_context(
           f"Открытие проекта «{project.get('name', '?')}»: отображение окна"
