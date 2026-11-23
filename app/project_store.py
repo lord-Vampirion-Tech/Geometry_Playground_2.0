@@ -69,8 +69,48 @@ class ProjectStore:
             json.dumps(data, ensure_ascii=False, indent=4),
             encoding="utf-8"
         )
+        (project_folder / "code.py").write_text("", encoding="utf-8")
 
         return {**data, "path": str(project_folder)}
+
+    def load_code(self, project):
+        project_folder = Path(project["path"]).resolve()
+        if project_folder.parent != self.root.resolve():
+            raise ValueError("Путь проекта находится вне папки проектов.")
+
+        code_file = project_folder / "code.py"
+        if not code_file.is_file():
+            return ""
+
+        return code_file.read_text(encoding="utf-8")
+
+    def save_code(self, project, code):
+        project_folder = Path(project["path"]).resolve()
+        if project_folder.parent != self.root.resolve():
+            raise ValueError("Путь проекта находится вне папки проектов.")
+
+        metadata_file = project_folder / "project.json"
+        if not metadata_file.is_file():
+            raise FileNotFoundError("Файл проекта не найден.")
+
+        data = json.loads(metadata_file.read_text(encoding="utf-8"))
+        if data.get("id") != project.get("id"):
+            raise ValueError("Идентификатор проекта не совпадает.")
+
+        code_file = project_folder / "code.py"
+        temporary_code = project_folder / "code.py.tmp"
+        temporary_code.write_text(code, encoding="utf-8")
+        temporary_code.replace(code_file)
+
+        data["modified_at"] = now_iso()
+        temporary_metadata = project_folder / "project.json.tmp"
+        temporary_metadata.write_text(
+            json.dumps(data, ensure_ascii=False, indent=4),
+            encoding="utf-8"
+        )
+        temporary_metadata.replace(metadata_file)
+
+        project["modified_at"] = data["modified_at"]
 
     def delete_project(self, project):
         project_path = Path(project["path"]).resolve()
