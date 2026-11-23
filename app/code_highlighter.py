@@ -40,12 +40,12 @@ class PythonHighlighter(QSyntaxHighlighter):
             source = self.document().toPlainText()
 
             variable_names = set(re.findall(
-                r"(?m)^\\s*([A-Za-z_]\\w*)\\s*(?=(?:=|\\+=|-=|\\*=|/=|:=))",
+                r"(?m)^\s*([A-Za-z_]\w*)\s*(?=(?:=|\+=|-=|\*=|/=|:=))",
                 source
             ))
 
             function_names = set(re.findall(
-                r"\\bdef\\s+([A-Za-z_]\\w*)",
+                r"\bdef\s+([A-Za-z_]\w*)",
                 source
             ))
 
@@ -68,7 +68,7 @@ class PythonHighlighter(QSyntaxHighlighter):
         if prefix:
             candidate = candidate[prefix.end():]
 
-        if len(candidate) >= 2 and candidate[0] in "'\\"" and candidate[-1] == candidate[0]:
+        if len(candidate) >= 2 and candidate[0] in ("'", '"') and candidate[-1] == candidate[0]:
             candidate = candidate[1:-1]
 
         if re.fullmatch(r"#[0-9a-fA-F]{3,8}", candidate):
@@ -82,10 +82,10 @@ class PythonHighlighter(QSyntaxHighlighter):
     def highlightBlock(self, text):
         string_pattern = re.compile(
             r"""(?i)(?:[rubf]{0,2})(?:""" +
-            r"""'''[\\s\\S]*?'''|""" +
-            r'''"""[\\s\\S]*?"""|''' +
-            r"""'(?:\\\\.|[^'\\\\])*'|""" +
-            r'''"(?:\\\\.|[^"\\\\])*")'''
+            r"""'''[\s\S]*?'''|""" +
+            r'''"""[\s\S]*?"""|''' +
+            r"""'(?:\\.|[^'\\])*'|""" +
+            r'''"(?:\\.|[^"\\])*")'''
         )
 
         strings = []
@@ -108,11 +108,11 @@ class PythonHighlighter(QSyntaxHighlighter):
                 self.comment_format
             )
 
-        for match in re.finditer(r"\\b\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?\\b", text):
+        for match in re.finditer(r"\b\d+(?:\.\d+)?(?:[eE][+-]?\d+)?\b", text):
             if not inside_string(match.start()):
                 self.setFormat(match.start(), len(match.group()), self.number_format)
 
-        for match in re.finditer(r"\\b[A-Za-z_]\\w*\\b", text):
+        for match in re.finditer(r"\b[A-Za-z_]\w*\b", text):
             start = match.start()
             name = match.group()
 
@@ -124,7 +124,7 @@ class PythonHighlighter(QSyntaxHighlighter):
 
             if name in self.keywords:
                 fmt = self.keyword_format
-            elif name in self.function_names or re.match(r"\\s*\\(", text[match.end():]):
+            elif name in self.function_names or re.match(r"\s*\(", text[match.end():]):
                 fmt = self.function_format
             elif name in self.variable_names:
                 fmt = self.variable_format
