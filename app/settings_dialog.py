@@ -99,6 +99,13 @@ class SettingsDialog(QDialog):
     )
     form.addRow("Ширина редактора", self.editor_width)
 
+    self.editor_font_size = QSpinBox()
+    self.editor_font_size.setRange(6, 48)
+    self.editor_font_size.setValue(
+        self.settings.get("general", "editor_font_size", default=16)
+    )
+    form.addRow("Размер текста в редакторе", self.editor_font_size)
+
     self.parameters_panel_width = QSpinBox()
     self.parameters_panel_width.setRange(200, 1600)
     self.parameters_panel_width.setValue(
@@ -226,6 +233,7 @@ class SettingsDialog(QDialog):
     self.settings.set(
         {
             "editor_width": self.editor_width.value(),
+            "editor_font_size": self.editor_font_size.value(),
             "parameters_panel_width": self.parameters_panel_width.value()
         },
         "general", "layout_sizes"
@@ -260,4 +268,7 @@ class SettingsDialog(QDialog):
     self.editor_width.setValue(layout_sizes["editor_width"])
     self.parameters_panel_width.setValue(
         layout_sizes["parameters_panel_width"]
+    )
+    self.editor_font_size.setValue(
+        layout_sizes.get("editor_font_size", 16)
     )
