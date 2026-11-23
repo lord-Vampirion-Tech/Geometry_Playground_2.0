@@ -48,9 +48,11 @@ class Cube(Drawable):
         self.rot_y = 0.0
         self.rot_z = 0.0
 
+        self._polydata_cache = None
         self._reset_local_vertices()
 
     def _reset_local_vertices(self):
+        self._polydata_cache = None
         hw = self.width / 2
         hh = self.height / 2
         hd = self.depth / 2
@@ -127,41 +129,54 @@ class Cube(Drawable):
 
         local = self._rotation_matrix().T @ (world - position)
         self.local_vertices[name] = local.tolist()
+        self._polydata_cache = None
         self.update_draw()
 
     def to_polydata(self):
-        points = np.array([
-            self.get_vertices()[name]
-            for name in self.POINT_NAMES
-        ], dtype=float)
-
-        return pv.PolyData(points, self.FACES)
+        if self._polydata_cache is None:
+            points = np.array([
+                self.get_vertices()[name]
+                for name in self.POINT_NAMES
+            ], dtype=float)
+            self._polydata_cache = pv.PolyData(points, self.FACES)
+        return self._polydata_cache
 
     def setPos(self, x, y, z):
-        self.x = float(x)
-        self.y = float(y)
-        self.z = float(z)
+        position = tuple(map(float, (x, y, z)))
+        if position == (self.x, self.y, self.z):
+            return
+        self.x, self.y, self.z = position
+        self._polydata_cache = None
         self.update_draw()
 
     def setRot(self, x=0, y=0, z=0):
-        self.rot_x = float(x)
-        self.rot_y = float(y)
-        self.rot_z = float(z)
+        rotation = tuple(map(float, (x, y, z)))
+        if rotation == (self.rot_x, self.rot_y, self.rot_z):
+            return
+        self.rot_x, self.rot_y, self.rot_z = rotation
+        self._polydata_cache = None
         self.update_draw()
 
     def setSize(self, width, height=None, depth=None):
-        self.width = float(width)
-        self.height = float(width if height is None else height)
-        self.depth = float(width if depth is None else depth)
+        size = (float(width), float(width if height is None else height),
+                float(width if depth is None else depth))
+        if size == (self.width, self.height, self.depth):
+            return
+        self.width, self.height, self.depth = size
         self._reset_local_vertices()
         self.update_draw()
 
     def setColor(self, color):
+        if color == self.color:
+            return
         self.color = color
         self.update_draw()
 
     def setOpacity(self, opacity):
-        self.opacity = float(np.clip(opacity, 0.0, 1.0))
+        opacity = float(np.clip(opacity, 0.0, 1.0))
+        if opacity == self.opacity:
+            return
+        self.opacity = opacity
         self.update_draw()
 
 
