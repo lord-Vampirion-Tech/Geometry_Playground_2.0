@@ -23,7 +23,7 @@ from .settings import apply_theme
 from .geometry import Square, Cube, BoundingCube
 from .rendering import Viewport2D, Viewport3D
 from .code_highlighter import PythonHighlighter
-from .crash_handler import set_crash_context
+from .crash_handler import report_exception, set_crash_context
 
 
 class ParameterAPI:
@@ -497,9 +497,12 @@ def update(Time):
       self._stop_playback()
       self.execution_status.setText("Ошибка выполнения")
 
-      self.execution_status.setToolTip(traceback.format_exc())
-
-      print(traceback.format_exc())
+      details = traceback.format_exc()
+      self.execution_status.setToolTip(details)
+      report_exception(
+          f"Выполнение кода проекта «{self.project.get('name', '?')}»",
+          __import__("sys").exc_info()
+      )
 
   def _toggle_realtime(self, enabled):
     if enabled:
@@ -584,9 +587,12 @@ def update(Time):
 
       self.execution_status.setText("Ошибка в update(Time)")
 
-      self.execution_status.setToolTip(traceback.format_exc())
-
-      print(traceback.format_exc())
+      details = traceback.format_exc()
+      self.execution_status.setToolTip(details)
+      report_exception(
+          f"Обновление кадра проекта «{self.project.get('name', '?')}»",
+          __import__("sys").exc_info()
+      )
 
   def _toggle_pause(self):
     if self.update_function is None:
@@ -687,11 +693,13 @@ def update(Time):
           "Ошибка обновления параметра"
       )
 
-      self.scene_label.setText(
-          traceback.format_exc()
+      details = traceback.format_exc()
+      self.execution_status.setToolTip(details)
+      report_exception(
+          f"Обновление параметра «{name}» проекта "
+          f"«{self.project.get('name', '?')}»",
+          __import__("sys").exc_info()
       )
-
-      print(traceback.format_exc())
 
   def _new_square(self, **kwargs):
     if self.project["mode"] != "2D":
