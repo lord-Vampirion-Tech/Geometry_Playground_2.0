@@ -466,7 +466,7 @@ class ProjectWindow(QMainWindow):
     HelpDialog(self.project["mode"], self).exec()
 
   def _apply_editor_settings(self):
-    size = self.settings.get("general", "editor_font_size", default=16)
+    size = self.settings.get("general", "layout_sizes", "editor_font_size", default=16)
     font = self.editor.font()
     font.setPointSize(int(size))
     self.editor.setFont(font)
