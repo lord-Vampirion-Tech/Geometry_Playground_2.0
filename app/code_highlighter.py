@@ -19,6 +19,7 @@ class PythonHighlighter(QSyntaxHighlighter):
         self.keywords = set(keyword.kwlist)
         self.variable_names = set()
         self.function_names = set()
+        self._refreshing_names = False
 
         document.contentsChanged.connect(self._refresh_names)
         self._refresh_names()
@@ -31,19 +32,34 @@ class PythonHighlighter(QSyntaxHighlighter):
         return result
 
     def _refresh_names(self):
-        source = self.document().toPlainText()
+        if self._refreshing_names:
+            return
 
-        self.variable_names = set(re.findall(
-            r"(?m)^\s*([A-Za-z_]\w*)\s*(?=(?:=|\+=|-=|\*=|/=|:=))",
-            source
-        ))
+        self._refreshing_names = True
+        try:
+            source = self.document().toPlainText()
 
-        self.function_names = set(re.findall(
-            r"\bdef\s+([A-Za-z_]\w*)",
-            source
-        ))
+            variable_names = set(re.findall(
+                r"(?m)^\\s*([A-Za-z_]\\w*)\\s*(?=(?:=|\\+=|-=|\\*=|/=|:=))",
+                source
+            ))
 
-        self.rehighlight()
+            function_names = set(re.findall(
+                r"\\bdef\\s+([A-Za-z_]\\w*)",
+                source
+            ))
+
+            if (
+                variable_names == self.variable_names
+                and function_names == self.function_names
+            ):
+                return
+
+            self.variable_names = variable_names
+            self.function_names = function_names
+            self.rehighlight()
+        finally:
+            self._refreshing_names = False
 
     def _string_format(self, value):
         candidate = value.strip()
@@ -52,7 +68,7 @@ class PythonHighlighter(QSyntaxHighlighter):
         if prefix:
             candidate = candidate[prefix.end():]
 
-        if len(candidate) >= 2 and candidate[0] in "'\"" and candidate[-1] == candidate[0]:
+        if len(candidate) >= 2 and candidate[0] in "'\\"" and candidate[-1] == candidate[0]:
             candidate = candidate[1:-1]
 
         if re.fullmatch(r"#[0-9a-fA-F]{3,8}", candidate):
@@ -66,10 +82,10 @@ class PythonHighlighter(QSyntaxHighlighter):
     def highlightBlock(self, text):
         string_pattern = re.compile(
             r"""(?i)(?:[rubf]{0,2})(?:""" +
-            r"""'''[\s\S]*?'''|""" +
-            r'''"""[\s\S]*?"""|''' +
-            r"""'(?:\\.|[^'\\])*'|""" +
-            r'''"(?:\\.|[^"\\])*")'''
+            r"""'''[\\s\\S]*?'''|""" +
+            r'''"""[\\s\\S]*?"""|''' +
+            r"""'(?:\\\\.|[^'\\\\])*'|""" +
+            r'''"(?:\\\\.|[^"\\\\])*")'''
         )
 
         strings = []
@@ -92,11 +108,11 @@ class PythonHighlighter(QSyntaxHighlighter):
                 self.comment_format
             )
 
-        for match in re.finditer(r"\b\d+(?:\.\d+)?(?:[eE][+-]?\d+)?\b", text):
+        for match in re.finditer(r"\\b\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?\\b", text):
             if not inside_string(match.start()):
                 self.setFormat(match.start(), len(match.group()), self.number_format)
 
-        for match in re.finditer(r"\b[A-Za-z_]\w*\b", text):
+        for match in re.finditer(r"\\b[A-Za-z_]\\w*\\b", text):
             start = match.start()
             name = match.group()
 
@@ -108,7 +124,7 @@ class PythonHighlighter(QSyntaxHighlighter):
 
             if name in self.keywords:
                 fmt = self.keyword_format
-            elif name in self.function_names or re.match(r"\s*\(", text[match.end():]):
+            elif name in self.function_names or re.match(r"\\s*\\(", text[match.end():]):
                 fmt = self.function_format
             elif name in self.variable_names:
                 fmt = self.variable_format
