@@ -239,6 +239,7 @@ class ProjectManagerWindow(QMainWindow):
     self.resize(int(manager_size[0]), int(manager_size[1]))
 
   def open_selected_project(self):
+    project = None
     try:
       set_crash_context("Получение выбранного проекта")
       project = self._selected_project()
@@ -273,7 +274,7 @@ class ProjectManagerWindow(QMainWindow):
 
     except Exception:
       report_exception(
-          f"Открытие проекта «{project.get('name', '?')}»",
+          f"Открытие проекта «{project.get('name', '?') if isinstance(project, dict) else '?'}»",
           sys.exc_info()
       )
 
