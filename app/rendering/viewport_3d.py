@@ -23,7 +23,7 @@ class Viewport3D(QWidget):
 
         self._camera_drag_mode = None
         self._last_mouse_pos = None
-        self._camera_initialized = False
+        self._camera_initialized = True
 
         self.plotter.installEventFilter(self)
         self.plotter.setFocusPolicy(Qt.StrongFocus)
