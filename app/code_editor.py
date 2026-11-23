@@ -67,21 +67,49 @@ class CodeEditor(QPlainTextEdit):
         cursor.endEditBlock()
 
     def change_indent(self, amount):
-        blocks = self._selected_blocks()
         cursor = self.textCursor()
+        has_selection = cursor.hasSelection()
+        selection_start = cursor.selectionStart()
+        selection_end = cursor.selectionEnd()
+        blocks = self._selected_blocks()
+        removed_first = 0
+        total_shift = 0
+
         cursor.beginEditBlock()
-        for block in reversed(blocks):
+        for index, block in enumerate(reversed(blocks)):
             line = block.text()
             if amount > 0:
                 cursor.setPosition(block.position())
                 cursor.insertText(' ' * amount)
+                total_shift += amount
             else:
                 count = min(-amount, len(line) - len(line.lstrip(' ')))
                 if count:
                     cursor.setPosition(block.position())
-                    cursor.movePosition(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor, count)
+                    cursor.movePosition(
+                        QTextCursor.MoveOperation.Right,
+                        QTextCursor.MoveMode.KeepAnchor,
+                        count
+                    )
                     cursor.removeSelectedText()
+                    total_shift -= count
+                    if block == blocks[0]:
+                        removed_first = count
         cursor.endEditBlock()
+
+        if has_selection:
+            if amount > 0:
+                selection_start += amount
+            else:
+                selection_start -= removed_first
+            selection_end += total_shift
+            cursor = self.textCursor()
+            cursor.setPosition(max(0, selection_start))
+            cursor.setPosition(
+                max(selection_start, selection_end),
+                QTextCursor.MoveMode.KeepAnchor
+            )
+            self.setTextCursor(cursor)
 
     def wrap_selection(self, opening, closing):
         cursor = self.textCursor()
