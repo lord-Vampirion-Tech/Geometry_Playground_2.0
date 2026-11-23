@@ -3,8 +3,10 @@ import sys
 import traceback
 
 from contextlib import redirect_stdout, redirect_stderr
+from pathlib import Path
 
 from PySide6.QtCore import Qt, QTimer, QElapsedTimer
+from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
     QMainWindow,
     QWidget,
@@ -17,10 +19,12 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QCheckBox,
     QSlider,
-    QFrame
+    QFrame,
+    QMessageBox
 )
 
 from .settings import apply_theme
+from .project_store import ProjectStore
 from .geometry import Square, Cube, BoundingCube
 from .rendering import Viewport2D, Viewport3D
 from .code_highlighter import PythonHighlighter
@@ -151,6 +155,8 @@ class ProjectWindow(QMainWindow):
 
     self.project = project
     self.settings = settings
+    self.store = ProjectStore(Path(project["path"]).parent)
+    self.code_saved = True
 
     self.setWindowTitle(
         f"{project['name']} — Geometry Playground 2.0"
@@ -185,6 +191,9 @@ class ProjectWindow(QMainWindow):
     set_crash_context(f"Проект «{project.get('name', '?')}»: создание редактора и сцены")
     self._build_workspace(root_layout)
 
+    self.save_shortcut = QShortcut(QKeySequence.StandardKey.Save, self)
+    self.save_shortcut.activated.connect(self.save_code)
+
     set_crash_context(f"Проект «{project.get('name', '?')}»: установка центрального виджета")
     self.setCentralWidget(central)
 
@@ -209,6 +218,10 @@ class ProjectWindow(QMainWindow):
   def _build_toolbar(self, layout):
     toolbar = QHBoxLayout()
     toolbar.setSpacing(8)
+
+    self.save_button = QPushButton("Сохранить")
+    self.save_button.setFixedHeight(32)
+    self.save_button.clicked.connect(self.save_code)
 
     self.run_button = QPushButton("Выполнить код")
     self.run_button.setFixedHeight(32)
@@ -241,6 +254,7 @@ class ProjectWindow(QMainWindow):
 
     self.execution_status = QLabel("Готово")
 
+    toolbar.addWidget(self.save_button)
     toolbar.addWidget(self.run_button)
     toolbar.addWidget(self.pause_button)
     toolbar.addWidget(self.realtime_checkbox)
@@ -310,25 +324,8 @@ class ProjectWindow(QMainWindow):
     self.editor.setPlaceholderText(
         "Введите код здесь..."
     )
-    if self.project["mode"] == "2D":
-      example = """square = New_SQUARE(x=0, y=0, width=16, height=16)
-print(square.x)
-
-square.draw()
-
-def update(Time):
-    square.setRot(Time * 30)
-"""
-    else:
-      example = """cube = New_CUBE(x=0, y=0, z=0, width=16)
-print(cube.x)
-
-cube.draw()
-
-def update(Time):
-    cube.setRot(Time * 20, Time * 30, 0)
-"""
-    self.editor.setPlainText(example)
+    self.editor.setPlainText(self.store.load_code(self.project))
+    self.editor.textChanged.connect(self._on_code_changed)
 
     editor_layout.addWidget(self.editor, 1)
 
@@ -435,6 +432,23 @@ def update(Time):
 
     self.parameters_container.hide()
 
+  def _on_code_changed(self):
+    self.code_saved = False
+    self.save_button.setText("Сохранить *")
+
+  def save_code(self):
+    try:
+      self.store.save_code(self.project, self.editor.toPlainText())
+      self.code_saved = True
+      self.save_button.setText("Сохранено")
+      self.execution_status.setText("Код сохранён")
+    except Exception as error:
+      QMessageBox.critical(
+          self,
+          "Ошибка сохранения",
+          f"Не удалось сохранить код проекта:\\n{error}"
+      )
+
   def _execute_code(self):
     self._stop_playback()
     self.clear_parameter_widgets()
@@ -534,6 +548,22 @@ def update(Time):
             "layout_sizes",
             "parameters_panel_width"
         )
+
+    try:
+      if not self.code_saved:
+        self.store.save_code(self.project, self.editor.toPlainText())
+        self.code_saved = True
+    except Exception as error:
+      answer = QMessageBox.warning(
+          self,
+          "Ошибка сохранения",
+          f"Не удалось сохранить код проекта:\\n{error}\\n\\nЗакрыть окно без сохранения?",
+          QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+          QMessageBox.StandardButton.No
+      )
+      if answer != QMessageBox.StandardButton.Yes:
+        event.ignore()
+        return
 
     self._stop_playback()
     super().closeEvent(event)
