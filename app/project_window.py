@@ -281,6 +281,9 @@ class ProjectWindow(QMainWindow):
     self.frame_timer.timeout.connect(self._on_frame)
 
     self.clock = QElapsedTimer()
+    self._fps_clock = QElapsedTimer()
+    self._fps_clock.start()
+    self._fps_frames = 0
 
     self.is_running = False
     self.is_paused = False
@@ -647,6 +650,14 @@ class ProjectWindow(QMainWindow):
 
     try:
       self._call_update(current_time)
+      self._fps_frames += 1
+      fps_elapsed = self._fps_clock.elapsed()
+      if fps_elapsed >= 500:
+        fps = self._fps_frames * 1000.0 / fps_elapsed
+        if hasattr(self.viewport, "set_fps"):
+          self.viewport.set_fps(fps)
+        self._fps_frames = 0
+        self._fps_clock.restart()
 
       self.execution_status.setText(
           f"Воспроизведение | {self.current_time:.2f} с"
@@ -736,13 +747,19 @@ class ProjectWindow(QMainWindow):
 
   def _call_update(self, value):
     self.current_time = float(value)
-
     self.execution_namespace["Time"] = self.current_time
 
-    if self.update_function is not None:
-      self.update_function(self.current_time)
+    batch_render = hasattr(self.viewport, "begin_update")
+    if batch_render:
+      self.viewport.begin_update()
 
-    self._update_scene()
+    try:
+      if self.update_function is not None:
+        self.update_function(self.current_time)
+      self._update_scene()
+    finally:
+      if batch_render:
+        self.viewport.end_update()
 
   def _on_parameter_changed(self, name, value):
     if not self.execution_namespace:
