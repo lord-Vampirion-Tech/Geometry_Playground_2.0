@@ -21,6 +21,7 @@ from .project_store import ProjectStore
 from .project_window import ProjectWindow
 from .settings import AppSettings, apply_theme
 from .settings_dialog import SettingsDialog
+from .crash_handler import report_exception, set_crash_context
 
 
 class ProjectManagerWindow(QMainWindow):
@@ -244,13 +245,35 @@ class ProjectManagerWindow(QMainWindow):
       )
       return
 
-    window = ProjectWindow(project, self.settings)
-    window.show()
-    self.project_windows.append(window)
-    window.destroyed.connect(lambda: self._remove_project_window(window))
+    try:
+      set_crash_context(
+          f"Открытие проекта «{project.get('name', '?')}» "
+          f"({project.get('mode', '?')}): создание окна"
+      )
+      window = ProjectWindow(project, self.settings)
 
-    if self.settings.get("manager", "close_on_open", default=False):
-      self.close()
+      set_crash_context(
+          f"Открытие проекта «{project.get('name', '?')}»: отображение окна"
+      )
+      self.project_windows.append(window)
+      window.destroyed.connect(
+          lambda: self._on_project_window_destroyed(window)
+      )
+      window.show()
+
+      if self.settings.get("manager", "close_on_open", default=False):
+        self.hide()
+
+    except Exception:
+      report_exception(
+          f"Открытие проекта «{project.get('name', '?')}»",
+          __import__("sys").exc_info()
+      )
+
+  def _on_project_window_destroyed(self, window):
+    self._remove_project_window(window)
+    if not self.isVisible():
+      self.show()
 
   def _remove_project_window(self, window):
     if window in self.project_windows:
