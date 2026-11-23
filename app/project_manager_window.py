@@ -1,4 +1,5 @@
 from pathlib import Path
+import sys
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -238,14 +239,15 @@ class ProjectManagerWindow(QMainWindow):
     self.resize(int(manager_size[0]), int(manager_size[1]))
 
   def open_selected_project(self):
-    project = self._selected_project()
-    if project is None:
-      QMessageBox.information(
-          self, "Проект не выбран", "Сначала выберите проект в списке."
-      )
-      return
-
     try:
+      set_crash_context("Получение выбранного проекта")
+      project = self._selected_project()
+      if project is None:
+        QMessageBox.information(
+            self, "Проект не выбран", "Сначала выберите проект в списке."
+        )
+        return
+
       set_crash_context(
           f"Открытие проекта «{project.get('name', '?')}» "
           f"({project.get('mode', '?')}): создание окна"
@@ -272,7 +274,7 @@ class ProjectManagerWindow(QMainWindow):
     except Exception:
       report_exception(
           f"Открытие проекта «{project.get('name', '?')}»",
-          __import__("sys").exc_info()
+          sys.exc_info()
       )
 
   def _on_project_window_destroyed(self, window):
