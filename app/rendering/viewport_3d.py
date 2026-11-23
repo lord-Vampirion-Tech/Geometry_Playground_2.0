@@ -9,7 +9,7 @@ class Viewport3D(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         self.plotter = QtInteractor(self)
-        layout.addWidget(self.plotter.interactor)
+        layout.addWidget(self.plotter)
         self.plotter.set_background("#20232b")
         self.plotter.add_axes()
         self.plotter.show_grid(color="#777777")
