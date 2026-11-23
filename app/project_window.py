@@ -24,6 +24,8 @@ from PySide6.QtWidgets import (
 )
 
 from .settings import apply_theme
+from .code_editor import CodeEditor
+from .help_dialog import HelpDialog
 from .settings_dialog import SettingsDialog
 from .project_store import ProjectStore
 from .geometry import Square, Cube, BoundingCube
@@ -260,7 +262,17 @@ class ProjectWindow(QMainWindow):
     toolbar.addWidget(self.pause_button)
     toolbar.addWidget(self.realtime_checkbox)
     toolbar.addStretch()
-    toolbar.addWidget(self.execution_status)
+
+    self.editor_settings_button = QPushButton("Настройки")
+    self.editor_settings_button.setFixedHeight(32)
+    self.editor_settings_button.clicked.connect(self.open_settings)
+
+    self.help_button = QPushButton("Помощь")
+    self.help_button.setFixedHeight(32)
+    self.help_button.clicked.connect(self.open_help)
+
+    toolbar.addWidget(self.editor_settings_button)
+    toolbar.addWidget(self.help_button)
 
     layout.addLayout(toolbar)
 
@@ -320,18 +332,17 @@ class ProjectWindow(QMainWindow):
     title = QLabel("Код")
     title.setObjectName("sectionTitle")
 
-    self.editor_settings_button = QPushButton("⚙ Настройки")
-    self.editor_settings_button.setFixedHeight(28)
-    self.editor_settings_button.clicked.connect(self.open_settings)
+    self.execution_status = QLabel("Готово")
 
     header.addWidget(title)
     header.addStretch()
-    header.addWidget(self.editor_settings_button)
+    header.addWidget(self.execution_status)
     editor_layout.addLayout(header)
 
-    self.editor = QPlainTextEdit()
+    self.editor = CodeEditor()
     set_crash_context("Создание редактора и подсветчика Python")
     self.highlighter = PythonHighlighter(self.editor.document())
+    self._apply_editor_settings()
     self.editor.setPlaceholderText(
         "Введите код здесь..."
     )
@@ -445,10 +456,20 @@ class ProjectWindow(QMainWindow):
 
   def open_settings(self):
     dialog = SettingsDialog(self.settings, self)
+    dialog.settings_applied.connect(self._apply_editor_settings)
     dialog.settings_applied.connect(
         lambda: apply_theme(self, self.settings)
     )
     dialog.exec()
+
+  def open_help(self):
+    HelpDialog(self.project["mode"], self).exec()
+
+  def _apply_editor_settings(self):
+    size = self.settings.get("general", "editor_font_size", default=16)
+    font = self.editor.font()
+    font.setPointSize(int(size))
+    self.editor.setFont(font)
 
   def _on_code_changed(self):
     self.code_saved = False
