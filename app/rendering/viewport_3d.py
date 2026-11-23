@@ -23,8 +23,8 @@ class Viewport3D(QWidget):
 
     def update_object(self, obj, actor):
         actor.mapper.SetInputData(obj.to_polydata())
-        actor.GetProperty().SetColor(*pv.parse_color(obj.color)[:3])
-        actor.GetProperty().SetOpacity(obj.opacity)
+        actor.prop.color = obj.color
+        actor.prop.opacity = obj.opacity
         self.plotter.render()
 
     def closeEvent(self, event):
