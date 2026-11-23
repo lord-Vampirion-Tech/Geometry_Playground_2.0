@@ -23,6 +23,7 @@ from .settings import apply_theme
 from .geometry import Square, Cube, BoundingCube
 from .rendering import Viewport2D, Viewport3D
 from .code_highlighter import PythonHighlighter
+from .crash_handler import set_crash_context
 
 
 class ParameterAPI:
@@ -177,11 +178,16 @@ class ProjectWindow(QMainWindow):
     root_layout.setContentsMargins(8, 8, 8, 8)
     root_layout.setSpacing(8)
 
+    set_crash_context(f"Проект «{project.get('name', '?')}»: создание панели инструментов")
     self._build_toolbar(root_layout)
+
+    set_crash_context(f"Проект «{project.get('name', '?')}»: создание редактора и сцены")
     self._build_workspace(root_layout)
 
+    set_crash_context(f"Проект «{project.get('name', '?')}»: установка центрального виджета")
     self.setCentralWidget(central)
 
+    set_crash_context(f"Проект «{project.get('name', '?')}»: применение темы")
     apply_theme(self, settings)
     self.setStyleSheet(self.styleSheet() + """
     QWidget#editorContainer,
@@ -298,6 +304,7 @@ class ProjectWindow(QMainWindow):
     editor_layout.addWidget(title)
 
     self.editor = QPlainTextEdit()
+    set_crash_context("Создание редактора и подсветчика Python")
     self.highlighter = PythonHighlighter(self.editor.document())
     self.editor.setPlaceholderText(
         "Введите код здесь..."
@@ -338,8 +345,10 @@ def update(Time):
     scene_layout.addWidget(title)
 
     if self.project["mode"] == "2D":
+      set_crash_context("Создание 2D-области PyQtGraph")
       self.viewport = Viewport2D(self.scene_container)
     else:
+      set_crash_context("Создание 3D-области PyVista/VTK")
       self.viewport = Viewport3D(self.scene_container)
 
     scene_layout.addWidget(self.viewport, 1)
