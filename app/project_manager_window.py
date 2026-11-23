@@ -251,6 +251,11 @@ class ProjectManagerWindow(QMainWindow):
           f"({project.get('mode', '?')}): создание окна"
       )
       window = ProjectWindow(project, self.settings)
+      close_manager = self.settings.get(
+          "manager", "close_on_open", default=False
+      )
+      if close_manager:
+        window.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
 
       set_crash_context(
           f"Открытие проекта «{project.get('name', '?')}»: отображение окна"
@@ -261,7 +266,7 @@ class ProjectManagerWindow(QMainWindow):
       )
       window.show()
 
-      if self.settings.get("manager", "close_on_open", default=False):
+      if close_manager:
         self.hide()
 
     except Exception:
