@@ -1,6 +1,7 @@
 import math
 
 import numpy as np
+import pyvista as pv
 from PySide6.QtCore import Qt, QEvent
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout
 from pyvistaqt import QtInteractor
@@ -18,8 +19,10 @@ class Viewport3D(QWidget):
 
         self.plotter.set_background("#20232b")
         self.plotter.add_axes()
-        self.plotter.show_grid(color="#777777")
-        self.plotter.view_isometric()
+        self._create_floor(size=1000, step=10)
+        self.plotter.camera_position = "iso"
+        self.plotter.camera.SetViewUp(0, 1, 0)
+        self.plotter.camera.OrthogonalizeViewUp()
 
         self._camera_drag_mode = None
         self._last_mouse_pos = None
@@ -27,6 +30,61 @@ class Viewport3D(QWidget):
 
         self.plotter.installEventFilter(self)
         self.plotter.setFocusPolicy(Qt.StrongFocus)
+
+    def _create_floor(self, size=1000, step=10):
+        half = size / 2
+
+        points = []
+        lines = []
+
+        def add_line(start, end):
+            index = len(points)
+            points.extend((start, end))
+            lines.extend((2, index, index + 1))
+
+        count = int(size / step)
+
+        for i in range(count + 1):
+            pos = -half + i * step
+            add_line((-half, 0, pos), (half, 0, pos))
+            add_line((pos, 0, -half), (pos, 0, half))
+
+        grid = pv.PolyData(
+            np.array(points, dtype=float),
+            lines=np.array(lines, dtype=np.int64)
+        )
+
+        self.plotter.add_mesh(
+            grid,
+            color="#414956",
+            line_width=1,
+            lighting=False,
+            name="world_grid"
+        )
+
+        self.plotter.add_mesh(
+            pv.Line((-half, 0, 0), (half, 0, 0)),
+            color="#d65b5b",
+            line_width=2,
+            lighting=False,
+            name="world_axis_x"
+        )
+
+        self.plotter.add_mesh(
+            pv.Line((0, 0, -half), (0, 0, half)),
+            color="#5b91d6",
+            line_width=2,
+            lighting=False,
+            name="world_axis_z"
+        )
+
+        self.plotter.add_mesh(
+            pv.Line((0, -half, 0), (0, half, 0)),
+            color="#65c878",
+            line_width=2,
+            lighting=False,
+            name="world_axis_y"
+        )
 
     def add_object(self, obj):
         return self.plotter.add_mesh(
@@ -50,7 +108,7 @@ class Viewport3D(QWidget):
         self.plotter.clear()
         self.plotter.set_background("#20232b")
         self.plotter.add_axes()
-        self.plotter.show_grid(color="#777777")
+        self._create_floor(size=1000, step=10)
 
         if camera_state is not None:
             self._restore_camera_state(camera_state)
