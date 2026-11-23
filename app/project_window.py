@@ -24,6 +24,7 @@ from PySide6.QtWidgets import (
 )
 
 from .settings import apply_theme
+from .settings_dialog import SettingsDialog
 from .project_store import ProjectStore
 from .geometry import Square, Cube, BoundingCube
 from .rendering import Viewport2D, Viewport3D
@@ -314,9 +315,19 @@ class ProjectWindow(QMainWindow):
     editor_layout.setContentsMargins(0, 0, 0, 0)
     editor_layout.setSpacing(6)
 
+    header = QHBoxLayout()
+
     title = QLabel("Код")
     title.setObjectName("sectionTitle")
-    editor_layout.addWidget(title)
+
+    self.editor_settings_button = QPushButton("⚙ Настройки")
+    self.editor_settings_button.setFixedHeight(28)
+    self.editor_settings_button.clicked.connect(self.open_settings)
+
+    header.addWidget(title)
+    header.addStretch()
+    header.addWidget(self.editor_settings_button)
+    editor_layout.addLayout(header)
 
     self.editor = QPlainTextEdit()
     set_crash_context("Создание редактора и подсветчика Python")
@@ -431,6 +442,13 @@ class ProjectWindow(QMainWindow):
         widget.deleteLater()
 
     self.parameters_container.hide()
+
+  def open_settings(self):
+    dialog = SettingsDialog(self.settings, self)
+    dialog.settings_applied.connect(
+        lambda: apply_theme(self, self.settings)
+    )
+    dialog.exec()
 
   def _on_code_changed(self):
     self.code_saved = False
