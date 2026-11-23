@@ -572,9 +572,7 @@ def update(Time):
 
       self.execution_status.setText("Ошибка в update(Time)")
 
-      self.scene_label.setText(
-          traceback.format_exc()
-      )
+      self.execution_status.setToolTip(traceback.format_exc())
 
       print(traceback.format_exc())
 
