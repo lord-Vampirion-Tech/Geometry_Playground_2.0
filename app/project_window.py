@@ -300,80 +300,25 @@ class ProjectWindow(QMainWindow):
     self.editor.setPlaceholderText(
         "Введите код здесь..."
     )
-    self.editor.setPlainText("""import math
+    if self.project["mode"] == "2D":
+      example = """square = New_SQUARE(x=0, y=0, width=16, height=16)
+print(square.x)
 
-speed = ui.slider(
-    "speed",
-    label="Скорость",
-    min=0,
-    max=10,
-    value=2,
-    step=0.1
-)
-
-radius = ui.slider(
-    "radius",
-    label="Радиус",
-    min=1,
-    max=10,
-    value=5,
-    step=0.5
-)
-
-amplitude = ui.slider(
-    "amplitude",
-    label="Амплитуда",
-    min=0,
-    max=5,
-    value=2,
-    step=0.1
-)
-
-show_grid = ui.checkbox(
-    "show_grid",
-    label="Показывать сетку",
-    value=True
-)
-
-show_circle = ui.checkbox(
-    "show_circle",
-    label="Показывать окружность",
-    value=True
-)
-
-show_wave = ui.checkbox(
-    "show_wave",
-    label="Показывать волну",
-    value=True
-)
-
+square.draw()
 
 def update(Time):
-    angle = Time * speed
+    square.setRot(Time * 30)
+"""
+    else:
+      example = """cube = New_CUBE(x=0, y=0, z=0, width=16)
+print(cube.x)
 
-    x = math.cos(angle) * radius
-    y = math.sin(angle) * radius
+cube.draw()
 
-    wave = math.sin(angle) * amplitude
-
-    print(
-        f"Время: {Time:7.2f} | "
-        f"Угол: {angle:7.2f} | "
-        f"X: {x:7.2f} | "
-        f"Y: {y:7.2f}"
-    )
-
-    if show_grid:
-        print("Сетка: включена")
-
-    if show_circle:
-        print("Окружность: включена")
-
-    if show_wave:
-        print(f"Волна: {wave:.2f}")
-
-    print("-" * 60)
-""")
+def update(Time):
+    cube.setRot(Time * 20, Time * 30, 0)
+"""
+    self.editor.setPlainText(example)
 
     editor_layout.addWidget(self.editor, 1)
 
