@@ -102,7 +102,7 @@ class SettingsDialog(QDialog):
     self.editor_font_size = QSpinBox()
     self.editor_font_size.setRange(6, 48)
     self.editor_font_size.setValue(
-        self.settings.get("general", "editor_font_size", default=16)
+        self.settings.get("general", "layout_sizes", "editor_font_size", default=16)
     )
     form.addRow("Размер текста в редакторе", self.editor_font_size)
 
