@@ -20,7 +20,7 @@ from PySide6.QtWidgets import (
 )
 
 from .settings import apply_theme
-from .geometry import Square, Cube
+from .geometry import Square, Cube, BoundingCube
 from .rendering import Viewport2D, Viewport3D
 from .code_highlighter import PythonHighlighter
 
@@ -447,7 +447,8 @@ def update(Time):
         "__name__": "__main__",
         "ui": self.parameter_api,
         "New_SQUARE": self._new_square,
-        "New_CUBE": self._new_cube
+        "New_CUBE": self._new_cube,
+        "New_BOUNDS": self._new_bounds
     }
 
     try:
@@ -698,6 +699,17 @@ def update(Time):
     if self.project["mode"] != "3D":
       raise RuntimeError("New_CUBE доступен только в 3D-проекте.")
     obj = Cube(
+        **kwargs,
+        draw_callback=lambda item: self.viewport.add_object(item),
+        update_callback=lambda item, handle: self.viewport.update_object(item, handle)
+    )
+    self.geometry_objects.append(obj)
+    return obj
+
+  def _new_bounds(self, **kwargs):
+    if self.project["mode"] != "3D":
+      raise RuntimeError("New_BOUNDS доступен только в 3D-проекте.")
+    obj = BoundingCube(
         **kwargs,
         draw_callback=lambda item: self.viewport.add_object(item),
         update_callback=lambda item, handle: self.viewport.update_object(item, handle)
