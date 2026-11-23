@@ -1,4 +1,5 @@
 import io
+import sys
 import traceback
 
 from contextlib import redirect_stdout, redirect_stderr
@@ -501,7 +502,7 @@ def update(Time):
       self.execution_status.setToolTip(details)
       report_exception(
           f"Выполнение кода проекта «{self.project.get('name', '?')}»",
-          __import__("sys").exc_info()
+          sys.exc_info()
       )
 
   def _toggle_realtime(self, enabled):
