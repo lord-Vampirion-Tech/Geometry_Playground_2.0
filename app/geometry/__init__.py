@@ -1,4 +1,4 @@
 from .square import Square
-from .cube import Cube
+from .cube import Cube, BoundingCube
 
-__all__ = ["Square", "Cube"]
+__all__ = ["Square", "Cube", "BoundingCube"]
