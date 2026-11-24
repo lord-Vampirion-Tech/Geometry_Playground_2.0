@@ -82,9 +82,11 @@ class UIElements:
             value_label.setText(
                 f"X: {current.val[0]:g}    Y: {current.val[1]:g}"
             )
+            canvas.update()
             self._on_change(name, current)
 
         canvas = Slider2DCanvas(model, on_value_changed)
+        model.set_on_change(on_value_changed)
         layout.addLayout(header)
         layout.addWidget(canvas)
         self._add_widget(container)
