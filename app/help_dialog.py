@@ -44,6 +44,71 @@ class HelpDialog(QDialog):
 
 Создаёт флажок и возвращает начальное логическое значение.
 
+### ui.input(name, value=0, type=float, min=None, max=None, step=None, decimals=6, label=None)
+
+Создаёт числовое поле ввода. Поддерживает целые числа и числа с плавающей точкой.
+
+| Аргумент | Назначение |
+|---|---|
+| name | Имя параметра — корректный Python-идентификатор |
+| value | Начальное значение |
+| type | Тип числа: int или float |
+| min / max | Необязательные границы значения |
+| step | Шаг кнопок изменения значения; по умолчанию 1 для int и 0.1 для float |
+| decimals | Количество знаков после запятой для float |
+| label | Отображаемая подпись |
+
+Пример:
+
+```python
+count = ui.input("count", value=5, type=int, min=1, max=50)
+speed = ui.input(
+    "speed",
+    value=2.5,
+    type=float,
+    min=0,
+    max=10,
+    step=0.1,
+    decimals=2,
+    label="Скорость"
+)
+```
+
+## Группировка UI-элементов
+
+Элементы можно объединять в горизонтальные, вертикальные группы и сетки. Группы поддерживают вложенность.
+
+### ui.column(spacing=6, margins=0)
+
+Вертикальное расположение элементов.
+
+### ui.row(spacing=8, margins=0)
+
+Горизонтальное расположение элементов.
+
+### ui.grid(columns=2, spacing=8, row_spacing=None, margins=0)
+
+Расположение по сетке. `columns` задаёт количество столбцов. Элементы автоматически заполняют строки слева направо.
+
+- `spacing` — расстояние между столбцами и строками.
+- `row_spacing` — отдельное расстояние между строками.
+- `margins` — внутренние отступы группы.
+
+Пример:
+
+```python
+with ui.grid(columns=2, spacing=10):
+    speed = ui.slider("speed", min=0, max=100, value=50)
+    count = ui.input("count", value=5, type=int)
+
+with ui.column(spacing=6):
+    ui.checkbox("enabled", label="Включено")
+
+    with ui.row():
+        ui.input("width", value=16, type=int)
+        ui.input("height", value=16, type=int)
+```
+
 ## Анимация
 
 Объявите функцию update(Time). Аргумент Time — время в секундах с начала выполнения. При включённом режиме реального времени функция вызывается каждый кадр.
