@@ -728,6 +728,10 @@ class ProjectWindow(QMainWindow):
       self.execution_status.setText("Воспроизведение")
 
   def _stop_playback(self):
+    if self.is_running:
+      elapsed = self.clock.nsecsElapsed() / 1_000_000_000
+      self.current_time = self.time_base + elapsed
+
     self.frame_timer.stop()
 
     self.is_running = False
