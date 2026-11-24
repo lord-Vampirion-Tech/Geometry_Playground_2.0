@@ -2,10 +2,8 @@ import io
 import sys
 import traceback
 
-from collections import deque
 from contextlib import redirect_stdout, redirect_stderr
 from pathlib import Path
-from time import perf_counter_ns
 
 from PySide6.QtCore import Qt, QTimer, QElapsedTimer
 from PySide6.QtGui import QKeySequence, QShortcut
@@ -286,16 +284,7 @@ class ProjectWindow(QMainWindow):
 
     self.clock = QElapsedTimer()
     self._fps_clock = QElapsedTimer()
-    self._fps_clock.start()
-    self._status_clock = QElapsedTimer()
-    self._status_clock.start()
     self._fps_frames = 0
-    self._last_script_ms = 0.0
-    self._frame_samples = deque(maxlen=120)
-    self._last_frame_start_ns = None
-
-    self._timer_debug_count = 0
-    self._timer_debug_last = None
 
     self.is_running = False
     self.is_paused = False
@@ -348,9 +337,11 @@ class ProjectWindow(QMainWindow):
     title.setObjectName("sectionTitle")
 
     self.execution_status = QLabel("Готово")
+    self.simulation_stats_label = QLabel("FPS: 0 | Время: 0.00 с")
 
     header.addWidget(title)
     header.addStretch()
+    header.addWidget(self.simulation_stats_label)
     header.addWidget(self.execution_status)
     editor_layout.addLayout(header)
 
@@ -516,6 +507,7 @@ class ProjectWindow(QMainWindow):
 
     self.current_time = 0.0
     self.time_base = 0.0
+    self._set_simulation_stats(0)
 
     self.parameter_api = ParameterAPI(
         self,
@@ -652,17 +644,12 @@ class ProjectWindow(QMainWindow):
 
     self.clock.start()
     self._fps_clock.restart()
-    self._status_clock.restart()
     self._fps_frames = 0
-    self._frame_samples.clear()
-    self._last_frame_start_ns = None
+    self._set_simulation_stats(0)
     self.frame_timer.start()
 
     self.is_running = True
     self.is_paused = False
-
-    self._timer_debug_count = 0
-    self._timer_debug_last = None
 
     self.pause_button.setEnabled(True)
     self.pause_button.setText("Ⅱ Пауза")
@@ -675,72 +662,19 @@ class ProjectWindow(QMainWindow):
     if not self.is_running or self.update_function is None:
       return
 
-    now = perf_counter_ns()
-
-    if self._timer_debug_last is not None:
-      delta = (now - self._timer_debug_last) / 1_000_000
-      self._timer_debug_count += 1
-
-      if self._timer_debug_count % 60 == 0:
-        print(
-            f"[TIMER] interval={delta:.2f} ms "
-            f"configured={self.frame_timer.interval()} ms"
-        )
-
-    self._timer_debug_last = now
-
-    frame_start_ns = perf_counter_ns()
-    debug_start_ns = perf_counter_ns()
-
-    interval_ms = None
-    if self._last_frame_start_ns is not None:
-      interval_ms = (frame_start_ns - self._last_frame_start_ns) / 1_000_000
-    self._last_frame_start_ns = frame_start_ns
-
-    if interval_ms is not None and interval_ms > 25:
-      print(f"[SLOW FRAME] {interval_ms:.2f} ms")
-
     elapsed = self.clock.nsecsElapsed() / 1_000_000_000
     current_time = self.time_base + elapsed
 
     try:
       self._call_update(current_time)
-      debug_python_ns = perf_counter_ns()
-
-      frame_work_ms = (perf_counter_ns() - frame_start_ns) / 1_000_000
-
-      viewport_stats = self.viewport
-      self._frame_samples.append({
-          "interval": interval_ms,
-          "work": frame_work_ms,
-          "script": self._last_script_ms,
-          "geometry": getattr(viewport_stats, "last_geometry_ms", 0.0),
-          "apply": getattr(viewport_stats, "last_apply_ms", 0.0),
-          "properties": getattr(viewport_stats, "last_property_ms", 0.0),
-          "render": getattr(viewport_stats, "last_render_ms", 0.0)
-      })
-      debug_end_ns = perf_counter_ns()
-
-      if (debug_end_ns - debug_start_ns) / 1_000_000 > 25:
-        print(
-            f"[FRAME BREAKDOWN] "
-            f"Python={(debug_python_ns - debug_start_ns) / 1_000_000:.2f} ms | "
-            f"Rest={(debug_end_ns - debug_python_ns) / 1_000_000:.2f} ms"
-        )
-
       self._fps_frames += 1
 
       fps_elapsed = self._fps_clock.elapsed()
       if fps_elapsed >= 500:
-        # self._publish_performance_stats()
+        fps = self._fps_frames * 1000.0 / fps_elapsed
+        self._set_simulation_stats(fps)
         self._fps_frames = 0
         self._fps_clock.restart()
-
-      if self._status_clock.elapsed() >= 250:
-        self.execution_status.setText(
-            f"Воспроизведение | {self.current_time:.2f} с"
-        )
-        self._status_clock.restart()
 
     except Exception:
       self._stop_playback()
@@ -754,45 +688,10 @@ class ProjectWindow(QMainWindow):
           sys.exc_info()
       )
 
-  def _publish_performance_stats(self):
-    samples = tuple(self._frame_samples)
-    if not samples or not hasattr(self.viewport, "set_performance_stats"):
-      return
-
-    def average(key):
-      values = [item[key] for item in samples if item[key] is not None]
-      return sum(values) / len(values) if values else 0.0
-
-    def percentile(key, fraction):
-      values = sorted(
-          item[key] for item in samples if item[key] is not None
-      )
-      if not values:
-        return 0.0
-      index = min(len(values) - 1, int((len(values) - 1) * fraction))
-      return values[index]
-
-    interval_ms = average("interval")
-    frame_ms = average("work")
-    wait_ms = max(0.0, interval_ms - frame_ms)
-    fps = 1000.0 / interval_ms if interval_ms > 0 else 0.0
-
-    self.viewport.set_performance_stats({
-        "fps": fps,
-        "interval_ms": interval_ms,
-        "interval_p95_ms": percentile("interval", 0.95),
-        "frame_ms": frame_ms,
-        "frame_p95_ms": percentile("work", 0.95),
-        "wait_ms": wait_ms,
-        "script_ms": average("script"),
-        "geometry_ms": average("geometry"),
-        "apply_ms": average("apply"),
-        "properties_ms": average("properties"),
-        "render_ms": average("render"),
-        "objects": len(self.geometry_objects),
-        "updated": getattr(self.viewport, "last_updated_objects", 0),
-        "pending": getattr(self.viewport, "last_pending_count", 0)
-    })
+  def _set_simulation_stats(self, fps):
+    self.simulation_stats_label.setText(
+        f"FPS: {fps:.0f} | Время: {self.current_time:.2f} с"
+    )
 
   def _toggle_pause(self):
     if self.update_function is None:
@@ -806,6 +705,7 @@ class ProjectWindow(QMainWindow):
       self.frame_timer.stop()
       self.is_running = False
       self.is_paused = True
+      self._set_simulation_stats(0)
 
       self.pause_button.setText("▶ Продолжить")
 
@@ -816,8 +716,8 @@ class ProjectWindow(QMainWindow):
 
       self.clock.start()
       self._fps_clock.restart()
-      self._status_clock.restart()
       self._fps_frames = 0
+      self._set_simulation_stats(0)
       self.frame_timer.start()
 
       self.is_running = True
@@ -832,6 +732,7 @@ class ProjectWindow(QMainWindow):
 
     self.is_running = False
     self.is_paused = False
+    self._set_simulation_stats(0)
 
     self.pause_button.setEnabled(False)
     self.pause_button.setText("Ⅱ Пауза")
@@ -875,13 +776,10 @@ class ProjectWindow(QMainWindow):
     if batch_render:
       self.viewport.begin_update()
 
-    script_start = perf_counter_ns()
-
     try:
       if self.update_function is not None:
         self.update_function(self.current_time)
 
-      self._last_script_ms = (perf_counter_ns() - script_start) / 1_000_000
       self._update_scene()
 
     finally:
