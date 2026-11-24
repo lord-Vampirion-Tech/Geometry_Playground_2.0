@@ -42,6 +42,24 @@ class HelpDialog(QDialog):
 
 Создаёт числовое поле ввода. Поддерживает **int** и **float**.
 
+### ui.slider2d(name, x_min=-1, x_max=1, x_value=0, x_step=0.1, y_min=-1, y_max=1, y_value=0, y_step=0.1, label=None)
+
+Создаёт квадратный двумерный ползунок. Перетаскивайте точку внутри квадрата, чтобы одновременно менять координаты X и Y. Для каждой оси задаются собственные min, max, value и step.
+
+Возвращает объект со значениями **.val[0]** (X) и **.val[1]** (Y).
+
+```python
+target = ui.slider2d(
+    "target",
+    x_min=-16, x_max=16, x_value=0, x_step=0.1,
+    y_min=0, y_max=16, y_value=8, y_step=0.1
+)
+
+def update(Time):
+    x = target.val[0]
+    y = target.val[1]
+```
+
 ### Группировка
 
 - **ui.column(spacing=6, margins=0)** — вертикальная группа.
