@@ -21,6 +21,10 @@ DEFAULT_SETTINGS = {
         "layout_sizes": {
             "editor_width": 450,
             "parameters_panel_width": 450
+        },
+        "ui_groups": {
+            "border_width": 5,
+            "border_color": "#000000"
         }
     },
     "manager": {
