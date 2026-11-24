@@ -5,6 +5,7 @@ from ..base import Drawable
 
 class Sphere(Drawable):
     RADIUS = 1.0
+    SCALE_GEOMETRY = True
 
     def __init__(self, x=0, y=0, z=0, radius=8, color="#42a5f5", opacity=1.0,
                  theta_resolution=24, phi_resolution=24,
@@ -21,7 +22,7 @@ class Sphere(Drawable):
     def to_polydata(self):
         if self._polydata_cache is None:
             self._polydata_cache = pv.Sphere(
-                radius=self.radius, center=(0, 0, 0),
+                radius=1.0, center=(0, 0, 0),
                 theta_resolution=self.theta_resolution,
                 phi_resolution=self.phi_resolution
             )
@@ -39,7 +40,6 @@ class Sphere(Drawable):
         if radius == self.radius:
             return
         self.radius = radius
-        self._polydata_cache = None
         self.update_draw()
 
     def setColor(self, color):
