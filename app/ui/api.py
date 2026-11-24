@@ -61,6 +61,53 @@ class ParameterAPI:
         self.values[name] = initial_value
         return initial_value
 
+    def slider2d(
+        self,
+        name,
+        x_min=-1,
+        x_max=1,
+        x_value=0,
+        x_step=0.1,
+        y_min=-1,
+        y_max=1,
+        y_value=0,
+        y_step=0.1,
+        label=None,
+    ):
+        self._validate_name(name)
+
+        axes = (
+            ("X", x_min, x_max, x_value, x_step),
+            ("Y", y_min, y_max, y_value, y_step),
+        )
+        for axis, minimum, maximum, value, step in axes:
+            numbers = (minimum, maximum, value, step)
+            if not all(
+                isinstance(number, (int, float))
+                and not isinstance(number, bool)
+                and math.isfinite(float(number))
+                for number in numbers
+            ):
+                raise TypeError(f"Параметры оси {axis} должны быть конечными числами")
+            if maximum <= minimum or step <= 0:
+                raise ValueError(f"Некорректный диапазон или шаг оси {axis}")
+
+        if self.create_widgets:
+            model = self.elements.slider2d(
+                name,
+                x_min, x_max, x_value, x_step,
+                y_min, y_max, y_value, y_step,
+                label or name,
+            )
+        else:
+            model = Slider2DValue(
+                x_min, x_max, x_value, x_step,
+                y_min, y_max, y_value, y_step,
+            )
+
+        self.values[name] = model
+        return model
+
     def checkbox(self, name, value=False, label=None):
         self._validate_name(name)
         if not isinstance(value, bool):
