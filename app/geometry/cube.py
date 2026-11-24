@@ -2,6 +2,7 @@ import math
 
 import numpy as np
 import pyvista as pv
+from vtkmodules.util.numpy_support import vtk_to_numpy
 
 from .base import Drawable
 
@@ -16,7 +17,7 @@ class Cube(Drawable):
       4, 1, 2, 6, 5,
       4, 2, 3, 7, 6,
       4, 3, 0, 4, 7
-  ])
+  ], dtype=np.int64)
 
   def __init__(
       self,
@@ -49,24 +50,45 @@ class Cube(Drawable):
     self.rot_z = 0.0
 
     self._polydata_cache = None
+    self._rotation_matrix_cache = np.eye(3, dtype=np.float64)
+    self._geometry_dirty = True
+
     self._reset_local_vertices()
 
   def _reset_local_vertices(self):
-    self._polydata_cache = None
     hw = self.width / 2
     hh = self.height / 2
     hd = self.depth / 2
 
-    self.local_vertices = {
-        "A": [-hw, -hh, -hd],
-        "B": [hw, -hh, -hd],
-        "C": [hw, hh, -hd],
-        "D": [-hw, hh, -hd],
-        "E": [-hw, -hh, hd],
-        "F": [hw, -hh, hd],
-        "G": [hw, hh, hd],
-        "H": [-hw, hh, hd]
-    }
+    vertices = (
+        (-hw, -hh, -hd),
+        (hw, -hh, -hd),
+        (hw, hh, -hd),
+        (-hw, hh, -hd),
+        (-hw, -hh, hd),
+        (hw, -hh, hd),
+        (hw, hh, hd),
+        (-hw, hh, hd)
+    )
+
+    if not hasattr(self, "local_vertices"):
+      self.local_vertices = {
+          name: list(vertex)
+          for name, vertex in zip(self.POINT_NAMES, vertices)
+      }
+      self._local_vertices_array = np.asarray(
+          vertices, dtype=np.float64
+      )
+      self._world_vertices_array = np.empty((8, 3), dtype=np.float64)
+    else:
+      for index, (name, vertex) in enumerate(
+          zip(self.POINT_NAMES, vertices)
+      ):
+        local = self.local_vertices[name]
+        local[0], local[1], local[2] = vertex
+        self._local_vertices_array[index] = vertex
+
+    self._geometry_dirty = True
 
   def _rotation_matrix(self):
     rx, ry, rz = map(
@@ -96,15 +118,23 @@ class Cube(Drawable):
         [0, 0, 1]
     ])
 
-    return matrix_z @ matrix_y @ matrix_x
+    self._rotation_matrix_cache = matrix_z @ matrix_y @ matrix_x
+    return self._rotation_matrix_cache
+
+  def _calculate_world_vertices(self):
+    np.matmul(
+        self._local_vertices_array,
+        self._rotation_matrix_cache.T,
+        out=self._world_vertices_array
+    )
+    self._world_vertices_array += (self.x, self.y, self.z)
+    return self._world_vertices_array
 
   def get_vertices(self):
-    rotation = self._rotation_matrix()
-    position = np.array([self.x, self.y, self.z], dtype=float)
-
+    vertices = self._calculate_world_vertices()
     return {
-        name: tuple((rotation @ np.asarray(vertex) + position).tolist())
-        for name, vertex in self.local_vertices.items()
+        name: tuple(vertices[index])
+        for index, name in enumerate(self.POINT_NAMES)
     }
 
   def getPoint(self, name):
@@ -124,44 +154,64 @@ class Cube(Drawable):
     if name not in self.POINT_NAMES:
       raise ValueError(f"Неизвестная вершина: {name}")
 
-    world = np.array([x, y, z], dtype=float)
-    position = np.array([self.x, self.y, self.z], dtype=float)
+    world = np.asarray((x, y, z), dtype=np.float64)
+    position = np.asarray((self.x, self.y, self.z), dtype=np.float64)
 
-    local = self._rotation_matrix().T @ (world - position)
+    local = self._rotation_matrix_cache.T @ (world - position)
+    index = self.POINT_NAMES.index(name)
+
     self.local_vertices[name] = local.tolist()
-    self._polydata_cache = None
+    self._local_vertices_array[index] = local
+    self._geometry_dirty = True
     self.update_draw()
 
   def to_polydata(self):
     if self._polydata_cache is None:
-      points = np.array([
-          self.get_vertices()[name]
-          for name in self.POINT_NAMES
-      ], dtype=float)
-      self._polydata_cache = pv.PolyData(points, self.FACES)
+      vertices = self._calculate_world_vertices()
+      self._polydata_cache = pv.PolyData(vertices.copy(), self.FACES)
+      self._geometry_dirty = False
+
+    elif self._geometry_dirty:
+      vertices = self._calculate_world_vertices()
+      vtk_points = self._polydata_cache.GetPoints()
+      point_array = vtk_to_numpy(vtk_points.GetData())
+      np.copyto(point_array, vertices)
+
+      vtk_points.GetData().Modified()
+      vtk_points.Modified()
+      self._polydata_cache.Modified()
+      self._geometry_dirty = False
+
     return self._polydata_cache
 
   def setPos(self, x, y, z):
     position = tuple(map(float, (x, y, z)))
     if position == (self.x, self.y, self.z):
       return
+
     self.x, self.y, self.z = position
-    self._polydata_cache = None
+    self._geometry_dirty = True
     self.update_draw()
 
   def setRot(self, x=0, y=0, z=0):
     rotation = tuple(map(float, (x, y, z)))
     if rotation == (self.rot_x, self.rot_y, self.rot_z):
       return
+
     self.rot_x, self.rot_y, self.rot_z = rotation
-    self._polydata_cache = None
+    self._rotation_matrix()
+    self._geometry_dirty = True
     self.update_draw()
 
   def setSize(self, width, height=None, depth=None):
-    size = (float(width), float(width if height is None else height),
-            float(width if depth is None else depth))
+    size = (
+        float(width),
+        float(width if height is None else height),
+        float(width if depth is None else depth)
+    )
     if size == (self.width, self.height, self.depth):
       return
+
     self.width, self.height, self.depth = size
     self._reset_local_vertices()
     self.update_draw()
@@ -237,6 +287,16 @@ class BoundingCube(Cube):
         minx, miny, minz,
         maxx, maxy, maxz
     )))
+
+    if bounds == (
+        self._minx,
+        self._miny,
+        self._minz,
+        self._maxx,
+        self._maxy,
+        self._maxz
+    ):
+      return
 
     if (
         bounds[0] > bounds[3]

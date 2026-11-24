@@ -1,4 +1,5 @@
 import math
+from time import perf_counter_ns
 
 import numpy as np
 import pyvista as pv
@@ -14,7 +15,7 @@ class Viewport3D(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
 
-        self.plotter = QtInteractor(self)
+        self.plotter = QtInteractor(self, auto_update=False)
         layout.addWidget(self.plotter)
 
         self.plotter.set_background("#20232b")
@@ -29,6 +30,9 @@ class Viewport3D(QWidget):
         self._camera_initialized = True
         self._render_batch_depth = 0
         self._render_pending = False
+        self._pending_object_updates = {}
+        self.last_geometry_ms = 0.0
+        self.last_render_ms = 0.0
         self._create_fps_counter()
 
         self.plotter.installEventFilter(self)
@@ -53,8 +57,8 @@ class Viewport3D(QWidget):
             add_line((pos, 0, -half), (pos, 0, half))
 
         grid = pv.PolyData(
-            np.array(points, dtype=float),
-            lines=np.array(lines, dtype=np.int64)
+            np.asarray(points, dtype=np.float32),
+            lines=np.asarray(lines, dtype=np.int64)
         )
 
         self.plotter.add_mesh(
@@ -95,9 +99,15 @@ class Viewport3D(QWidget):
             color="#d7e0ea", name="fps_counter"
         )
 
-    def set_fps(self, value):
+    def set_fps(self, value, script_ms=None):
+        script_text = (
+            f" | Python: {script_ms:.1f} ms"
+            if script_ms is not None else ""
+        )
         self.plotter.add_text(
-            f"FPS: {value:.0f}",
+            f"FPS: {value:.0f}{script_text}"
+            f" | Geometry: {self.last_geometry_ms:.1f} ms"
+            f" | Render: {self.last_render_ms:.1f} ms",
             position="upper_right",
             font_size=10,
             color="#d7e0ea",
@@ -105,15 +115,30 @@ class Viewport3D(QWidget):
         )
 
     def begin_update(self):
+        if self._render_batch_depth == 0:
+            self.last_geometry_ms = 0.0
+            self.last_render_ms = 0.0
         self._render_batch_depth += 1
 
     def end_update(self):
         if self._render_batch_depth <= 0:
             return
+
         self._render_batch_depth -= 1
-        if self._render_batch_depth == 0 and self._render_pending:
+        if self._render_batch_depth != 0:
+            return
+
+        if self._pending_object_updates:
+            pending = tuple(self._pending_object_updates.values())
+            self._pending_object_updates.clear()
+            for obj, actor in pending:
+                self._apply_object_update(obj, actor)
+
+        if self._render_pending:
             self._render_pending = False
+            start = perf_counter_ns()
             self.plotter.render()
+            self.last_render_ms = (perf_counter_ns() - start) / 1_000_000
 
     def add_object(self, obj):
         actor = self.plotter.add_mesh(
@@ -122,51 +147,71 @@ class Viewport3D(QWidget):
             opacity=obj.opacity,
             show_edges=not hasattr(obj, "RADIUS"),
             edge_color="#ffffff",
-            line_width=1
+            line_width=1,
+            render=False
         )
 
-        if hasattr(obj, "RADIUS") and obj.name:
-            label = self.plotter.add_point_labels(
-                np.array([[obj.x, obj.y, obj.z]], dtype=float),
-                [obj.name],
-                show_points=False,
-                shape=None,
-                name=f"point_label_{id(obj)}"
-            )
-            return actor, label
+        if hasattr(obj, "RADIUS"):
+            actor.SetPosition(obj.x, obj.y, obj.z)
 
-        return actor
+            if obj.name:
+                label_data = pv.PolyData(
+                    np.array([[obj.x, obj.y, obj.z]], dtype=np.float64)
+                )
+                label_data.point_data["labels"] = [obj.name]
+                label = self.plotter.add_point_labels(
+                    label_data,
+                    "labels",
+                    show_points=False,
+                    shape=None,
+                    name=f"point_label_{id(obj)}",
+                    render=False
+                )
+                result = (actor, label, label_data)
+            else:
+                result = actor
+        else:
+            result = actor
+
+        if self._render_batch_depth:
+            self._render_pending = True
+        else:
+            self.plotter.render()
+
+        return result
 
     def update_object(self, obj, actor):
+        if self._render_batch_depth:
+            self._pending_object_updates[id(obj)] = (obj, actor)
+            self._render_pending = True
+            return
+
+        self._apply_object_update(obj, actor)
+        render_start = perf_counter_ns()
+        self.plotter.render()
+        self.last_render_ms = (perf_counter_ns() - render_start) / 1_000_000
+
+    def _apply_object_update(self, obj, actor):
         mesh_actor = actor[0] if isinstance(actor, tuple) else actor
-        mesh_actor.mapper.SetInputData(obj.to_polydata())
+        start = perf_counter_ns()
+
+        if hasattr(obj, "RADIUS"):
+            mesh_actor.SetPosition(obj.x, obj.y, obj.z)
+
+            if isinstance(actor, tuple) and len(actor) > 2:
+                label_data = actor[2]
+                label_points = label_data.GetPoints()
+                label_points.SetPoint(0, obj.x, obj.y, obj.z)
+                label_points.GetData().Modified()
+                label_points.Modified()
+                label_data.Modified()
+        else:
+            obj.to_polydata()
+
+        self.last_geometry_ms += (perf_counter_ns() - start) / 1_000_000
+
         mesh_actor.prop.color = obj.color
         mesh_actor.prop.opacity = obj.opacity
-
-        if isinstance(actor, tuple):
-            self.plotter.remove_actor(actor[1], render=False)
-            label = self.plotter.add_point_labels(
-                np.array([[obj.x, obj.y, obj.z]], dtype=float),
-                [obj.name],
-                show_points=False,
-                shape=None,
-                name=f"point_label_{id(obj)}"
-            )
-            obj._handle = (mesh_actor, label)
-
-        if self._render_batch_depth:
-            self._render_pending = True
-        else:
-            self.plotter.render()
-
-    def update_object(self, obj, actor):
-        actor.mapper.SetInputData(obj.to_polydata())
-        actor.prop.color = obj.color
-        actor.prop.opacity = obj.opacity
-        if self._render_batch_depth:
-            self._render_pending = True
-        else:
-            self.plotter.render()
 
     def clear_scene(self):
         camera_state = self._save_camera_state() if self._camera_initialized else None

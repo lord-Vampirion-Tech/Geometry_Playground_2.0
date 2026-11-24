@@ -4,6 +4,7 @@ import traceback
 
 from contextlib import redirect_stdout, redirect_stderr
 from pathlib import Path
+from time import perf_counter_ns
 
 from PySide6.QtCore import Qt, QTimer, QElapsedTimer
 from PySide6.QtGui import QKeySequence, QShortcut
@@ -117,7 +118,7 @@ class ParameterAPI:
     return initial_value
 
   def checkbox(self, name, value=False, label=None):
-    if not name.isidentifier():
+    if not isinstance(name, str) or not name.isidentifier():
       raise ValueError(
           f"Имя параметра должно быть Python-идентификатором: {name}"
       )
@@ -255,8 +256,6 @@ class ProjectWindow(QMainWindow):
         self._on_realtime_toggled
     )
 
-    self.execution_status = QLabel("Готово")
-
     toolbar.addWidget(self.save_button)
     toolbar.addWidget(self.run_button)
     toolbar.addWidget(self.pause_button)
@@ -277,13 +276,17 @@ class ProjectWindow(QMainWindow):
     layout.addLayout(toolbar)
 
     self.frame_timer = QTimer(self)
+    self.frame_timer.setTimerType(Qt.TimerType.PreciseTimer)
     self.frame_timer.setInterval(16)
     self.frame_timer.timeout.connect(self._on_frame)
 
     self.clock = QElapsedTimer()
     self._fps_clock = QElapsedTimer()
     self._fps_clock.start()
+    self._status_clock = QElapsedTimer()
+    self._status_clock.start()
     self._fps_frames = 0
+    self._last_script_ms = 0.0
 
     self.is_running = False
     self.is_paused = False
@@ -518,40 +521,49 @@ class ProjectWindow(QMainWindow):
         "New_POINT": self._new_point
     }
 
+    batch_render = hasattr(self.viewport, "begin_update")
+    if batch_render:
+      self.viewport.begin_update()
+
     try:
-      exec(
-          compile(
-              source,
-              f"<{self.project['name']}>",
-              "exec"
-          ),
-          namespace,
-          namespace
-      )
-
-      update_function = namespace.get("update")
-
-      if update_function is not None and not callable(update_function):
-        raise TypeError(
-            "update должна быть функцией: def update(Time):"
+      try:
+        exec(
+            compile(
+                source,
+                f"<{self.project['name']}>",
+                "exec"
+            ),
+            namespace,
+            namespace
         )
 
-      self.execution_namespace = namespace
-      self.update_function = update_function
+        update_function = namespace.get("update")
 
-      self._call_update(0.0)
+        if update_function is not None and not callable(update_function):
+          raise TypeError(
+              "update должна быть функцией: def update(Time):"
+          )
 
-      if (
-          self.realtime_checkbox.isChecked()
-          and self.update_function is not None
-      ):
-        self._start_playback()
+        self.execution_namespace = namespace
+        self.update_function = update_function
 
-      else:
-        self.clear_parameter_widgets()
-        self.execution_status.setText("Готово")
+        self._call_update(0.0)
 
-    except Exception as error:
+        if (
+            self.realtime_checkbox.isChecked()
+            and self.update_function is not None
+        ):
+          self._start_playback()
+
+        else:
+          self.clear_parameter_widgets()
+          self.execution_status.setText("Готово")
+
+      finally:
+        if batch_render:
+          self.viewport.end_update()
+
+    except Exception:
       self._stop_playback()
       self.execution_status.setText("Ошибка выполнения")
 
@@ -629,6 +641,9 @@ class ProjectWindow(QMainWindow):
     self.time_base = self.current_time
 
     self.clock.start()
+    self._fps_clock.restart()
+    self._status_clock.restart()
+    self._fps_frames = 0
     self.frame_timer.start()
 
     self.is_running = True
@@ -646,23 +661,27 @@ class ProjectWindow(QMainWindow):
       return
 
     elapsed = self.clock.nsecsElapsed() / 1_000_000_000
-
     current_time = self.time_base + elapsed
 
     try:
       self._call_update(current_time)
       self._fps_frames += 1
+
       fps_elapsed = self._fps_clock.elapsed()
       if fps_elapsed >= 500:
         fps = self._fps_frames * 1000.0 / fps_elapsed
+
         if hasattr(self.viewport, "set_fps"):
-          self.viewport.set_fps(fps)
+          self.viewport.set_fps(fps, self._last_script_ms)
+
         self._fps_frames = 0
         self._fps_clock.restart()
 
-      self.execution_status.setText(
-          f"Воспроизведение | {self.current_time:.2f} с"
-      )
+      if self._status_clock.elapsed() >= 250:
+        self.execution_status.setText(
+            f"Воспроизведение | {self.current_time:.2f} с"
+        )
+        self._status_clock.restart()
 
     except Exception:
       self._stop_playback()
@@ -673,7 +692,7 @@ class ProjectWindow(QMainWindow):
       self.execution_status.setToolTip(details)
       report_exception(
           f"Обновление кадра проекта «{self.project.get('name', '?')}»",
-          __import__("sys").exc_info()
+          sys.exc_info()
       )
 
   def _toggle_pause(self):
@@ -697,6 +716,9 @@ class ProjectWindow(QMainWindow):
       self.time_base = self.current_time
 
       self.clock.start()
+      self._fps_clock.restart()
+      self._status_clock.restart()
+      self._fps_frames = 0
       self.frame_timer.start()
 
       self.is_running = True
@@ -754,10 +776,15 @@ class ProjectWindow(QMainWindow):
     if batch_render:
       self.viewport.begin_update()
 
+    script_start = perf_counter_ns()
+
     try:
       if self.update_function is not None:
         self.update_function(self.current_time)
+
+      self._last_script_ms = (perf_counter_ns() - script_start) / 1_000_000
       self._update_scene()
+
     finally:
       if batch_render:
         self.viewport.end_update()
@@ -786,7 +813,7 @@ class ProjectWindow(QMainWindow):
       report_exception(
           f"Обновление параметра «{name}» проекта "
           f"«{self.project.get('name', '?')}»",
-          __import__("sys").exc_info()
+          sys.exc_info()
       )
 
   def _new_square(self, **kwargs):

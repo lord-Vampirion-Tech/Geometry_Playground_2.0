@@ -30,7 +30,7 @@ class Point(Drawable):
         if self._polydata_cache is None:
             self._polydata_cache = pv.Sphere(
                 radius=self.RADIUS,
-                center=(self.x, self.y, self.z),
+                center=(0.0, 0.0, 0.0),
                 theta_resolution=20,
                 phi_resolution=20
             )
@@ -42,7 +42,6 @@ class Point(Drawable):
             return
 
         self.x, self.y, self.z = position
-        self._polydata_cache = None
         self.update_draw()
 
     def setColor(self, color):

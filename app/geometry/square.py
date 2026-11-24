@@ -25,19 +25,29 @@ class Square(Drawable):
                 for px, py in points]
 
     def setPos(self, x, y):
-        self.x, self.y = float(x), float(y)
+        position = (float(x), float(y))
+        if position == (self.x, self.y):
+            return
+        self.x, self.y = position
         self.update_draw()
 
     def setRot(self, angle, pivot_x=None, pivot_y=None):
-        self.angle = float(angle)
+        angle = float(angle)
+        if angle == self.angle:
+            return
+        self.angle = angle
         self.update_draw()
 
     def setSize(self, width, height=None):
-        self.width = float(width)
-        self.height = float(width if height is None else height)
+        size = (float(width), float(width if height is None else height))
+        if size == (self.width, self.height):
+            return
+        self.width, self.height = size
         self.update_draw()
 
     def setColor(self, color):
+        if color == self.color:
+            return
         self.color = color
         self.update_draw()
 
