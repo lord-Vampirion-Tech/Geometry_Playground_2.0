@@ -309,6 +309,9 @@ class ProjectWindow(QMainWindow):
     self.main_splitter.addWidget(self.editor_container)
     self.main_splitter.addWidget(self.scene_container)
 
+    self.main_splitter.setStretchFactor(0, 0)
+    self.main_splitter.setStretchFactor(1, 1)
+
     layout.addWidget(self.main_splitter, 1)
 
     editor_width = self.settings.get(
