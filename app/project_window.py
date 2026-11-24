@@ -134,19 +134,18 @@ class ProjectWindow(QMainWindow):
 
     if event.type() not in (QEvent.Type.KeyPress, QEvent.Type.KeyRelease):
       return super().eventFilter(watched, event)
-    if event.isAutoRepeat():
-      return False
-
     sequence = QKeySequence(
         int(event.key()) | int(event.modifiers())
     ).toString(QKeySequence.SequenceFormat.PortableText).upper()
     bindings = self._ui_key_bindings.get(sequence)
     if not bindings:
       return super().eventFilter(watched, event)
+    if event.isAutoRepeat():
+      return True
 
     if event.type() == QEvent.Type.KeyPress:
       if sequence in self._ui_pressed_keys:
-        return False
+        return True
       self._ui_pressed_keys.add(sequence)
       for on_press, _ in tuple(bindings):
         if on_press is not None:
