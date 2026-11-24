@@ -116,14 +116,48 @@ class Viewport3D(QWidget):
             self.plotter.render()
 
     def add_object(self, obj):
-        return self.plotter.add_mesh(
+        actor = self.plotter.add_mesh(
             obj.to_polydata(),
             color=obj.color,
             opacity=obj.opacity,
-            show_edges=True,
+            show_edges=not hasattr(obj, "RADIUS"),
             edge_color="#ffffff",
             line_width=1
         )
+
+        if hasattr(obj, "RADIUS") and obj.name:
+            label = self.plotter.add_point_labels(
+                np.array([[obj.x, obj.y, obj.z]], dtype=float),
+                [obj.name],
+                show_points=False,
+                shape=None,
+                name=f"point_label_{id(obj)}"
+            )
+            return actor, label
+
+        return actor
+
+    def update_object(self, obj, actor):
+        mesh_actor = actor[0] if isinstance(actor, tuple) else actor
+        mesh_actor.mapper.SetInputData(obj.to_polydata())
+        mesh_actor.prop.color = obj.color
+        mesh_actor.prop.opacity = obj.opacity
+
+        if isinstance(actor, tuple):
+            self.plotter.remove_actor(actor[1], render=False)
+            label = self.plotter.add_point_labels(
+                np.array([[obj.x, obj.y, obj.z]], dtype=float),
+                [obj.name],
+                show_points=False,
+                shape=None,
+                name=f"point_label_{id(obj)}"
+            )
+            obj._handle = (mesh_actor, label)
+
+        if self._render_batch_depth:
+            self._render_pending = True
+        else:
+            self.plotter.render()
 
     def update_object(self, obj, actor):
         actor.mapper.SetInputData(obj.to_polydata())
