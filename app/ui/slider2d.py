@@ -106,14 +106,21 @@ class Slider2DCanvas(QWidget):
             painter.drawLine(QPointF(x, top), QPointF(x, bottom))
             painter.drawLine(QPointF(left, y), QPointF(right, y))
 
-        axis_pen = QPen(QColor("#7c8798"), 1.4)
-        painter.setPen(axis_pen)
         if self.model.x_min <= 0 <= self.model.x_max:
-            axis_x = self._to_screen(0, self.model.y_min).x()
-            painter.drawLine(QPointF(axis_x, top), QPointF(axis_x, bottom))
+            vertical_axis_x = self._to_screen(0, self.model.y_min).x()
+            painter.setPen(QPen(QColor("#4caf50"), 2))
+            painter.drawLine(
+                QPointF(vertical_axis_x, top),
+                QPointF(vertical_axis_x, bottom)
+            )
+
         if self.model.y_min <= 0 <= self.model.y_max:
-            axis_y = self._to_screen(self.model.x_min, 0).y()
-            painter.drawLine(QPointF(left, axis_y), QPointF(right, axis_y))
+            horizontal_axis_y = self._to_screen(self.model.x_min, 0).y()
+            painter.setPen(QPen(QColor("#ef5350"), 2))
+            painter.drawLine(
+                QPointF(left, horizontal_axis_y),
+                QPointF(right, horizontal_axis_y)
+            )
 
         painter.setPen(QPen(QColor("#8d98a8"), 1))
         painter.setBrush(Qt.BrushStyle.NoBrush)
