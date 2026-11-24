@@ -11,6 +11,18 @@ class Viewport2D(QWidget):
     self.graph.setBackground("#20232b")
     self.graph.setAspectLocked(True)
     self.graph.showGrid(x=True, y=True, alpha=0.2)
+    self.axis_x = pg.InfiniteLine(
+        pos=0, angle=0, movable=False,
+        pen=pg.mkPen("#596273", width=1.2)
+    )
+    self.axis_y = pg.InfiniteLine(
+        pos=0, angle=90, movable=False,
+        pen=pg.mkPen("#596273", width=1.2)
+    )
+    self.axis_x.setZValue(-100)
+    self.axis_y.setZValue(-100)
+    self.graph.addItem(self.axis_x)
+    self.graph.addItem(self.axis_y)
     self.graph.setXRange(-20, 20, padding=0)
     self.graph.setYRange(-20, 20, padding=0)
     self.graph.setLabel("bottom", "X")
