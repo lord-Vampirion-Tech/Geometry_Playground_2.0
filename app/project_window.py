@@ -18,8 +18,6 @@ from PySide6.QtWidgets import (
     QLabel,
     QSizePolicy,
     QCheckBox,
-    QSlider,
-    QFrame,
     QMessageBox
 )
 
@@ -29,126 +27,10 @@ from .help_dialog import HelpDialog
 from .settings_dialog import SettingsDialog
 from .project_store import ProjectStore
 from .geometry import Square, Cube, BoundingCube, Point
+from .ui import ParameterAPI
 from .rendering import Viewport2D, Viewport3D
 from .code_highlighter import PythonHighlighter
 from .crash_handler import report_exception, set_crash_context
-
-
-class ParameterAPI:
-
-  def __init__(self, window, create_widgets=False):
-    self.window = window
-    self.values = {}
-    self.create_widgets = create_widgets
-
-  def _validate_name(self, name):
-    if not isinstance(name, str) or not name.isidentifier():
-      raise ValueError(
-          f"Некорректное имя параметра: {name}"
-      )
-
-  def slider(
-      self,
-      name,
-      min=0,
-      max=100,
-      value=50,
-      step=1,
-      label=None
-  ):
-    self._validate_name(name)
-
-    if step <= 0 or max <= min:
-      raise ValueError(
-          f"Некорректный диапазон ползунка: {name}"
-      )
-
-    count = round((max - min) / step)
-
-    if count <= 0:
-      raise ValueError(
-          f"Некорректный диапазон ползунка: {name}"
-      )
-
-    max_value = min + count * step
-    value = max_value if value > max_value else value
-    value = min if value < min else value
-
-    index = round((value - min) / step)
-    initial_value = min + index * step
-
-    self.values[name] = initial_value
-
-    if self.create_widgets:
-      container = QWidget()
-      layout = QVBoxLayout(container)
-      layout.setContentsMargins(0, 4, 0, 4)
-
-      title = QLabel(label or name)
-      value_label = QLabel(f"{initial_value:g}")
-
-      header = QHBoxLayout()
-      header.addWidget(title)
-      header.addStretch()
-      header.addWidget(value_label)
-
-      slider = QSlider(Qt.Horizontal)
-      slider.setRange(0, count)
-      slider.setValue(index)
-
-      layout.addLayout(header)
-      layout.addWidget(slider)
-
-      self.window.add_parameter_widget(container)
-
-      def on_value_changed(index):
-        current_value = min + index * step
-
-        value_label.setText(f"{current_value:g}")
-        self.values[name] = current_value
-
-        self.window._on_parameter_changed(
-            name,
-            current_value
-        )
-
-      slider.valueChanged.connect(on_value_changed)
-
-    return initial_value
-
-  def checkbox(self, name, value=False, label=None):
-    if not isinstance(name, str) or not name.isidentifier():
-      raise ValueError(
-          f"Имя параметра должно быть Python-идентификатором: {name}"
-      )
-
-    self.values[name] = value
-
-    if self.create_widgets:
-      checkbox = QCheckBox(label or name)
-      checkbox.setChecked(value)
-
-      self.window.add_parameter_widget(checkbox)
-
-      def on_toggled(checked):
-        self.values[name] = checked
-
-        self.window._on_parameter_changed(
-            name,
-            checked
-        )
-
-      checkbox.toggled.connect(on_toggled)
-
-    return value
-
-  def _on_checkbox_changed(self, name, value):
-    self.values[name] = value
-
-    self.window._on_parameter_changed(
-        name,
-        value
-    )
 
 
 class ProjectWindow(QMainWindow):
@@ -514,6 +396,7 @@ class ProjectWindow(QMainWindow):
 
     self.parameter_api = ParameterAPI(
         self,
+        self.parameters_content,
         create_widgets=self.realtime_checkbox.isChecked()
     )
 
