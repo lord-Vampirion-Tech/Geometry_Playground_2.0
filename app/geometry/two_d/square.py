@@ -8,7 +8,7 @@ class Square(Drawable2D):
     POINT_NAMES = ("A", "B", "C", "D")
 
     def __init__(self, x=0, y=0, width=16, height=None, color="#42a5f5",
-                 angle=0, draw_callback=None, update_callback=None):
+                 angle=0, line_width=2, draw_callback=None, update_callback=None):
         super().__init__(draw_callback, update_callback)
         self.x = float(x)
         self.y = float(y)
@@ -16,6 +16,7 @@ class Square(Drawable2D):
         self.height = float(width if height is None else height)
         self.color = color
         self.angle = float(angle)
+        self.line_width = float(line_width)
 
     def get_vertices(self):
         hw, hh = self.width / 2, self.height / 2

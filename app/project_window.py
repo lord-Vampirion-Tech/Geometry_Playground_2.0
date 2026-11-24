@@ -366,7 +366,8 @@ class ProjectWindow(QMainWindow):
 
     self.parameter_api.layouts.set_group_style(
         self.settings.get("general", "ui_groups", "border_width", default=5),
-        self.settings.get("general", "ui_groups", "border_color", default="#000000")
+        self.settings.get("general", "ui_groups",
+                          "border_color", default="#000000")
     )
 
   def _apply_editor_settings(self):
@@ -411,8 +412,10 @@ class ProjectWindow(QMainWindow):
         self,
         self.parameters_content,
         create_widgets=self.realtime_checkbox.isChecked(),
-        group_border_width=self.settings.get("general", "ui_groups", "border_width", default=5),
-        group_border_color=self.settings.get("general", "ui_groups", "border_color", default="#000000")
+        group_border_width=self.settings.get(
+            "general", "ui_groups", "border_width", default=5),
+        group_border_color=self.settings.get(
+            "general", "ui_groups", "border_color", default="#000000")
     )
 
     namespace = {
@@ -426,20 +429,20 @@ class ProjectWindow(QMainWindow):
 
     if self.project["mode"] == "2D":
       namespace.update({
-          "Point": lambda **kwargs: self._create_geometry(Point2D, **kwargs),
-          "Line": lambda **kwargs: self._create_geometry(Line2D, **kwargs),
-          "Square": lambda **kwargs: self._create_geometry(Square, **kwargs),
-          "Polygon": lambda **kwargs: self._create_geometry(Polygon, **kwargs),
-          "Circle": lambda **kwargs: self._create_geometry(Circle, **kwargs),
-          "New_POINT": lambda **kwargs: self._create_geometry(Point2D, **kwargs)
+          "Point": lambda *args, **kwargs: self._create_geometry(Point2D, *args, **kwargs),
+          "Line": lambda *args, **kwargs: self._create_geometry(Line2D, *args, **kwargs),
+          "Square": lambda *args, **kwargs: self._create_geometry(Square, *args, **kwargs),
+          "Polygon": lambda *args, **kwargs: self._create_geometry(Polygon, *args, **kwargs),
+          "Circle": lambda *args, **kwargs: self._create_geometry(Circle, *args, **kwargs),
+          "New_POINT": lambda *args, **kwargs: self._create_geometry(Point2D, *args, **kwargs)
       })
     else:
       namespace.update({
-          "Point": self._new_point,
-          "Line": lambda **kwargs: self._create_geometry(Line3D, **kwargs),
-          "Cube": self._new_cube,
-          "BoundingCube": self._new_bounds,
-          "Sphere": lambda **kwargs: self._create_geometry(Sphere, **kwargs)
+          "Point": lambda *args, **kwargs: self._create_geometry(Point3D, *args, **kwargs),
+          "Line": lambda *args, **kwargs: self._create_geometry(Line3D, *args, **kwargs),
+          "Cube": lambda *args, **kwargs: self._create_geometry(Cube, *args, **kwargs),
+          "BoundingCube": lambda *args, **kwargs: self._create_geometry(BoundingCube, *args, **kwargs),
+          "Sphere": lambda *args, **kwargs: self._create_geometry(Sphere, *args, **kwargs)
       })
 
     batch_render = hasattr(self.viewport, "begin_update")
@@ -736,12 +739,14 @@ class ProjectWindow(QMainWindow):
           sys.exc_info()
       )
 
-  def _create_geometry(self, geometry_class, **kwargs):
+  def _create_geometry(self, geometry_class, *args, **kwargs):
     obj = geometry_class(
+        *args,
         **kwargs,
         draw_callback=lambda item: self.viewport.add_object(item),
         update_callback=lambda item, handle: self.viewport.update_object(
-            item, handle)
+            item, handle
+        )
     )
     self.geometry_objects.append(obj)
     return obj
