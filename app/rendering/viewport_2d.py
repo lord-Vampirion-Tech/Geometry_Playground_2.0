@@ -13,11 +13,11 @@ class Viewport2D(QWidget):
     self.graph.showGrid(x=True, y=True, alpha=0.2)
     self.axis_x = pg.InfiniteLine(
         pos=0, angle=0, movable=False,
-        pen=pg.mkPen("#596273", width=1.2)
+        pen=pg.mkPen("#ef5350", width=2)
     )
     self.axis_y = pg.InfiniteLine(
         pos=0, angle=90, movable=False,
-        pen=pg.mkPen("#596273", width=1.2)
+        pen=pg.mkPen("#4caf50", width=2)
     )
     self.axis_x.setZValue(-100)
     self.axis_y.setZValue(-100)
