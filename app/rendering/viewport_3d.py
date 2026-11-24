@@ -128,7 +128,7 @@ class Viewport3D(QWidget):
     if hasattr(obj, "RADIUS"):
       actor.SetPosition(obj.x, obj.y, obj.z)
 
-      if obj.name:
+      if getattr(obj, "name", None):
         label_data = pv.PolyData(
             np.array([[obj.x, obj.y, obj.z]], dtype=np.float64)
         )
