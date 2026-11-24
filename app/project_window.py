@@ -5,9 +5,10 @@ import traceback
 from contextlib import redirect_stdout, redirect_stderr
 from pathlib import Path
 
-from PySide6.QtCore import Qt, QTimer, QElapsedTimer
+from PySide6.QtCore import Qt, QTimer, QElapsedTimer, QEvent
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
+    QApplication,
     QMainWindow,
     QWidget,
     QVBoxLayout,
@@ -67,6 +68,11 @@ class ProjectWindow(QMainWindow):
 
     self.execution_context = {"__name__": "__main__"}
     self.geometry_objects = []
+    self._ui_key_bindings = {}
+    self._ui_pressed_keys = set()
+    app = QApplication.instance()
+    if app is not None:
+      app.installEventFilter(self)
 
     central = QWidget()
     root_layout = QVBoxLayout(central)
@@ -105,6 +111,57 @@ class ProjectWindow(QMainWindow):
         padding: 3px 4px;
     }
 """)
+
+
+  def _register_ui_key(self, key, on_press=None, on_release=None):
+    sequence = QKeySequence(key)
+    if sequence.isEmpty() or sequence.count() != 1:
+      raise ValueError(f"Некорректная клавиша кнопки: {key}")
+    normalized = sequence.toString(QKeySequence.SequenceFormat.PortableText).upper()
+    self._ui_key_bindings.setdefault(normalized, []).append((on_press, on_release))
+
+  def eventFilter(self, watched, event):
+    if event.type() not in (QEvent.Type.KeyPress, QEvent.Type.KeyRelease):
+      return super().eventFilter(watched, event)
+    if event.isAutoRepeat():
+      return False
+
+    sequence = QKeySequence(
+        int(event.key()) | int(event.modifiers())
+    ).toString(QKeySequence.SequenceFormat.PortableText).upper()
+    bindings = self._ui_key_bindings.get(sequence)
+    if not bindings:
+      return super().eventFilter(watched, event)
+
+    if event.type() == QEvent.Type.KeyPress:
+      if sequence in self._ui_pressed_keys:
+        return False
+      self._ui_pressed_keys.add(sequence)
+      for on_press, _ in tuple(bindings):
+        if on_press is not None:
+          on_press()
+    else:
+      self._ui_pressed_keys.discard(sequence)
+      for _, on_release in tuple(bindings):
+        if on_release is not None:
+          on_release()
+
+    return False
+
+  def _invoke_ui_callback(self, callback, name, phase):
+    try:
+      callback()
+      if self.update_function is not None:
+        self._call_update(self.current_time)
+    except Exception:
+      self._stop_playback()
+      self.execution_status.setText(f"Ошибка кнопки: {name}")
+      details = traceback.format_exc()
+      self.execution_status.setToolTip(details)
+      report_exception(
+          f"Обработчик {phase} кнопки «{name}» проекта «{self.project.get('name', '?')}»",
+          sys.exc_info()
+      )
 
   def _build_toolbar(self, layout):
     toolbar = QHBoxLayout()
@@ -408,6 +465,8 @@ class ProjectWindow(QMainWindow):
     self.time_base = 0.0
     self._set_simulation_stats(0)
 
+    self._ui_key_bindings.clear()
+    self._ui_pressed_keys.clear()
     self.parameter_api = ParameterAPI(
         self,
         self.parameters_content,
@@ -540,6 +599,9 @@ class ProjectWindow(QMainWindow):
         return
 
     self._stop_playback()
+    app = QApplication.instance()
+    if app is not None:
+      app.removeEventFilter(self)
     super().closeEvent(event)
 
   def _on_run_button(self):
