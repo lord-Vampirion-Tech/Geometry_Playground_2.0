@@ -121,6 +121,14 @@ class ProjectWindow(QMainWindow):
     self._ui_key_bindings.setdefault(normalized, []).append((on_press, on_release))
 
   def eventFilter(self, watched, event):
+    if event.type() == QEvent.Type.ApplicationDeactivate:
+      for sequence in tuple(self._ui_pressed_keys):
+        for _, on_release in tuple(self._ui_key_bindings.get(sequence, ())):
+          if on_release is not None:
+            on_release()
+      self._ui_pressed_keys.clear()
+      return super().eventFilter(watched, event)
+
     if event.type() not in (QEvent.Type.KeyPress, QEvent.Type.KeyRelease):
       return super().eventFilter(watched, event)
     if event.isAutoRepeat():
@@ -146,7 +154,7 @@ class ProjectWindow(QMainWindow):
         if on_release is not None:
           on_release()
 
-    return False
+    return True
 
   def _invoke_ui_callback(self, callback, name, phase):
     try:
@@ -396,6 +404,8 @@ class ProjectWindow(QMainWindow):
     self.parameters_container.show()
 
   def clear_parameter_widgets(self):
+    self._ui_key_bindings.clear()
+    self._ui_pressed_keys.clear()
     while self.parameters_content.count():
       item = self.parameters_content.takeAt(0)
 
