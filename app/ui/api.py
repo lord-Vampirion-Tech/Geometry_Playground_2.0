@@ -21,6 +21,8 @@ class ParameterAPI:
         self.elements = UIElementFactory(
             self._on_change,
             self.layouts.add_widget,
+            self.window._invoke_ui_callback,
+            self.window._register_ui_key,
         )
 
     def _validate_name(self, name):
@@ -197,6 +199,23 @@ class ParameterAPI:
 
         self.values[name] = initial_value
         return initial_value
+
+
+    def button(self, name, label=None, on_press=None, on_release=None, key=None):
+        self._validate_name(name)
+        for callback_name, callback in (("on_press", on_press), ("on_release", on_release)):
+            if callback is not None and not callable(callback):
+                raise TypeError(f"{callback_name} кнопки «{name}» должна быть функцией")
+
+        if self.create_widgets:
+            self.elements.button(name, label or name, on_press, on_release, key)
+
+    def hold_button(self, name, label=None, key=None):
+        self._validate_name(name)
+        self.values[name] = False
+        if self.create_widgets:
+            self.elements.hold_button(name, label or name, key)
+        return False
 
     def _on_change(self, name, value):
         self.values[name] = value
