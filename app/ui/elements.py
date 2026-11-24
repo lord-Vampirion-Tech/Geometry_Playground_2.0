@@ -8,14 +8,17 @@ from PySide6.QtWidgets import (
     QSlider,
     QSpinBox,
     QDoubleSpinBox,
+    QPushButton,
 )
 from .slider2d import Slider2DValue, Slider2DCanvas
 
 
 class UIElements:
-    def __init__(self, on_change, add_widget):
+    def __init__(self, on_change, add_widget, invoke_callback, register_key):
         self._on_change = on_change
         self._add_widget = add_widget
+        self._invoke_callback = invoke_callback
+        self._register_key = register_key
 
     def slider(self, name, minimum, maximum, value, step, label):
         count = round((maximum - minimum) / step)
@@ -101,6 +104,40 @@ class UIElements:
         )
         return value
 
+
+    def button(self, name, label, on_press, on_release, key):
+        button = QPushButton(label)
+        self._add_widget(button)
+
+        if on_press is not None:
+            button.pressed.connect(
+                lambda: self._invoke_callback(on_press, name, "press")
+            )
+        if on_release is not None:
+            button.released.connect(
+                lambda: self._invoke_callback(on_release, name, "release")
+            )
+
+        if key is not None:
+            self._register_key(
+                key,
+                (lambda: self._invoke_callback(on_press, name, "press")) if on_press else None,
+                (lambda: self._invoke_callback(on_release, name, "release")) if on_release else None,
+            )
+
+    def hold_button(self, name, label, key):
+        button = QPushButton(label)
+        self._add_widget(button)
+        button.pressed.connect(lambda: self._on_change(name, True))
+        button.released.connect(lambda: self._on_change(name, False))
+
+        if key is not None:
+            self._register_key(
+                key,
+                lambda: self._on_change(name, True),
+                lambda: self._on_change(name, False),
+            )
+
     def input(
         self,
         name,
@@ -147,8 +184,8 @@ class UIElements:
 
 
 class UIElementFactory:
-    def __init__(self, on_change, add_widget):
-        self.elements = UIElements(on_change, add_widget)
+    def __init__(self, on_change, add_widget, invoke_callback, register_key):
+        self.elements = UIElements(on_change, add_widget, invoke_callback, register_key)
 
     def slider(self, *args, **kwargs):
         return self.elements.slider(*args, **kwargs)
@@ -161,3 +198,9 @@ class UIElementFactory:
 
     def input(self, *args, **kwargs):
         return self.elements.input(*args, **kwargs)
+
+    def button(self, *args, **kwargs):
+        return self.elements.button(*args, **kwargs)
+
+    def hold_button(self, *args, **kwargs):
+        return self.elements.hold_button(*args, **kwargs)
