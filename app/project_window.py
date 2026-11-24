@@ -134,8 +134,15 @@ class ProjectWindow(QMainWindow):
 
     if event.type() not in (QEvent.Type.KeyPress, QEvent.Type.KeyRelease):
       return super().eventFilter(watched, event)
+    modifier_masks = {
+        int(Qt.Key.Key_Shift): int(Qt.KeyboardModifier.ShiftModifier),
+        int(Qt.Key.Key_Control): int(Qt.KeyboardModifier.ControlModifier),
+        int(Qt.Key.Key_Alt): int(Qt.KeyboardModifier.AltModifier),
+        int(Qt.Key.Key_Meta): int(Qt.KeyboardModifier.MetaModifier),
+    }
+    modifiers = int(event.modifiers()) & ~modifier_masks.get(int(event.key()), 0)
     sequence = QKeySequence(
-        int(event.key()) | int(event.modifiers())
+        int(event.key()) | modifiers
     ).toString(QKeySequence.SequenceFormat.PortableText).upper()
     bindings = self._ui_key_bindings.get(sequence)
     if not bindings:
