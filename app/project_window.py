@@ -421,7 +421,6 @@ class ProjectWindow(QMainWindow):
     namespace = {
         "__name__": "__main__",
         "ui": self.parameter_api,
-        "ui": self.parameter_api,
     }
 
     if self.project["mode"] == "2D":
