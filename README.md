@@ -31,32 +31,7 @@ python run.py
 
 ## API геометрии
 
-В 2D-проекте:
-
-```python
-square = New_SQUARE(x=0, y=0, width=16, height=16)
-print(square.x)
-
-square.draw()
-
-def update(Time):
-    square.setRot(Time * 30)
-```
-
-В 3D-проекте:
-
-```python
-cube = New_CUBE(x=0, y=0, z=0, width=16)
-print(cube.x)
-
-cube.draw()
-
-def update(Time):
-    cube.setRot(Time * 20, Time * 30, 0)
-```
-
-Создание объекта не отображает его автоматически. Для добавления на сцену вызовите `draw()`. После этого методы изменения геометрии обновляют отображение автоматически.
-
+Фигуры создаются конструкторами, соответствующими режиму проекта: в 2D доступны `Point`, `Line`, `Square`, `Polygon`, `Circle`; в 3D — `Point`, `Line`, `Cube`, `BoundingCube`, `Sphere`. Для отображения объекта вызовите `draw()`.
 
 ## Диагностика аварийного завершения
 
