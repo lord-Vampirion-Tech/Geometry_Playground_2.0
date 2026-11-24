@@ -279,7 +279,7 @@ class ProjectWindow(QMainWindow):
 
     self.frame_timer = QTimer(self)
     self.frame_timer.setTimerType(Qt.TimerType.PreciseTimer)
-    self.frame_timer.setInterval(16)
+    self.frame_timer.setInterval(8)
     self.frame_timer.timeout.connect(self._on_frame)
 
     self.clock = QElapsedTimer()
