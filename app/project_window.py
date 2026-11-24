@@ -26,7 +26,10 @@ from .code_editor import CodeEditor
 from .help_dialog import HelpDialog
 from .settings_dialog import SettingsDialog
 from .project_store import ProjectStore
-from .geometry import Square, Cube, BoundingCube, Point
+from .geometry import (
+    Square, Cube, BoundingCube, Point2D, Point3D,
+    Line2D, Line3D, Polygon, Circle, Sphere
+)
 from .ui import ParameterAPI
 from .rendering import Viewport2D, Viewport3D
 from .code_highlighter import PythonHighlighter
@@ -421,6 +424,24 @@ class ProjectWindow(QMainWindow):
         "New_POINT": self._new_point
     }
 
+    if self.project["mode"] == "2D":
+      namespace.update({
+          "Point": lambda **kwargs: self._create_geometry(Point2D, **kwargs),
+          "Line": lambda **kwargs: self._create_geometry(Line2D, **kwargs),
+          "Square": lambda **kwargs: self._create_geometry(Square, **kwargs),
+          "Polygon": lambda **kwargs: self._create_geometry(Polygon, **kwargs),
+          "Circle": lambda **kwargs: self._create_geometry(Circle, **kwargs),
+          "New_POINT": lambda **kwargs: self._create_geometry(Point2D, **kwargs)
+      })
+    else:
+      namespace.update({
+          "Point": self._new_point,
+          "Line": lambda **kwargs: self._create_geometry(Line3D, **kwargs),
+          "Cube": self._new_cube,
+          "BoundingCube": self._new_bounds,
+          "Sphere": lambda **kwargs: self._create_geometry(Sphere, **kwargs)
+      })
+
     batch_render = hasattr(self.viewport, "begin_update")
     if batch_render:
       self.viewport.begin_update()
@@ -715,10 +736,8 @@ class ProjectWindow(QMainWindow):
           sys.exc_info()
       )
 
-  def _new_square(self, **kwargs):
-    if self.project["mode"] != "2D":
-      raise RuntimeError("New_SQUARE доступен только в 2D-проекте.")
-    obj = Square(
+  def _create_geometry(self, geometry_class, **kwargs):
+    obj = geometry_class(
         **kwargs,
         draw_callback=lambda item: self.viewport.add_object(item),
         update_callback=lambda item, handle: self.viewport.update_object(
@@ -726,42 +745,26 @@ class ProjectWindow(QMainWindow):
     )
     self.geometry_objects.append(obj)
     return obj
+
+  def _new_square(self, **kwargs):
+    if self.project["mode"] != "2D":
+      raise RuntimeError("New_SQUARE доступен только в 2D-проекте.")
+    return self._create_geometry(Square, **kwargs)
 
   def _new_cube(self, **kwargs):
     if self.project["mode"] != "3D":
       raise RuntimeError("New_CUBE доступен только в 3D-проекте.")
-    obj = Cube(
-        **kwargs,
-        draw_callback=lambda item: self.viewport.add_object(item),
-        update_callback=lambda item, handle: self.viewport.update_object(
-            item, handle)
-    )
-    self.geometry_objects.append(obj)
-    return obj
+    return self._create_geometry(Cube, **kwargs)
 
   def _new_bounds(self, **kwargs):
     if self.project["mode"] != "3D":
       raise RuntimeError("New_BOUNDS доступен только в 3D-проекте.")
-    obj = BoundingCube(
-        **kwargs,
-        draw_callback=lambda item: self.viewport.add_object(item),
-        update_callback=lambda item, handle: self.viewport.update_object(
-            item, handle)
-    )
-    self.geometry_objects.append(obj)
-    return obj
+    return self._create_geometry(BoundingCube, **kwargs)
 
   def _new_point(self, **kwargs):
     if self.project["mode"] != "3D":
       raise RuntimeError("New_POINT доступен только в 3D-проекте.")
-    obj = Point(
-        **kwargs,
-        draw_callback=lambda item: self.viewport.add_object(item),
-        update_callback=lambda item, handle: self.viewport.update_object(
-            item, handle)
-    )
-    self.geometry_objects.append(obj)
-    return obj
+    return self._create_geometry(Point3D, **kwargs)
 
   def _clear_scene(self):
     self.geometry_objects.clear()
