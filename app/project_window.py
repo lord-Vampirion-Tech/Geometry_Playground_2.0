@@ -121,6 +121,9 @@ class ProjectWindow(QMainWindow):
     self._ui_key_bindings.setdefault(normalized, []).append((on_press, on_release))
 
   def eventFilter(self, watched, event):
+    if isinstance(watched, QWidget) and watched is not self and not self.isAncestorOf(watched):
+      return super().eventFilter(watched, event)
+
     if event.type() == QEvent.Type.ApplicationDeactivate:
       for sequence in tuple(self._ui_pressed_keys):
         for _, on_release in tuple(self._ui_key_bindings.get(sequence, ())):
