@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (
     QSpinBox,
     QDoubleSpinBox,
 )
+from .slider2d import Slider2DValue, Slider2DCanvas
 
 
 class UIElements:
@@ -50,6 +51,51 @@ class UIElements:
 
         slider.valueChanged.connect(on_value_changed)
         return initial_value
+
+
+    def slider2d(
+        self,
+        name,
+        x_min, x_max, x_value, x_step,
+        y_min, y_max, y_value, y_step,
+        label,
+    ):
+        model = Slider2DValue(
+            x_min, x_max, x_value, x_step,
+            y_min, y_max, y_value, y_step,
+        )
+
+        container = QWidget()
+        layout = QVBoxLayout(container)
+        layout.setContentsMargins(0, 4, 0, 4)
+
+        title = QLabel(label)
+        value_label = QLabel(
+            f"X: {model.val[0]:g}    Y: {model.val[1]:g}"
+        )
+        header = QHBoxLayout()
+        header.addWidget(title)
+        header.addStretch()
+        header.addWidget(value_label)
+
+        canvas = Slider2DCanvas(
+            model,
+            lambda current: self._on_change(name, current),
+        )
+        layout.addLayout(header)
+        layout.addWidget(canvas)
+        self._add_widget(container)
+
+        def update_value(current):
+            value_label.setText(
+                f"X: {current.val[0]:g}    Y: {current.val[1]:g}"
+            )
+
+        canvas._on_change = lambda current: (
+            update_value(current),
+            self._on_change(name, current),
+        )
+        return model
 
     def checkbox(self, name, value, label):
         checkbox = QCheckBox(label)
@@ -114,6 +160,9 @@ class UIElementFactory:
 
     def checkbox(self, *args, **kwargs):
         return self.elements.checkbox(*args, **kwargs)
+
+    def slider2d(self, *args, **kwargs):
+        return self.elements.slider2d(*args, **kwargs)
 
     def input(self, *args, **kwargs):
         return self.elements.input(*args, **kwargs)
