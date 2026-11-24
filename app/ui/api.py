@@ -2,6 +2,7 @@ import math
 
 from .elements import UIElementFactory
 from .layouts import UILayouts
+from .slider2d import Slider2DValue
 
 
 class ParameterAPI:
