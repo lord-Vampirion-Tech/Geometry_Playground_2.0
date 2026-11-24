@@ -48,7 +48,11 @@ class ParameterAPI:
             )
         else:
             maximum_value = min + count * step
-            initial_value = max(min, min(maximum_value, value))
+            initial_value = value
+            if initial_value < min:
+                initial_value = min
+            if initial_value > maximum_value:
+                initial_value = maximum_value
             index = round((initial_value - min) / step)
             initial_value = min + index * step
 
