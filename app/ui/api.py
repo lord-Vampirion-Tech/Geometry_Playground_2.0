@@ -1,3 +1,5 @@
+import math
+
 from .elements import UIElementFactory
 from .layouts import UILayouts
 
@@ -86,13 +88,23 @@ class ParameterAPI:
             raise TypeError("max должен быть числом")
         if min is not None and max is not None and min > max:
             raise ValueError("min не может быть больше max")
-        if decimals < 0 or not isinstance(decimals, int):
+        if isinstance(decimals, bool) or not isinstance(decimals, int) or decimals < 0:
             raise ValueError("decimals должен быть целым числом не меньше нуля")
+
+        numeric_values = [value]
+        numeric_values.extend(bound for bound in (min, max) if bound is not None)
+        if not all(math.isfinite(float(number)) for number in numeric_values):
+            raise ValueError("Числовые параметры input должны быть конечными")
 
         if step is None:
             step = 1 if type is int else 0.1
-        if isinstance(step, bool) or not isinstance(step, (int, float)) or step <= 0:
-            raise ValueError("step должен быть положительным числом")
+        if (
+            isinstance(step, bool)
+            or not isinstance(step, (int, float))
+            or not math.isfinite(float(step))
+            or step <= 0
+        ):
+            raise ValueError("step должен быть положительным конечным числом")
         if type is int and (not float(step).is_integer()):
             raise ValueError("Для type=int шаг должен быть целым числом")
 
@@ -103,6 +115,8 @@ class ParameterAPI:
                 if bound is not None and not float(bound).is_integer():
                     raise ValueError(f"{bound_name} для type=int должен быть целым")
             initial_value = int(value)
+            min = None if min is None else int(min)
+            max = None if max is None else int(max)
             step = int(step)
         else:
             initial_value = float(value)
