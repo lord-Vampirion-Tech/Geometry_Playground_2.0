@@ -106,6 +106,20 @@ class SettingsDialog(QDialog):
     )
     form.addRow("Размер текста в редакторе", self.editor_font_size)
 
+    ui_groups = self.settings.get("general", "ui_groups", default={})
+
+    self.group_border_width = QSpinBox()
+    self.group_border_width.setRange(0, 20)
+    self.group_border_width.setValue(ui_groups.get("border_width", 5))
+    form.addRow("Толщина рамок групп (px)", self.group_border_width)
+
+    self.group_border_color_button = QPushButton(ui_groups.get("border_color", "#000000"))
+    self.group_border_color_button.clicked.connect(
+        lambda: self._choose_color(self.group_border_color_button)
+    )
+    self._set_color_button(self.group_border_color_button, self.group_border_color_button.text())
+    form.addRow("Цвет рамок групп", self.group_border_color_button)
+
     self.parameters_panel_width = QSpinBox()
     self.parameters_panel_width.setRange(200, 1600)
     self.parameters_panel_width.setValue(
@@ -239,6 +253,13 @@ class SettingsDialog(QDialog):
         "general", "layout_sizes"
     )
     self.settings.set(
+        {
+            "border_width": self.group_border_width.value(),
+            "border_color": self.group_border_color_button.text()
+        },
+        "general", "ui_groups"
+    )
+    self.settings.set(
         self.close_on_open.isChecked(), "manager", "close_on_open"
     )
 
@@ -261,6 +282,9 @@ class SettingsDialog(QDialog):
     self.project2d_height.setValue(sizes["project_2d"][1])
     self.project3d_width.setValue(sizes["project_3d"][0])
     self.project3d_height.setValue(sizes["project_3d"][1])
+    ui_groups = defaults["general"]["ui_groups"]
+    self.group_border_width.setValue(ui_groups["border_width"])
+    self._set_color_button(self.group_border_color_button, ui_groups["border_color"])
     self.close_on_open.setChecked(
         defaults["manager"]["close_on_open"]
     )
