@@ -28,7 +28,7 @@ from .code_editor import CodeEditor
 from .help_dialog import HelpDialog
 from .settings_dialog import SettingsDialog
 from .project_store import ProjectStore
-from .geometry import Square, Cube, BoundingCube
+from .geometry import Square, Cube, BoundingCube, Point
 from .rendering import Viewport2D, Viewport3D
 from .code_highlighter import PythonHighlighter
 from .crash_handler import report_exception, set_crash_context
@@ -514,7 +514,8 @@ class ProjectWindow(QMainWindow):
         "ui": self.parameter_api,
         "New_SQUARE": self._new_square,
         "New_CUBE": self._new_cube,
-        "New_BOUNDS": self._new_bounds
+        "New_BOUNDS": self._new_bounds,
+        "New_POINT": self._new_point
     }
 
     try:
@@ -814,6 +815,17 @@ class ProjectWindow(QMainWindow):
     if self.project["mode"] != "3D":
       raise RuntimeError("New_BOUNDS доступен только в 3D-проекте.")
     obj = BoundingCube(
+        **kwargs,
+        draw_callback=lambda item: self.viewport.add_object(item),
+        update_callback=lambda item, handle: self.viewport.update_object(item, handle)
+    )
+    self.geometry_objects.append(obj)
+    return obj
+
+  def _new_point(self, **kwargs):
+    if self.project["mode"] != "3D":
+      raise RuntimeError("New_POINT доступен только в 3D-проекте.")
+    obj = Point(
         **kwargs,
         draw_callback=lambda item: self.viewport.add_object(item),
         update_callback=lambda item, handle: self.viewport.update_object(item, handle)
