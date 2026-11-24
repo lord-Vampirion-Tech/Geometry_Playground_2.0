@@ -14,7 +14,7 @@ class Sphere(Drawable):
         self.x, self.y, self.z = map(float, (x, y, z))
         self.radius = float(radius)
         self.color = color
-        self.opacity = float(opacity)
+        self.opacity = max(0.0, min(1.0, float(opacity)))
         self.theta_resolution = int(theta_resolution)
         self.phi_resolution = int(phi_resolution)
         self._polydata_cache = None
@@ -49,7 +49,7 @@ class Sphere(Drawable):
         self.update_draw()
 
     def setOpacity(self, opacity):
-        opacity = float(opacity)
+        opacity = max(0.0, min(1.0, float(opacity)))
         if opacity == self.opacity:
             return
         self.opacity = opacity
