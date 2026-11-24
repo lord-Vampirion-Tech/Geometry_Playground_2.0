@@ -47,3 +47,10 @@ class Line(Drawable):
             return
         self.width = width
         self.update_draw()
+
+    def setOpacity(self, opacity):
+        opacity = float(np.clip(opacity, 0.0, 1.0))
+        if opacity == self.opacity:
+            return
+        self.opacity = opacity
+        self.update_draw()
