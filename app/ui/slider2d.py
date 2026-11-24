@@ -25,9 +25,31 @@ class Slider2DValue:
     def val(self):
         return self._x, self._y
 
+    @property
+    def x_value(self):
+        return self._x
+
+    @x_value.setter
+    def x_value(self, value):
+        self.set_values(value, self._y)
+
+    @property
+    def y_value(self):
+        return self._y
+
+    @y_value.setter
+    def y_value(self, value):
+        self.set_values(self._x, value)
+
+    def set_on_change(self, callback):
+        self._on_change = callback
+
     def set_values(self, x, y):
+        previous = self.val
         self._x = self._quantize(x, self.x_min, self.x_max, self.x_step)
         self._y = self._quantize(y, self.y_min, self.y_max, self.y_step)
+        if self.val != previous and hasattr(self, "_on_change") and self._on_change:
+            self._on_change(self)
 
 
 class Slider2DCanvas(QWidget):
@@ -66,11 +88,7 @@ class Slider2DCanvas(QWidget):
 
     def _set_from_mouse(self, position):
         x, y = self._from_screen(position.x(), position.y())
-        previous = self.model.val
         self.model.set_values(x, y)
-        if self.model.val != previous:
-            self._on_change(self.model)
-            self.update()
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
