@@ -300,6 +300,7 @@ class ProjectWindow(QMainWindow):
     self.update_function = None
     self.execution_namespace = {}
     self.parameter_api = None
+
   def _build_workspace(self, layout):
     self.main_splitter = QSplitter(
         Qt.Orientation.Horizontal
@@ -599,7 +600,8 @@ class ProjectWindow(QMainWindow):
       parameter_sizes = self.parameters_splitter.sizes()
 
       if parameter_sizes and parameter_sizes[0] > 0:
-        self.settings.set(            parameter_sizes[0],
+        self.settings.set(
+            parameter_sizes[0],
             "general",
             "layout_sizes",
             "parameters_panel_width"
