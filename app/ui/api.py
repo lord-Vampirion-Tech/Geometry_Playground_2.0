@@ -5,7 +5,7 @@ from .layouts import UILayouts
 
 
 class ParameterAPI:
-    def __init__(self, window, root_layout, create_widgets=False):
+    def __init__(self, window, root_layout, create_widgets=False, group_border_width=5, group_border_color="#000000"):
         self.window = window
         self.values = {}
         self.create_widgets = create_widgets
@@ -14,6 +14,8 @@ class ParameterAPI:
             root_layout,
             enabled=create_widgets,
             root_add_widget=window.add_parameter_widget,
+            border_width=group_border_width,
+            border_color=group_border_color,
         )
         self.elements = UIElementFactory(
             self._on_change,
