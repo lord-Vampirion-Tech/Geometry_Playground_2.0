@@ -15,10 +15,13 @@ class Polygon(Drawable2D):
 
     @staticmethod
     def _normalize_points(points):
-        normalized = tuple((float(point[0]), float(point[1])) for point in points)
-        if any(len(point) != 2 for point in points):
-            raise ValueError("Каждая точка Polygon должна содержать x и y.")
-        return normalized
+        normalized = []
+        for point in points:
+            point = tuple(point)
+            if len(point) != 2:
+                raise ValueError("Каждая точка Polygon должна содержать x и y.")
+            normalized.append((float(point[0]), float(point[1])))
+        return tuple(normalized)
 
     def get_vertices(self):
         return list(self.points)
