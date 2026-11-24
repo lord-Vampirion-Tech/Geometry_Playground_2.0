@@ -128,14 +128,23 @@ class UIElements:
     def hold_button(self, name, label, key):
         button = QPushButton(label)
         self._add_widget(button)
-        button.pressed.connect(lambda: self._on_change(name, True))
-        button.released.connect(lambda: self._on_change(name, False))
+        active_sources = set()
+
+        def set_source(source, active):
+            if active:
+                active_sources.add(source)
+            else:
+                active_sources.discard(source)
+            self._on_change(name, bool(active_sources))
+
+        button.pressed.connect(lambda: set_source("mouse", True))
+        button.released.connect(lambda: set_source("mouse", False))
 
         if key is not None:
             self._register_key(
                 key,
-                lambda: self._on_change(name, True),
-                lambda: self._on_change(name, False),
+                lambda: set_source("key", True),
+                lambda: set_source("key", False),
             )
 
     def input(
