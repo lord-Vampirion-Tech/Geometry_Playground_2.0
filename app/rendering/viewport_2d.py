@@ -20,11 +20,12 @@ class Viewport2D(QWidget):
         self._pending_updates = {}
         layout.addWidget(self.graph)
 
-    def _pen(self, color):
-        pen = self._pens.get(color)
+    def _pen(self, color, width=2):
+        key = (color, float(width))
+        pen = self._pens.get(key)
         if pen is None:
-            pen = pg.mkPen(color, width=2)
-            self._pens[color] = pen
+            pen = pg.mkPen(color, width=width)
+            self._pens[key] = pen
         return pen
 
     def begin_update(self):
@@ -33,7 +34,6 @@ class Viewport2D(QWidget):
     def end_update(self):
         if self._batch_depth <= 0:
             return
-
         self._batch_depth -= 1
         if self._batch_depth == 0 and self._pending_updates:
             pending = tuple(self._pending_updates.values())
@@ -42,10 +42,21 @@ class Viewport2D(QWidget):
                 self._apply_update(obj, item)
 
     def add_object(self, obj):
+        if getattr(obj, "geometry_kind", None) == "point":
+            return self.graph.plot(
+                [obj.x], [obj.y], pen=None, symbol="o",
+                symbolSize=obj.size, symbolBrush=obj.color,
+                symbolPen=pg.mkPen(obj.color)
+            )
+
         points = obj.get_vertices()
-        xs = [p[0] for p in points] + [points[0][0]]
-        ys = [p[1] for p in points] + [points[0][1]]
-        return self.graph.plot(xs, ys, pen=self._pen(obj.color))
+        xs = [point[0] for point in points]
+        ys = [point[1] for point in points]
+        if getattr(obj, "closed", False) and points:
+            xs.append(points[0][0])
+            ys.append(points[0][1])
+        width = getattr(obj, "width", 2)
+        return self.graph.plot(xs, ys, pen=self._pen(obj.color, width))
 
     def update_object(self, obj, item):
         if self._batch_depth:
@@ -54,7 +65,18 @@ class Viewport2D(QWidget):
         self._apply_update(obj, item)
 
     def _apply_update(self, obj, item):
+        if getattr(obj, "geometry_kind", None) == "point":
+            item.setData(
+                [obj.x], [obj.y], pen=None, symbol="o",
+                symbolSize=obj.size, symbolBrush=obj.color,
+                symbolPen=pg.mkPen(obj.color)
+            )
+            return
+
         points = obj.get_vertices()
-        xs = [p[0] for p in points] + [points[0][0]]
-        ys = [p[1] for p in points] + [points[0][1]]
-        item.setData(xs, ys, pen=self._pen(obj.color))
+        xs = [point[0] for point in points]
+        ys = [point[1] for point in points]
+        if getattr(obj, "closed", False) and points:
+            xs.append(points[0][0])
+            ys.append(points[0][1])
+        item.setData(xs, ys, pen=self._pen(obj.color, getattr(obj, "width", 2)))
