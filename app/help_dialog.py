@@ -26,21 +26,58 @@ class HelpDialog(QDialog):
 
 Код проекта выполняется как Python. Конструкторы фигур возвращают объект. Для отображения вызовите **draw()**.
 
-Цвет всех фигур по умолчанию: **#42a5f5**. Цвет можно переопределить аргументом **color**.
+Можно использовать стандартные модули Python, например `math` и `random`, а также циклы, функции, списки и словари.
+
+Цвет фигур по умолчанию: **#42a5f5**. Цвет можно переопределить аргументом **color**.
 
 ## UI-параметры
 
 ### ui.slider(name, min=0, max=100, value=50, step=1, label=None)
 
-Создаёт числовой ползунок и возвращает его начальное значение.
+Создаёт числовой ползунок и возвращает его текущее значение.
+
+```python
+speed = ui.slider("speed", min=0, max=20, value=5, step=0.5)
+```
 
 ### ui.checkbox(name, value=False, label=None)
 
-Создаёт флажок и возвращает начальное логическое значение.
+Создаёт флажок и возвращает логическое значение `True` или `False`.
+
+```python
+enabled = ui.checkbox("enabled", value=True, label="Включено")
+```
+
+### ui.input(name, value=0, type=float, min=None, max=None, step=None, decimals=6, label=None)
+
+Создаёт числовое поле ввода. Поддерживаются типы **int** и **float**. Если границы не заданы, поле не ограничивается ими.
+
+```python
+count = ui.input("count", value=10, type=int, min=1, max=100)
+mass = ui.input("mass", value=2.5, type=float, min=0, step=0.1)
+```
+
+### ui.slider2d(name, x_min=-1, x_max=1, x_value=0, x_step=0.1, y_min=-1, y_max=1, y_value=0, y_step=0.1, label=None)
+
+Создаёт двумерный ползунок. Перетаскивайте точку внутри области, чтобы одновременно менять координаты X и Y. Для каждой оси задаются собственные границы, начальное значение и шаг.
+
+Возвращает объект со значениями **.val[0]** (X) и **.val[1]** (Y). Значения также можно менять программно через **.x_value**, **.y_value** или **.set_values(x, y)**.
+
+```python
+target = ui.slider2d(
+    "target",
+    x_min=-16, x_max=16, x_value=0, x_step=0.1,
+    y_min=-16, y_max=16, y_value=8, y_step=0.1,
+    label="Цель"
+)
+
+def update(Time):
+    x, y = target.val
+```
 
 ### ui.button(name, label=None, on_press=None, on_release=None, key=None)
 
-Создаёт функциональную кнопку. `on_press` вызывается один раз при нажатии, `on_release` — при отпускании. Обработчики — обычные функции без аргументов. Кнопку можно активировать мышью или клавишей, заданной через `key` (например, `"SPACE"`).
+Создаёт функциональную кнопку. **on_press** вызывается один раз при нажатии, **on_release** — при отпускании. Обработчики — обычные функции без аргументов. Кнопку можно активировать мышью или назначенной клавишей через **key**. Функция `ui.button` не возвращает значение.
 
 ```python
 def fire():
@@ -49,58 +86,84 @@ def fire():
 def stop_fire():
     print("Отпустили")
 
-ui.button("fire", label="Огонь", on_press=fire, on_release=stop_fire, key="SPACE")
+ui.button(
+    "fire",
+    label="Огонь",
+    on_press=fire,
+    on_release=stop_fire,
+    key="SPACE"
+)
 ```
 
 ### ui.hold_button(name, label=None, key=None)
 
-Создаёт кнопку удержания и возвращает начальное значение `False`. Во время удержания кнопки мышью или назначенной клавиши значение переменной становится `True`, после отпускания — `False`. В режиме реального времени проверяйте его внутри `update(Time)`.
+Создаёт кнопку удержания и возвращает начальное значение **False**. Пока кнопка удерживается мышью или назначенной клавишей, переменная становится **True**. После отпускания всех источников удержания значение возвращается к **False**. Проверяйте его внутри `update(Time)`.
 
 ```python
-active = ui.hold_button("active", label="Удерживать", key="SPACE")
+boost = ui.hold_button("boost", label="Ускорение", key="SHIFT")
 
 def update(Time):
-    if active:
-        pass
+    if boost:
+        pass  # Действие во время удержания
 ```
 
-### ui.input(name, value=0, type=float, min=None, max=None, step=None, decimals=6, label=None)
+### Группировка UI
 
-Создаёт числовое поле ввода. Поддерживает **int** и **float**.
+Группы создаются как контекстные менеджеры с помощью **with**. Внутри группы размещайте обычные UI-элементы. Группы можно вкладывать друг в друга.
 
-### ui.slider2d(name, x_min=-1, x_max=1, x_value=0, x_step=0.1, y_min=-1, y_max=1, y_value=0, y_step=0.1, label=None)
-
-Создаёт квадратный двумерный ползунок. Перетаскивайте точку внутри квадрата, чтобы одновременно менять координаты X и Y. Для каждой оси задаются собственные min, max, value и step.
-
-Возвращает объект со значениями **.val[0]** (X) и **.val[1]** (Y).
-
-```python
-target = ui.slider2d(
-    "target",
-    x_min=-16, x_max=16, x_value=0, x_step=0.1,
-    y_min=0, y_max=16, y_value=8, y_step=0.1
-)
-
-def update(Time):
-    x = target.val[0]
-    y = target.val[1]
-```
-
-### Группировка
-
-- **ui.column(spacing=6, margins=0)** — вертикальная группа.
 - **ui.row(spacing=8, margins=0)** — горизонтальная группа.
+- **ui.column(spacing=6, margins=0)** — вертикальная группа.
 - **ui.grid(columns=2, spacing=8, row_spacing=None, margins=0)** — сетка с заполнением слева направо.
 
-Группы можно вкладывать друг в друга.
+```python
+with ui.row():
+    ui.button("left", label="Влево")
+    ui.button("right", label="Вправо")
 
-## Анимация
+with ui.column():
+    speed = ui.slider("speed", min=0, max=20, value=5)
+    enabled = ui.checkbox("enabled", label="Активно")
 
-Объявите **update(Time)**. Аргумент **Time** — время в секундах с начала выполнения.
+with ui.grid(columns=2):
+    x = ui.input("x", value=0.0)
+    y = ui.input("y", value=0.0)
+```
+
+## Анимация и время
+
+Объявите функцию **update(Time)**. Она вызывается при обновлении симуляции в режиме реального времени. **Time** — общее время в секундах с начала выполнения, а не длительность одного кадра.
+
+Для расчёта движения используйте разницу между текущим и предыдущим временем:
 
 ```python
+previous_time = 0
+
 def update(Time):
-    pass
+    global previous_time
+
+    dt = Time - previous_time
+    previous_time = Time
+
+    # Используйте dt для расчёта движения
+```
+
+В режиме одного выполнения код запускается один раз. Для непрерывной анимации включите режим **«Выполнять в реальном времени»**.
+
+## Пример: случайные объекты
+
+```python
+import random
+
+balls = []
+
+for i in range(10):
+    x = random.uniform(-10, 10)
+    y = random.uniform(0, 15)
+    radius = random.uniform(0.5, 2)
+
+    ball = Circle(x=x, y=y, radius=radius)
+    ball.draw()
+    balls.append(ball)
 ```
 '''
         if mode == '2D':
@@ -113,11 +176,11 @@ def update(Time):
 
 ### Line(x1=0, y1=0, x2=16, y2=0, color='#42a5f5', width=2)
 
-Создаёт отрезок между двумя точками.
+Создаёт отрезок между двумя точками. Координаты передаются четырьмя отдельными аргументами.
 
 ### Square(x=0, y=0, width=16, height=None, color='#42a5f5', angle=0)
 
-Создаёт квадрат или прямоугольник. Если height не задан, используется width.
+Создаёт квадрат или прямоугольник. Если **height** не задан, используется **width**.
 
 ### Polygon(points, color='#42a5f5', width=2)
 
@@ -148,7 +211,7 @@ for shape in (point, line, square, circle):
 
 ### Point(x=0, y=0, z=0, name=None, color='#42a5f5', opacity=1.0)
 
-Создаёт 3D-точку. Необязательный name отображается рядом с точкой.
+Создаёт 3D-точку. Необязательный **name** отображается рядом с точкой.
 
 ### Line(x1=0, y1=0, z1=0, x2=16, y2=0, z2=0, color='#42a5f5', width=2)
 
@@ -167,7 +230,7 @@ for shape in (point, line, square, circle):
 Создаёт сферу с заданным радиусом.
 
 ```python
-point = Point(0, 0, 0, name='Center')
+point = Point(0, 0, 0, name="Center")
 line = Line(0, 0, 0, 16, 8, 0)
 cube = Cube(x=0, y=0, z=0, width=8)
 bounds = BoundingCube(-8, -8, -8, 8, 8, 8)
