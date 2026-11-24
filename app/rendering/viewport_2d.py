@@ -40,6 +40,11 @@ class Viewport2D(QWidget):
       self._pens[key] = pen
     return pen
 
+  def clear_scene(self):
+    self.graph.clear()
+    self.graph.addItem(self.axis_x)
+    self.graph.addItem(self.axis_y)
+
   def begin_update(self):
     self._batch_depth += 1
 
