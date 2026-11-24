@@ -5,7 +5,7 @@ import traceback
 from contextlib import redirect_stdout, redirect_stderr
 from pathlib import Path
 
-from PySide6.QtCore import Qt, QTimer, QElapsedTimer, QEvent
+from PySide6.QtCore import Qt, QTimer, QElapsedTimer, QEvent, QObject
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
     QApplication,
@@ -37,133 +37,10 @@ from .code_highlighter import PythonHighlighter
 from .crash_handler import report_exception, set_crash_context
 
 
-class ProjectWindow(QMainWindow):
-
-  def __init__(self, project, settings):
-    super().__init__()
-
-    self.project = project
-    self.settings = settings
-    self.store = ProjectStore(Path(project["path"]).parent)
-    self.code_saved = True
-
-    self.setWindowTitle(
-        f"{project['name']} — Geometry Playground 2.0"
-    )
-
-    size_key = (
-        "project_2d"
-        if project["mode"] == "2D"
-        else "project_3d"
-    )
-
-    size = settings.get(
-        "general",
-        "window_sizes",
-        size_key,
-        default=[1100, 750]
-    )
-
-    self.resize(int(size[0]), int(size[1]))
-
-    self.execution_context = {"__name__": "__main__"}
-    self.geometry_objects = []
-    self._ui_key_bindings = {}
-    self._ui_pressed_keys = set()
-    app = QApplication.instance()
-    if app is not None:
-      app.installEventFilter(self)
-
-    central = QWidget()
-    root_layout = QVBoxLayout(central)
-    root_layout.setContentsMargins(8, 8, 8, 8)
-    root_layout.setSpacing(8)
-
-    set_crash_context(
-        f"Проект «{project.get('name', '?')}»: создание панели инструментов")
-    self._build_toolbar(root_layout)
-
-    set_crash_context(
-        f"Проект «{project.get('name', '?')}»: создание редактора и сцены")
-    self._build_workspace(root_layout)
-
-    self.save_shortcut = QShortcut(QKeySequence.StandardKey.Save, self)
-    self.save_shortcut.activated.connect(self.save_code)
-
-    set_crash_context(
-        f"Проект «{project.get('name', '?')}»: установка центрального виджета")
-    self.setCentralWidget(central)
-
-    set_crash_context(f"Проект «{project.get('name', '?')}»: применение темы")
-    apply_theme(self, settings)
-    self.setStyleSheet(self.styleSheet() + """
-    QWidget#editorContainer,
-    QWidget#sceneContainer,
-    QWidget#parametersContainer {
-        border: 1px solid #383838;
-        border-radius: 5px;
-    }
-
-    QLabel#sectionTitle {
-        border: none;
-        font-size: 13px;
-        font-weight: bold;
-        padding: 3px 4px;
-    }
-""")
-
-
-  def _register_ui_key(self, key, on_press=None, on_release=None):
-    sequence = QKeySequence(key)
-    if sequence.isEmpty() or sequence.count() != 1:
-      raise ValueError(f"Некорректная клавиша кнопки: {key}")
-    normalized = sequence.toString(QKeySequence.SequenceFormat.PortableText).upper()
-    self._ui_key_bindings.setdefault(normalized, []).append((on_press, on_release))
-
-  def eventFilter(self, watched, event):
-    if isinstance(watched, QWidget) and watched is not self and not self.isAncestorOf(watched):
-      return super().eventFilter(watched, event)
-
-    if event.type() == QEvent.Type.ApplicationDeactivate:
-      for sequence in tuple(self._ui_pressed_keys):
-        for _, on_release in tuple(self._ui_key_bindings.get(sequence, ())):
-          if on_release is not None:
-            on_release()
-      self._ui_pressed_keys.clear()
-      return super().eventFilter(watched, event)
-
-    if event.type() not in (QEvent.Type.KeyPress, QEvent.Type.KeyRelease):
-      return super().eventFilter(watched, event)
-    modifier_masks = {
-        int(Qt.Key.Key_Shift): int(Qt.KeyboardModifier.ShiftModifier),
-        int(Qt.Key.Key_Control): int(Qt.KeyboardModifier.ControlModifier),
-        int(Qt.Key.Key_Alt): int(Qt.KeyboardModifier.AltModifier),
-        int(Qt.Key.Key_Meta): int(Qt.KeyboardModifier.MetaModifier),
-    }
-    modifiers = int(event.modifiers()) & ~modifier_masks.get(int(event.key()), 0)
-    sequence = QKeySequence(
-        int(event.key()) | modifiers
-    ).toString(QKeySequence.SequenceFormat.PortableText).upper()
-    bindings = self._ui_key_bindings.get(sequence)
-    if not bindings:
-      return super().eventFilter(watched, event)
-    if event.isAutoRepeat():
-      return True
-
-    if event.type() == QEvent.Type.KeyPress:
-      if sequence in self._ui_pressed_keys:
-        return True
-      self._ui_pressed_keys.add(sequence)
-      for on_press, _ in tuple(bindings):
-        if on_press is not None:
-          on_press()
-    else:
-      self._ui_pressed_keys.discard(sequence)
-      for _, on_release in tuple(bindings):
-        if on_release is not None:
-          on_release()
-
-    return True
+class UIKeyEventFilter(QObject):
+  def __init__(self, window):
+    super().__init__(window)
+    self.window = window
 
   def _invoke_ui_callback(self, callback, name, phase):
     try:
@@ -620,7 +497,7 @@ class ProjectWindow(QMainWindow):
     self._stop_playback()
     app = QApplication.instance()
     if app is not None:
-      app.removeEventFilter(self)
+      app.removeEventFilter(self._ui_event_filter)
     super().closeEvent(event)
 
   def _on_run_button(self):
