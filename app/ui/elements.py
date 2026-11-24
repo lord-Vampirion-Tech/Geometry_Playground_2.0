@@ -78,23 +78,16 @@ class UIElements:
         header.addStretch()
         header.addWidget(value_label)
 
-        canvas = Slider2DCanvas(
-            model,
-            lambda current: self._on_change(name, current),
-        )
-        layout.addLayout(header)
-        layout.addWidget(canvas)
-        self._add_widget(container)
-
-        def update_value(current):
+        def on_value_changed(current):
             value_label.setText(
                 f"X: {current.val[0]:g}    Y: {current.val[1]:g}"
             )
+            self._on_change(name, current)
 
-        canvas._on_change = lambda current: (
-            update_value(current),
-            self._on_change(name, current),
-        )
+        canvas = Slider2DCanvas(model, on_value_changed)
+        layout.addLayout(header)
+        layout.addWidget(canvas)
+        self._add_widget(container)
         return model
 
     def checkbox(self, name, value, label):
