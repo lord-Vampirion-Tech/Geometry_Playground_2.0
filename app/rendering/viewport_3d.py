@@ -121,12 +121,12 @@ class Viewport3D(QWidget):
     def set_performance_stats(self, stats):
         text = (
             f"FPS {stats['fps']:.0f} | Interval {stats['interval_ms']:.1f} ms "
-            f"(p95 {stats['interval_p95_ms']:.1f})\\n"
+            f"(p95 {stats['interval_p95_ms']:.1f})\n"
             f"Frame {stats['frame_ms']:.1f} ms (p95 {stats['frame_p95_ms']:.1f}) "
-            f"| Wait/Qt {stats['wait_ms']:.1f} ms\\n"
+            f"| Wait/Qt {stats['wait_ms']:.1f} ms\n"
             f"Python {stats['script_ms']:.2f} | Apply {stats['apply_ms']:.2f} "
             f"(geom {stats['geometry_ms']:.2f}, props {stats['properties_ms']:.2f}) "
-            f"| Render {stats['render_ms']:.2f} ms\\n"
+            f"| Render {stats['render_ms']:.2f} ms\n"
             f"Objects {stats['objects']} | Updated {stats['updated']} "
             f"| Pending {stats['pending']}"
         )
