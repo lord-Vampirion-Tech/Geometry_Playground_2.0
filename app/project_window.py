@@ -421,10 +421,7 @@ class ProjectWindow(QMainWindow):
     namespace = {
         "__name__": "__main__",
         "ui": self.parameter_api,
-        "New_SQUARE": self._new_square,
-        "New_CUBE": self._new_cube,
-        "New_BOUNDS": self._new_bounds,
-        "New_POINT": self._new_point
+        "ui": self.parameter_api,
     }
 
     if self.project["mode"] == "2D":
@@ -433,8 +430,7 @@ class ProjectWindow(QMainWindow):
           "Line": lambda *args, **kwargs: self._create_geometry(Line2D, *args, **kwargs),
           "Square": lambda *args, **kwargs: self._create_geometry(Square, *args, **kwargs),
           "Polygon": lambda *args, **kwargs: self._create_geometry(Polygon, *args, **kwargs),
-          "Circle": lambda *args, **kwargs: self._create_geometry(Circle, *args, **kwargs),
-          "New_POINT": lambda *args, **kwargs: self._create_geometry(Point2D, *args, **kwargs)
+          "Circle": lambda *args, **kwargs: self._create_geometry(Circle, *args, **kwargs)
       })
     else:
       namespace.update({
@@ -751,25 +747,6 @@ class ProjectWindow(QMainWindow):
     self.geometry_objects.append(obj)
     return obj
 
-  def _new_square(self, **kwargs):
-    if self.project["mode"] != "2D":
-      raise RuntimeError("New_SQUARE доступен только в 2D-проекте.")
-    return self._create_geometry(Square, **kwargs)
-
-  def _new_cube(self, **kwargs):
-    if self.project["mode"] != "3D":
-      raise RuntimeError("New_CUBE доступен только в 3D-проекте.")
-    return self._create_geometry(Cube, **kwargs)
-
-  def _new_bounds(self, **kwargs):
-    if self.project["mode"] != "3D":
-      raise RuntimeError("New_BOUNDS доступен только в 3D-проекте.")
-    return self._create_geometry(BoundingCube, **kwargs)
-
-  def _new_point(self, **kwargs):
-    if self.project["mode"] != "3D":
-      raise RuntimeError("New_POINT доступен только в 3D-проекте.")
-    return self._create_geometry(Point3D, **kwargs)
 
   def _clear_scene(self):
     self.geometry_objects.clear()
