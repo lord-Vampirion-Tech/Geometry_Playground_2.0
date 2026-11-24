@@ -351,10 +351,20 @@ class ProjectWindow(QMainWindow):
     dialog.settings_applied.connect(
         lambda: apply_theme(self, self.settings)
     )
+    dialog.settings_applied.connect(self._apply_ui_group_settings)
     dialog.exec()
 
   def open_help(self):
     HelpDialog(self.project["mode"], self).exec()
+
+  def _apply_ui_group_settings(self):
+    if self.parameter_api is None:
+      return
+
+    self.parameter_api.layouts.set_group_style(
+        self.settings.get("general", "ui_groups", "border_width", default=5),
+        self.settings.get("general", "ui_groups", "border_color", default="#000000")
+    )
 
   def _apply_editor_settings(self):
     size = self.settings.get("general", "layout_sizes",
@@ -397,7 +407,9 @@ class ProjectWindow(QMainWindow):
     self.parameter_api = ParameterAPI(
         self,
         self.parameters_content,
-        create_widgets=self.realtime_checkbox.isChecked()
+        create_widgets=self.realtime_checkbox.isChecked(),
+        group_border_width=self.settings.get("general", "ui_groups", "border_width", default=5),
+        group_border_color=self.settings.get("general", "ui_groups", "border_color", default="#000000")
     )
 
     namespace = {
