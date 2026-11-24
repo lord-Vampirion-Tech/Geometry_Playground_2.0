@@ -144,13 +144,19 @@ class ProjectWindow(QMainWindow):
 
     if event.type() not in (QEvent.Type.KeyPress, QEvent.Type.KeyRelease):
       return False
+
+    if isinstance(watched, QWidget) and (
+        watched is self.editor or self.editor.isAncestorOf(watched)
+    ):
+      return False
+
     modifier_masks = {
-        int(Qt.Key.Key_Shift): int(Qt.KeyboardModifier.ShiftModifier),
-        int(Qt.Key.Key_Control): int(Qt.KeyboardModifier.ControlModifier),
-        int(Qt.Key.Key_Alt): int(Qt.KeyboardModifier.AltModifier),
-        int(Qt.Key.Key_Meta): int(Qt.KeyboardModifier.MetaModifier),
+        int(Qt.Key.Key_Shift): Qt.KeyboardModifier.ShiftModifier.value,
+        int(Qt.Key.Key_Control): Qt.KeyboardModifier.ControlModifier.value,
+        int(Qt.Key.Key_Alt): Qt.KeyboardModifier.AltModifier.value,
+        int(Qt.Key.Key_Meta): Qt.KeyboardModifier.MetaModifier.value,
     }
-    modifiers = int(event.modifiers()) & ~modifier_masks.get(int(event.key()), 0)
+    modifiers = event.modifiers().value & ~modifier_masks.get(int(event.key()), 0)
     sequence = QKeySequence(
         int(event.key()) | modifiers
     ).toString(QKeySequence.SequenceFormat.PortableText).upper()
