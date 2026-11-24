@@ -38,6 +38,22 @@ class HelpDialog(QDialog):
 
 Создаёт флажок и возвращает начальное логическое значение.
 
+### ui.button(name, label=None, on_press=None, on_release=None, key=None)
+
+Создаёт функциональную кнопку. `on_press` вызывается один раз при нажатии, `on_release` — при отпускании. Обработчики — обычные функции без аргументов. Кнопку можно активировать мышью или клавишей, заданной через `key` (например, `"SPACE"`).
+
+### ui.hold_button(name, label=None, key=None)
+
+Создаёт кнопку удержания и возвращает начальное значение `False`. Во время удержания кнопки мышью или назначенной клавиши значение переменной становится `True`, после отпускания — `False`. В режиме реального времени проверяйте его внутри `update(Time)`.
+
+```python
+active = ui.hold_button("active", label="Удерживать", key="SPACE")
+
+def update(Time):
+    if active:
+        pass
+```
+
 ### ui.input(name, value=0, type=float, min=None, max=None, step=None, decimals=6, label=None)
 
 Создаёт числовое поле ввода. Поддерживает **int** и **float**.
