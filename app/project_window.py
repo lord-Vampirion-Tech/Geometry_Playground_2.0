@@ -2,6 +2,7 @@ import io
 import sys
 import traceback
 
+from collections import deque
 from contextlib import redirect_stdout, redirect_stderr
 from pathlib import Path
 from time import perf_counter_ns
@@ -287,6 +288,8 @@ class ProjectWindow(QMainWindow):
     self._status_clock.start()
     self._fps_frames = 0
     self._last_script_ms = 0.0
+    self._frame_samples = deque(maxlen=120)
+    self._last_frame_start_ns = None
 
     self.is_running = False
     self.is_paused = False
@@ -297,7 +300,6 @@ class ProjectWindow(QMainWindow):
     self.update_function = None
     self.execution_namespace = {}
     self.parameter_api = None
-
   def _build_workspace(self, layout):
     self.main_splitter = QSplitter(
         Qt.Orientation.Horizontal
@@ -597,8 +599,7 @@ class ProjectWindow(QMainWindow):
       parameter_sizes = self.parameters_splitter.sizes()
 
       if parameter_sizes and parameter_sizes[0] > 0:
-        self.settings.set(
-            parameter_sizes[0],
+        self.settings.set(            parameter_sizes[0],
             "general",
             "layout_sizes",
             "parameters_panel_width"
@@ -644,6 +645,8 @@ class ProjectWindow(QMainWindow):
     self._fps_clock.restart()
     self._status_clock.restart()
     self._fps_frames = 0
+    self._frame_samples.clear()
+    self._last_frame_start_ns = None
     self.frame_timer.start()
 
     self.is_running = True
@@ -660,20 +663,35 @@ class ProjectWindow(QMainWindow):
     if not self.is_running or self.update_function is None:
       return
 
+    frame_start_ns = perf_counter_ns()
+    interval_ms = None
+    if self._last_frame_start_ns is not None:
+      interval_ms = (frame_start_ns - self._last_frame_start_ns) / 1_000_000
+    self._last_frame_start_ns = frame_start_ns
+
     elapsed = self.clock.nsecsElapsed() / 1_000_000_000
     current_time = self.time_base + elapsed
 
     try:
       self._call_update(current_time)
+      frame_work_ms = (perf_counter_ns() - frame_start_ns) / 1_000_000
+
+      viewport_stats = self.viewport
+      self._frame_samples.append({
+          "interval": interval_ms,
+          "work": frame_work_ms,
+          "script": self._last_script_ms,
+          "geometry": getattr(viewport_stats, "last_geometry_ms", 0.0),
+          "apply": getattr(viewport_stats, "last_apply_ms", 0.0),
+          "properties": getattr(viewport_stats, "last_property_ms", 0.0),
+          "render": getattr(viewport_stats, "last_render_ms", 0.0)
+      })
+
       self._fps_frames += 1
 
       fps_elapsed = self._fps_clock.elapsed()
       if fps_elapsed >= 500:
-        fps = self._fps_frames * 1000.0 / fps_elapsed
-
-        if hasattr(self.viewport, "set_fps"):
-          self.viewport.set_fps(fps, self._last_script_ms)
-
+        self._publish_performance_stats()
         self._fps_frames = 0
         self._fps_clock.restart()
 
@@ -694,6 +712,46 @@ class ProjectWindow(QMainWindow):
           f"Обновление кадра проекта «{self.project.get('name', '?')}»",
           sys.exc_info()
       )
+
+  def _publish_performance_stats(self):
+    samples = tuple(self._frame_samples)
+    if not samples or not hasattr(self.viewport, "set_performance_stats"):
+      return
+
+    def average(key):
+      values = [item[key] for item in samples if item[key] is not None]
+      return sum(values) / len(values) if values else 0.0
+
+    def percentile(key, fraction):
+      values = sorted(
+          item[key] for item in samples if item[key] is not None
+      )
+      if not values:
+        return 0.0
+      index = min(len(values) - 1, int((len(values) - 1) * fraction))
+      return values[index]
+
+    interval_ms = average("interval")
+    frame_ms = average("work")
+    wait_ms = max(0.0, interval_ms - frame_ms)
+    fps = 1000.0 / interval_ms if interval_ms > 0 else 0.0
+
+    self.viewport.set_performance_stats({
+        "fps": fps,
+        "interval_ms": interval_ms,
+        "interval_p95_ms": percentile("interval", 0.95),
+        "frame_ms": frame_ms,
+        "frame_p95_ms": percentile("work", 0.95),
+        "wait_ms": wait_ms,
+        "script_ms": average("script"),
+        "geometry_ms": average("geometry"),
+        "apply_ms": average("apply"),
+        "properties_ms": average("properties"),
+        "render_ms": average("render"),
+        "objects": len(self.geometry_objects),
+        "updated": getattr(self.viewport, "last_updated_objects", 0),
+        "pending": getattr(self.viewport, "last_pending_count", 0)
+    })
 
   def _toggle_pause(self):
     if self.update_function is None:
