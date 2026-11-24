@@ -4,6 +4,7 @@ from .base import Drawable2D
 
 
 class Square(Drawable2D):
+    closed = True
     POINT_NAMES = ("A", "B", "C", "D")
 
     def __init__(self, x=0, y=0, width=16, height=None, color="#42a5f5",
