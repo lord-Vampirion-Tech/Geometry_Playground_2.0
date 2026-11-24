@@ -2,6 +2,7 @@ from contextlib import contextmanager
 
 from PySide6.QtWidgets import (
     QWidget,
+    QFrame,
     QVBoxLayout,
     QHBoxLayout,
     QGridLayout,
@@ -36,7 +37,7 @@ class UILayouts:
 
     def _apply_group_style(self, container):
         container.setStyleSheet(
-            "QWidget#uiGroupContainer { "
+            "QFrame#uiGroupContainer { "
             f"border: {self._border_width}px solid {self._border_color}; "
             "}"
         )
@@ -78,12 +79,18 @@ class UILayouts:
             yield
             return
 
-        container = QWidget()
+        container = QFrame()
         container.setObjectName("uiGroupContainer")
         self._groups.append(container)
         self._apply_group_style(container)
         layout = layout_type(container)
-        layout.setContentsMargins(margins, margins, margins, margins)
+        content_margin = margins + self._border_width
+        layout.setContentsMargins(
+            content_margin,
+            content_margin,
+            content_margin,
+            content_margin,
+        )
 
         if layout_type is QGridLayout:
             layout.setHorizontalSpacing(spacing)
