@@ -1,6 +1,4 @@
 import math
-from time import perf_counter_ns
-from PySide6.QtCore import QTimer
 
 import numpy as np
 import pyvista as pv
@@ -32,18 +30,10 @@ class Viewport3D(QWidget):
     self._render_batch_depth = 0
     self._render_pending = False
     self._pending_object_updates = {}
-    self.last_geometry_ms = 0.0
-    self.last_render_ms = 0.0
-    self.last_apply_ms = 0.0
-    self.last_property_ms = 0.0
-    self.last_updated_objects = 0
-    self.last_pending_count = 0
-    self._create_fps_counter()
 
     self.plotter.installEventFilter(self)
     self.plotter.setFocusPolicy(Qt.StrongFocus)
 
-    QTimer.singleShot(1500, self._print_opengl_info)
 
   def _create_floor(self, size=1000, step=10):
     half = size / 2
@@ -100,79 +90,7 @@ class Viewport3D(QWidget):
         name="world_axis_y"
     )
 
-  def _create_fps_counter(self):
-    self._fps_actor = self.plotter.add_text(
-        "FPS: --", position="upper_right", font_size=10,
-        color="#d7e0ea", name="fps_counter"
-    )
-
-  def _print_opengl_info(self):
-    print("\n" + "=" * 60)
-    print("OPENGL / VTK GPU DIAGNOSTICS")
-    print("=" * 60)
-
-    try:
-      self.plotter.render()
-
-      capabilities = self.plotter.ren_win.ReportCapabilities()
-
-      for line in capabilities.splitlines():
-        if any(key in line for key in (
-            "OpenGL vendor string",
-            "OpenGL renderer string",
-            "OpenGL version string"
-        )):
-          print(line)
-
-    except Exception as e:
-      print("\nOpenGL diagnostics failed:")
-      print(repr(e))
-
-    print("=" * 60 + "\n")
-
-  def set_fps(self, value, script_ms=None):
-    script_text = (
-        f" | Python: {script_ms:.1f} ms"
-        if script_ms is not None else ""
-    )
-    self.plotter.add_text(
-        f"FPS: {value:.0f}{script_text}"
-        f" | Geometry: {self.last_geometry_ms:.1f} ms"
-        f" | Render: {self.last_render_ms:.1f} ms",
-        position="upper_right",
-        font_size=10,
-        color="#d7e0ea",
-        name="fps_counter"
-    )
-
-  def set_performance_stats(self, stats):
-    text = (
-        f"FPS {stats['fps']:.0f} | Interval {stats['interval_ms']:.1f} ms "
-        f"(p95 {stats['interval_p95_ms']:.1f})\n"
-        f"Frame {stats['frame_ms']:.1f} ms (p95 {stats['frame_p95_ms']:.1f}) "
-        f"| Wait/Qt {stats['wait_ms']:.1f} ms\n"
-        f"Python {stats['script_ms']:.2f} | Apply {stats['apply_ms']:.2f} "
-        f"(geom {stats['geometry_ms']:.2f}, props {stats['properties_ms']:.2f}) "
-        f"| Render {stats['render_ms']:.2f} ms\n"
-        f"Objects {stats['objects']} | Updated {stats['updated']} "
-        f"| Pending {stats['pending']}"
-    )
-    self.plotter.add_text(
-        text,
-        position="upper_right",
-        font_size=9,
-        color="#d7e0ea",
-        name="fps_counter"
-    )
-
   def begin_update(self):
-    if self._render_batch_depth == 0:
-      self.last_geometry_ms = 0.0
-      self.last_render_ms = 0.0
-      self.last_apply_ms = 0.0
-      self.last_property_ms = 0.0
-      self.last_updated_objects = 0
-      self.last_pending_count = 0
     self._render_batch_depth += 1
 
   def end_update(self):
@@ -185,16 +103,13 @@ class Viewport3D(QWidget):
 
     if self._pending_object_updates:
       pending = tuple(self._pending_object_updates.values())
-      self.last_pending_count = len(pending)
       self._pending_object_updates.clear()
       for obj, actor in pending:
         self._apply_object_update(obj, actor)
 
     if self._render_pending:
       self._render_pending = False
-      start = perf_counter_ns()
       self.plotter.render()
-      self.last_render_ms = (perf_counter_ns() - start) / 1_000_000
 
   def add_object(self, obj):
     actor = self.plotter.add_mesh(
@@ -243,14 +158,10 @@ class Viewport3D(QWidget):
       return
 
     self._apply_object_update(obj, actor)
-    render_start = perf_counter_ns()
     self.plotter.render()
-    self.last_render_ms = (perf_counter_ns() - render_start) / 1_000_000
 
   def _apply_object_update(self, obj, actor):
     mesh_actor = actor[0] if isinstance(actor, tuple) else actor
-    apply_start = perf_counter_ns()
-    geometry_start = apply_start
 
     if hasattr(obj, "RADIUS"):
       mesh_actor.SetPosition(obj.x, obj.y, obj.z)
@@ -265,17 +176,8 @@ class Viewport3D(QWidget):
     else:
       obj.to_polydata()
 
-    geometry_end = perf_counter_ns()
-    self.last_geometry_ms += (geometry_end - geometry_start) / 1_000_000
-
-    property_start = perf_counter_ns()
     mesh_actor.prop.color = obj.color
     mesh_actor.prop.opacity = obj.opacity
-    property_end = perf_counter_ns()
-
-    self.last_property_ms += (property_end - property_start) / 1_000_000
-    self.last_apply_ms += (property_end - apply_start) / 1_000_000
-    self.last_updated_objects += 1
 
   def clear_scene(self):
     camera_state = self._save_camera_state() if self._camera_initialized else None
@@ -284,7 +186,6 @@ class Viewport3D(QWidget):
     self.plotter.set_background("#20232b")
     self.plotter.add_axes()
     self._create_floor(size=1000, step=10)
-    self._create_fps_counter()
 
     if camera_state is not None:
       self._restore_camera_state(camera_state)
