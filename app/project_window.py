@@ -773,10 +773,7 @@ class ProjectWindow(QMainWindow):
 
   def _clear_scene(self):
     self.geometry_objects.clear()
-    if self.project["mode"] == "2D":
-      self.viewport.graph.clear()
-    else:
-      self.viewport.clear_scene()
+    self.viewport.clear_scene()
 
   def _update_scene(self):
     pass
