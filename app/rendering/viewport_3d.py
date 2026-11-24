@@ -116,11 +116,14 @@ class Viewport3D(QWidget):
         obj.to_polydata(),
         color=obj.color,
         opacity=obj.opacity,
-        show_edges=not hasattr(obj, "RADIUS"),
+        show_edges=not hasattr(obj, "RADIUS") and not hasattr(obj, "width"),
         edge_color="#ffffff",
-        line_width=1,
+        line_width=getattr(obj, "width", 1),
         render=False
     )
+
+    if getattr(obj, "SCALE_GEOMETRY", False):
+      actor.SetScale(obj.radius, obj.radius, obj.radius)
 
     if hasattr(obj, "RADIUS"):
       actor.SetPosition(obj.x, obj.y, obj.z)
@@ -166,6 +169,9 @@ class Viewport3D(QWidget):
     if hasattr(obj, "RADIUS"):
       mesh_actor.SetPosition(obj.x, obj.y, obj.z)
 
+      if getattr(obj, "SCALE_GEOMETRY", False):
+        mesh_actor.SetScale(obj.radius, obj.radius, obj.radius)
+
       if isinstance(actor, tuple) and len(actor) > 2:
         label_data = actor[2]
         label_points = label_data.GetPoints()
@@ -177,7 +183,9 @@ class Viewport3D(QWidget):
       obj.to_polydata()
 
     mesh_actor.prop.color = obj.color
-    mesh_actor.prop.opacity = obj.opacity
+    mesh_actor.prop.opacity = getattr(obj, "opacity", 1.0)
+    if hasattr(obj, "width"):
+      mesh_actor.prop.line_width = obj.width
 
   def clear_scene(self):
     camera_state = self._save_camera_state() if self._camera_initialized else None
