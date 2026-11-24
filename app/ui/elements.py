@@ -82,11 +82,11 @@ class UIElements:
         if value_type is int:
             field = QSpinBox()
             field.setRange(
-                -2147483648 if minimum is None else minimum,
-                2147483647 if maximum is None else maximum,
+                -2147483648 if minimum is None else int(minimum),
+                2147483647 if maximum is None else int(maximum),
             )
-            field.setSingleStep(step)
-            field.setValue(value)
+            field.setSingleStep(int(step))
+            field.setValue(int(value))
         else:
             field = QDoubleSpinBox()
             field.setRange(
