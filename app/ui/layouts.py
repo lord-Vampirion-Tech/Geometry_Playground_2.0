@@ -9,11 +9,14 @@ from PySide6.QtWidgets import (
 
 
 class UILayouts:
-    def __init__(self, root_layout, enabled=True, root_add_widget=None):
+    def __init__(self, root_layout, enabled=True, root_add_widget=None, border_width=5, border_color="#000000"):
         self._root_layout = root_layout
         self._enabled = enabled
         self._root_add_widget = root_add_widget or root_layout.addWidget
         self._stack = [root_layout]
+        self._groups = []
+        self._border_width = max(0, int(border_width))
+        self._border_color = border_color
 
     def _add_to_current(self, widget):
         if len(self._stack) == 1:
@@ -24,6 +27,19 @@ class UILayouts:
     def add_widget(self, widget):
         if self._enabled:
             self._add_to_current(widget)
+
+    def set_group_style(self, border_width, border_color):
+        self._border_width = max(0, int(border_width))
+        self._border_color = border_color
+        for container in self._groups:
+            self._apply_group_style(container)
+
+    def _apply_group_style(self, container):
+        container.setStyleSheet(
+            "QWidget#uiGroupContainer { "
+            f"border: {self._border_width}px solid {self._border_color}; "
+            "}"
+        )
 
     @contextmanager
     def column(self, spacing=6, margins=0):
@@ -63,6 +79,9 @@ class UILayouts:
             return
 
         container = QWidget()
+        container.setObjectName("uiGroupContainer")
+        self._groups.append(container)
+        self._apply_group_style(container)
         layout = layout_type(container)
         layout.setContentsMargins(margins, margins, margins, margins)
 
