@@ -8,7 +8,11 @@ class ParameterAPI:
         self.values = {}
         self.create_widgets = create_widgets
 
-        self.layouts = UILayouts(root_layout, enabled=create_widgets)
+        self.layouts = UILayouts(
+            root_layout,
+            enabled=create_widgets,
+            root_add_widget=window.add_parameter_widget,
+        )
         self.elements = UIElementFactory(
             self._on_change,
             self.layouts.add_widget,
@@ -92,16 +96,23 @@ class ParameterAPI:
         if type is int and (not float(step).is_integer()):
             raise ValueError("Для type=int шаг должен быть целым числом")
 
-        initial_value = type(value)
-        if min is not None:
-            initial_value = max_value = max if False else initial_value
-            initial_value = max(min, initial_value)
-        if max is not None:
-            initial_value = min(max, initial_value)
-
         if type is int:
+            if not float(value).is_integer():
+                raise ValueError("Для type=int значение должно быть целым")
+            for bound_name, bound in (("min", min), ("max", max)):
+                if bound is not None and not float(bound).is_integer():
+                    raise ValueError(f"{bound_name} для type=int должен быть целым")
+            initial_value = int(value)
             step = int(step)
         else:
+            initial_value = float(value)
+
+        if min is not None and initial_value < min:
+            initial_value = min
+        if max is not None and initial_value > max:
+            initial_value = max
+
+        if type is float:
             initial_value = round(initial_value, decimals)
 
         if self.create_widgets:
