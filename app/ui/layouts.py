@@ -9,14 +9,21 @@ from PySide6.QtWidgets import (
 
 
 class UILayouts:
-    def __init__(self, root_layout, enabled=True):
+    def __init__(self, root_layout, enabled=True, root_add_widget=None):
         self._root_layout = root_layout
         self._enabled = enabled
+        self._root_add_widget = root_add_widget or root_layout.addWidget
         self._stack = [root_layout]
+
+    def _add_to_current(self, widget):
+        if len(self._stack) == 1:
+            self._root_add_widget(widget)
+        else:
+            self._stack[-1].addWidget(widget)
 
     def add_widget(self, widget):
         if self._enabled:
-            self._stack[-1].addWidget(widget)
+            self._add_to_current(widget)
 
     @contextmanager
     def column(self, spacing=6, margins=0):
@@ -78,7 +85,7 @@ class UILayouts:
             layout.setSpacing(spacing)
             target_layout = layout
 
-        self._stack[-1].addWidget(container)
+        self._add_to_current(container)
         self._stack.append(target_layout)
 
         try:
