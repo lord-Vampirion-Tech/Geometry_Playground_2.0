@@ -190,16 +190,19 @@ class ProjectWindow(QMainWindow):
     root_layout.setContentsMargins(8, 8, 8, 8)
     root_layout.setSpacing(8)
 
-    set_crash_context(f"Проект «{project.get('name', '?')}»: создание панели инструментов")
+    set_crash_context(
+        f"Проект «{project.get('name', '?')}»: создание панели инструментов")
     self._build_toolbar(root_layout)
 
-    set_crash_context(f"Проект «{project.get('name', '?')}»: создание редактора и сцены")
+    set_crash_context(
+        f"Проект «{project.get('name', '?')}»: создание редактора и сцены")
     self._build_workspace(root_layout)
 
     self.save_shortcut = QShortcut(QKeySequence.StandardKey.Save, self)
     self.save_shortcut.activated.connect(self.save_code)
 
-    set_crash_context(f"Проект «{project.get('name', '?')}»: установка центрального виджета")
+    set_crash_context(
+        f"Проект «{project.get('name', '?')}»: установка центрального виджета")
     self.setCentralWidget(central)
 
     set_crash_context(f"Проект «{project.get('name', '?')}»: применение темы")
@@ -290,6 +293,9 @@ class ProjectWindow(QMainWindow):
     self._last_script_ms = 0.0
     self._frame_samples = deque(maxlen=120)
     self._last_frame_start_ns = None
+
+    self._timer_debug_count = 0
+    self._timer_debug_last = None
 
     self.is_running = False
     self.is_paused = False
@@ -475,7 +481,8 @@ class ProjectWindow(QMainWindow):
     HelpDialog(self.project["mode"], self).exec()
 
   def _apply_editor_settings(self):
-    size = self.settings.get("general", "layout_sizes", "editor_font_size", default=16)
+    size = self.settings.get("general", "layout_sizes",
+                             "editor_font_size", default=16)
     font = self.editor.font()
     font.setPointSize(int(size))
     self.editor.setFont(font)
@@ -654,6 +661,9 @@ class ProjectWindow(QMainWindow):
     self.is_running = True
     self.is_paused = False
 
+    self._timer_debug_count = 0
+    self._timer_debug_last = None
+
     self.pause_button.setEnabled(True)
     self.pause_button.setText("Ⅱ Пауза")
 
@@ -665,17 +675,38 @@ class ProjectWindow(QMainWindow):
     if not self.is_running or self.update_function is None:
       return
 
+    now = perf_counter_ns()
+
+    if self._timer_debug_last is not None:
+      delta = (now - self._timer_debug_last) / 1_000_000
+      self._timer_debug_count += 1
+
+      if self._timer_debug_count % 60 == 0:
+        print(
+            f"[TIMER] interval={delta:.2f} ms "
+            f"configured={self.frame_timer.interval()} ms"
+        )
+
+    self._timer_debug_last = now
+
     frame_start_ns = perf_counter_ns()
+    debug_start_ns = perf_counter_ns()
+
     interval_ms = None
     if self._last_frame_start_ns is not None:
       interval_ms = (frame_start_ns - self._last_frame_start_ns) / 1_000_000
     self._last_frame_start_ns = frame_start_ns
+
+    if interval_ms is not None and interval_ms > 25:
+      print(f"[SLOW FRAME] {interval_ms:.2f} ms")
 
     elapsed = self.clock.nsecsElapsed() / 1_000_000_000
     current_time = self.time_base + elapsed
 
     try:
       self._call_update(current_time)
+      debug_python_ns = perf_counter_ns()
+
       frame_work_ms = (perf_counter_ns() - frame_start_ns) / 1_000_000
 
       viewport_stats = self.viewport
@@ -688,12 +719,20 @@ class ProjectWindow(QMainWindow):
           "properties": getattr(viewport_stats, "last_property_ms", 0.0),
           "render": getattr(viewport_stats, "last_render_ms", 0.0)
       })
+      debug_end_ns = perf_counter_ns()
+
+      if (debug_end_ns - debug_start_ns) / 1_000_000 > 25:
+        print(
+            f"[FRAME BREAKDOWN] "
+            f"Python={(debug_python_ns - debug_start_ns) / 1_000_000:.2f} ms | "
+            f"Rest={(debug_end_ns - debug_python_ns) / 1_000_000:.2f} ms"
+        )
 
       self._fps_frames += 1
 
       fps_elapsed = self._fps_clock.elapsed()
       if fps_elapsed >= 500:
-        self._publish_performance_stats()
+        # self._publish_performance_stats()
         self._fps_frames = 0
         self._fps_clock.restart()
 
@@ -882,7 +921,8 @@ class ProjectWindow(QMainWindow):
     obj = Square(
         **kwargs,
         draw_callback=lambda item: self.viewport.add_object(item),
-        update_callback=lambda item, handle: self.viewport.update_object(item, handle)
+        update_callback=lambda item, handle: self.viewport.update_object(
+            item, handle)
     )
     self.geometry_objects.append(obj)
     return obj
@@ -893,7 +933,8 @@ class ProjectWindow(QMainWindow):
     obj = Cube(
         **kwargs,
         draw_callback=lambda item: self.viewport.add_object(item),
-        update_callback=lambda item, handle: self.viewport.update_object(item, handle)
+        update_callback=lambda item, handle: self.viewport.update_object(
+            item, handle)
     )
     self.geometry_objects.append(obj)
     return obj
@@ -904,7 +945,8 @@ class ProjectWindow(QMainWindow):
     obj = BoundingCube(
         **kwargs,
         draw_callback=lambda item: self.viewport.add_object(item),
-        update_callback=lambda item, handle: self.viewport.update_object(item, handle)
+        update_callback=lambda item, handle: self.viewport.update_object(
+            item, handle)
     )
     self.geometry_objects.append(obj)
     return obj
@@ -915,7 +957,8 @@ class ProjectWindow(QMainWindow):
     obj = Point(
         **kwargs,
         draw_callback=lambda item: self.viewport.add_object(item),
-        update_callback=lambda item, handle: self.viewport.update_object(item, handle)
+        update_callback=lambda item, handle: self.viewport.update_object(
+            item, handle)
     )
     self.geometry_objects.append(obj)
     return obj
