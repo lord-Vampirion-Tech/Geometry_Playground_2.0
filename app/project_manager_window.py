@@ -33,6 +33,7 @@ class ProjectManagerWindow(QMainWindow):
     self.store = None
     self.project_windows = []
     self._module_states = {"2D": "loading", "3D": "loading"}
+    self._module_errors = {}
     self._module_tasks = {}
     self._pending_projects = []
 
@@ -153,8 +154,10 @@ class ProjectManagerWindow(QMainWindow):
 
     if error is None:
       self._module_states[mode] = "ready"
+      self._module_errors.pop(mode, None)
     else:
       self._module_states[mode] = "error"
+      self._module_errors[mode] = error
 
     pending = [
         project for project in self._pending_projects
@@ -326,8 +329,8 @@ class ProjectManagerWindow(QMainWindow):
         QMessageBox.critical(
             self,
             f"Ошибка загрузки {mode}",
-            f"Библиотеки режима {mode} не удалось загрузить. "
-            "Перезапустите приложение и проверьте журнал ошибок."
+            f"Библиотеки режима {mode} не удалось загрузить.\\n\\n"
+            f"{self._module_errors.get(mode, 'Неизвестная ошибка')}"
         )
         return
 
