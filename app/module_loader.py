@@ -32,7 +32,7 @@ class ModuleLoadTask(QRunnable):
         except Exception as error:
             self.signals.finished.emit(
                 self.mode,
-                f"{type(error).__name__}: {error}\\n{traceback.format_exc()}"
+                f"{type(error).__name__}: {error}\n{traceback.format_exc()}"
             )
             return
 
