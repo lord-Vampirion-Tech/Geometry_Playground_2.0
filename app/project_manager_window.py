@@ -329,7 +329,7 @@ class ProjectManagerWindow(QMainWindow):
         QMessageBox.critical(
             self,
             f"Ошибка загрузки {mode}",
-            f"Библиотеки режима {mode} не удалось загрузить.\\n\\n"
+            f"Библиотеки режима {mode} не удалось загрузить.\n\n"
             f"{self._module_errors.get(mode, 'Неизвестная ошибка')}"
         )
         return
