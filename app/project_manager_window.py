@@ -173,7 +173,7 @@ class ProjectManagerWindow(QMainWindow):
         QMessageBox.critical(
             self,
             f"Ошибка загрузки {mode}",
-            f"Не удалось подготовить библиотеки режима {mode}.\n\\n{error}"
+            f"Не удалось подготовить библиотеки режима {mode}.\n\n{error}"
         )
     else:
       for project in pending:
