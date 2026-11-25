@@ -84,11 +84,13 @@ $startInfo.StandardOutputEncoding = [Console]::OutputEncoding
 $startInfo.StandardErrorEncoding = [Console]::OutputEncoding
 
 $process.StartInfo = $startInfo
+$processStarted = $false
 
 try {
     if (-not $process.Start()) {
         throw "Could not start the build process."
     }
+    $processStarted = $true
 
     [BuildOutputPump]::Pump($process, $LogFile)
     exit $process.ExitCode
@@ -108,7 +110,7 @@ catch {
         [Console]::Error.WriteLine("Could not write the logger error to the log file.")
     }
 
-    if ($process -and -not $process.HasExited) {
+    if ($processStarted -and -not $process.HasExited) {
         $process.Kill()
         $process.WaitForExit()
     }
