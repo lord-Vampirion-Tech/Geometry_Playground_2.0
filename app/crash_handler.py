@@ -1,6 +1,5 @@
 import faulthandler
 import logging
-import os
 import sys
 import threading
 import traceback
@@ -9,11 +8,11 @@ from pathlib import Path
 from PySide6.QtCore import QtMsgType, qInstallMessageHandler
 from PySide6.QtWidgets import QApplication, QMessageBox
 
+from .settings import application_dir
+
 
 APP_NAME = "Geometry Playground 2.0"
-LOG_DIR = Path(
-    os.environ.get("LOCALAPPDATA", Path.home() / "AppData" / "Local")
-) / "ZifTech" / "Geometry Playground 2.0"
+LOG_DIR = application_dir() / "Settings"
 LOG_FILE = LOG_DIR / "crash.log"
 
 _logger = logging.getLogger("geometry_playground")
