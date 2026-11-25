@@ -21,7 +21,10 @@ def _restart_with_high_performance_gpu():
     if os.environ.get(_GPU_RESTART_MARKER) == "1":
         return False
 
-    import winreg
+    try:
+        import winreg
+    except ImportError:
+        return False
 
     registry_path = r"Software\Microsoft\DirectX\UserGpuPreferences"
     executable = os.path.abspath(sys.executable)
