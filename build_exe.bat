@@ -17,12 +17,12 @@ echo   Geometry Playground 2.0 - EXE Builder
 echo ============================================
 echo.
 
-if not exist "launch_gpu.py" (
-    echo [ERROR] launch_gpu.py not found.
+if not exist "run.py" (
+    echo [ERROR] run.py not found. Run this script from the project folder.
     goto :error
 )
 
-if not exist "requirements.txt" (
+if not exist "%~dp0requirements.txt" (
     echo [ERROR] requirements.txt not found.
     goto :error
 )
@@ -50,7 +50,7 @@ if errorlevel 1 goto :error
 
 echo.
 echo [3/5] Installing application dependencies...
-"%PYTHON%" -m pip install -r requirements.txt
+"%PYTHON%" -m pip install -r "%~dp0requirements.txt"
 if errorlevel 1 goto :error
 
 echo.
@@ -64,7 +64,31 @@ echo [5/5] Building single-file executable...
 if exist "%WORK_DIR%" rmdir /s /q "%WORK_DIR%"
 if exist "%DIST_DIR%" rmdir /s /q "%DIST_DIR%"
 
-"%PYTHON%" -m PyInstaller --noconfirm --clean --onefile --windowed --name GeometryPlayground --distpath "%DIST_DIR%" --workpath "%WORK_DIR%" --specpath "%BUILD_DIR%" --paths "%~dp0" --collect-all vtkmodules --collect-all pyvista --collect-all pyvistaqt --collect-all pyqtgraph --collect-all numpy --hidden-import vtkmodules.qt.QVTKRenderWindowInteractor --hidden-import vtkmodules.vtkRenderingOpenGL2 --hidden-import vtkmodules.vtkInteractionStyle --hidden-import vtkmodules.vtkRenderingFreeType --hidden-import vtkmodules.vtkRenderingUI --hidden-import vtkmodules.vtkRenderingCore --hidden-import vtkmodules.vtkRenderingAnnotation --hidden-import vtkmodules.vtkRenderingVolumeOpenGL2 --hidden-import vtkmodules.vtkIOXML "%~dp0launch_gpu.py"
+"%PYTHON%" -m PyInstaller ^
+    --noconfirm ^
+    --clean ^
+    --onefile ^
+    --windowed ^
+    --name GeometryPlayground ^
+    --distpath "%DIST_DIR%" ^
+    --workpath "%WORK_DIR%" ^
+    --specpath "%BUILD_DIR%" ^
+    --paths "%~dp0" ^
+    --collect-all vtkmodules ^
+    --collect-all pyvista ^
+    --collect-all pyvistaqt ^
+    --collect-all pyqtgraph ^
+    --collect-all numpy ^
+    --hidden-import vtkmodules.qt.QVTKRenderWindowInteractor ^
+    --hidden-import vtkmodules.vtkRenderingOpenGL2 ^
+    --hidden-import vtkmodules.vtkInteractionStyle ^
+    --hidden-import vtkmodules.vtkRenderingFreeType ^
+    --hidden-import vtkmodules.vtkRenderingUI ^
+    --hidden-import vtkmodules.vtkRenderingCore ^
+    --hidden-import vtkmodules.vtkRenderingAnnotation ^
+    --hidden-import vtkmodules.vtkRenderingVolumeOpenGL2 ^
+    --hidden-import vtkmodules.vtkIOXML ^
+    run.py
 
 if errorlevel 1 goto :error
 
