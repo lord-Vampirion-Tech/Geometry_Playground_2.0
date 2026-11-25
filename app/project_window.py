@@ -27,10 +27,6 @@ from .code_editor import CodeEditor
 from .help_dialog import HelpDialog
 from .settings_dialog import SettingsDialog
 from .project_store import ProjectStore
-from .geometry import (
-    Square, Cube, BoundingCube, Point2D, Point3D,
-    Line2D, Line3D, Polygon, Circle, Sphere
-)
 from .ui import ParameterAPI
 from .code_highlighter import PythonHighlighter
 from .crash_handler import report_exception, set_crash_context
@@ -52,6 +48,26 @@ class ProjectWindow(QMainWindow):
 
     self.project = project
     self.settings = settings
+
+    if project["mode"] == "2D":
+      from .geometry.two_d import Point, Line, Square, Polygon, Circle
+      self.geometry_classes = {
+          "Point": Point,
+          "Line": Line,
+          "Square": Square,
+          "Polygon": Polygon,
+          "Circle": Circle,
+      }
+    else:
+      from .geometry.three_d import Point, Line, Cube, BoundingCube, Sphere
+      self.geometry_classes = {
+          "Point": Point,
+          "Line": Line,
+          "Cube": Cube,
+          "BoundingCube": BoundingCube,
+          "Sphere": Sphere,
+      }
+
     self.store = ProjectStore(Path(project["path"]).parent)
     self.code_saved = True
 
@@ -518,22 +534,13 @@ class ProjectWindow(QMainWindow):
         "ui": self.parameter_api,
     }
 
-    if self.project["mode"] == "2D":
-      namespace.update({
-          "Point": lambda *args, **kwargs: self._create_geometry(Point2D, *args, **kwargs),
-          "Line": lambda *args, **kwargs: self._create_geometry(Line2D, *args, **kwargs),
-          "Square": lambda *args, **kwargs: self._create_geometry(Square, *args, **kwargs),
-          "Polygon": lambda *args, **kwargs: self._create_geometry(Polygon, *args, **kwargs),
-          "Circle": lambda *args, **kwargs: self._create_geometry(Circle, *args, **kwargs)
-      })
-    else:
-      namespace.update({
-          "Point": lambda *args, **kwargs: self._create_geometry(Point3D, *args, **kwargs),
-          "Line": lambda *args, **kwargs: self._create_geometry(Line3D, *args, **kwargs),
-          "Cube": lambda *args, **kwargs: self._create_geometry(Cube, *args, **kwargs),
-          "BoundingCube": lambda *args, **kwargs: self._create_geometry(BoundingCube, *args, **kwargs),
-          "Sphere": lambda *args, **kwargs: self._create_geometry(Sphere, *args, **kwargs)
-      })
+    namespace.update({
+        name: (
+            lambda *args, _geometry_class=geometry_class, **kwargs:
+                self._create_geometry(_geometry_class, *args, **kwargs)
+        )
+        for name, geometry_class in self.geometry_classes.items()
+    })
 
     batch_render = hasattr(self.viewport, "begin_update")
     if batch_render:
