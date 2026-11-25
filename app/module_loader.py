@@ -1,4 +1,5 @@
 from importlib import import_module
+import traceback
 
 from PySide6.QtCore import QObject, QRunnable, Signal
 
@@ -31,7 +32,7 @@ class ModuleLoadTask(QRunnable):
         except Exception as error:
             self.signals.finished.emit(
                 self.mode,
-                f"{type(error).__name__}: {error}"
+                f"{type(error).__name__}: {error}\\n{traceback.format_exc()}"
             )
             return
 
