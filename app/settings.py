@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 
 from PySide6.QtGui import QColor
+from PySide6.QtCore import QStandardPaths
 
 
 DEFAULT_SETTINGS = {
@@ -50,6 +51,18 @@ class AppSettings:
     self.path = self.settings_dir / "settings.json"
 
     loaded = self._load()
+    if not loaded:
+      legacy_dir = Path(QStandardPaths.writableLocation(
+          QStandardPaths.StandardLocation.AppConfigLocation
+      ))
+      legacy_path = legacy_dir / "settings.json"
+      if legacy_path != self.path and legacy_path.exists():
+        try:
+          legacy_data = json.loads(legacy_path.read_text(encoding="utf-8"))
+          if isinstance(legacy_data, dict):
+            loaded = legacy_data
+        except (json.JSONDecodeError, OSError):
+          pass
     self.data = self._merge_defaults(loaded)
     self.save()
 
