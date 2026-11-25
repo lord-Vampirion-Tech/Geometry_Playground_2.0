@@ -1,4 +1,3 @@
-
 @echo off
 setlocal EnableExtensions
 
@@ -42,6 +41,7 @@ if not exist "%PYTHON%" (
     echo [1/5] Creating isolated build environment...
 
     if not exist "%BUILD_DIR%" mkdir "%BUILD_DIR%"
+    if errorlevel 1 goto :error
 
     py -3.12 -m venv "%VENV_DIR%"
     if errorlevel 1 goto :error
@@ -76,8 +76,15 @@ if not exist "%PYINSTALLER%" (
 echo.
 echo [5/5] Building portable application folder...
 
-if exist "%WORK_DIR%" rmdir /s /q "%WORK_DIR%"
-if exist "%DIST_DIR%" rmdir /s /q "%DIST_DIR%"
+if exist "%WORK_DIR%" (
+    rmdir /s /q "%WORK_DIR%"
+    if errorlevel 1 goto :error
+)
+
+if exist "%DIST_DIR%" (
+    rmdir /s /q "%DIST_DIR%"
+    if errorlevel 1 goto :error
+)
 
 "%PYINSTALLER%" --noconfirm --clean --onedir --contents-directory "_internal" --windowed --name GeometryPlayground --distpath "%DIST_DIR%" --workpath "%WORK_DIR%" --specpath "%BUILD_DIR%" --paths "%~dp0." --collect-all vtkmodules --collect-all pyvista --collect-all pyvistaqt --collect-all pyqtgraph --collect-all numpy --hidden-import numpy.linalg._umath_linalg --hidden-import vtkmodules.qt.QVTKRenderWindowInteractor --hidden-import vtkmodules.vtkRenderingOpenGL2 --hidden-import vtkmodules.vtkInteractionStyle --hidden-import vtkmodules.vtkRenderingFreeType --hidden-import vtkmodules.vtkRenderingUI --hidden-import vtkmodules.vtkRenderingCore --hidden-import vtkmodules.vtkRenderingAnnotation --hidden-import vtkmodules.vtkRenderingVolumeOpenGL2 --hidden-import vtkmodules.vtkIOXML "%~dp0run.py"
 
@@ -88,12 +95,25 @@ if not exist "%BUILD_PACKAGE%\GeometryPlayground.exe" (
     goto :error
 )
 
-if exist "%PACKAGE_DIR%" rmdir /s /q "%PACKAGE_DIR%"
-move "%BUILD_PACKAGE%" "%PACKAGE_DIR%" >nul
+if exist "%PACKAGE_DIR%" (
+    rmdir /s /q "%PACKAGE_DIR%"
+    if errorlevel 1 goto :error
+)
+
+rem Both directories are inside DIST_DIR, so rename instead of move.
+ren "%BUILD_PACKAGE%" "Geometry Playground 2.0"
 if errorlevel 1 goto :error
 
+if not exist "%PACKAGE_DIR%\GeometryPlayground.exe" (
+    echo [ERROR] The packaged EXE was not found after renaming.
+    goto :error
+)
+
 if not exist "%PACKAGE_DIR%\Projects" mkdir "%PACKAGE_DIR%\Projects"
+if errorlevel 1 goto :error
+
 if not exist "%PACKAGE_DIR%\Settings" mkdir "%PACKAGE_DIR%\Settings"
+if errorlevel 1 goto :error
 
 > "%PACKAGE_DIR%\README.txt" (
     echo Geometry Playground 2.0
@@ -108,6 +128,12 @@ if not exist "%PACKAGE_DIR%\Settings" mkdir "%PACKAGE_DIR%\Settings"
     echo You can choose another projects folder in application settings.
     echo.
     echo Do not modify or delete the _internal folder. It contains the runtime.
+)
+if errorlevel 1 goto :error
+
+if not exist "%PACKAGE_DIR%\README.txt" (
+    echo [ERROR] README.txt was not created.
+    goto :error
 )
 
 echo.
