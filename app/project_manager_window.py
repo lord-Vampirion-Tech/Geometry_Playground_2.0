@@ -1,7 +1,7 @@
 from pathlib import Path
 import sys
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QThreadPool
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QFileDialog,
@@ -22,6 +22,7 @@ from .project_store import ProjectStore
 from .settings import AppSettings, apply_theme
 from .settings_dialog import SettingsDialog
 from .crash_handler import report_exception, set_crash_context
+from .module_loader import ModuleLoadTask
 
 
 class ProjectManagerWindow(QMainWindow):
@@ -31,6 +32,9 @@ class ProjectManagerWindow(QMainWindow):
     self.settings = AppSettings()
     self.store = None
     self.project_windows = []
+    self._module_states = {"2D": "loading", "3D": "loading"}
+    self._module_tasks = {}
+    self._pending_projects = []
 
     self.setWindowTitle("Geometry Playground 2.0")
     manager_size = self.settings.get(
@@ -44,6 +48,7 @@ class ProjectManagerWindow(QMainWindow):
     folder = self.settings.projects_folder
     folder.mkdir(parents=True, exist_ok=True)
     self._set_projects_folder(folder)
+    self._start_module_loading()
 
   def _build_interface(self):
     central = QWidget()
@@ -124,7 +129,64 @@ class ProjectManagerWindow(QMainWindow):
     self.folder_label.setStyleSheet("color: #888;")
     root_layout.addWidget(self.folder_label)
 
+    self.loading_label = QLabel()
+    self.loading_label.setStyleSheet("color: #888;")
+    self.loading_label.hide()
+    root_layout.addWidget(self.loading_label)
+
     self.setCentralWidget(central)
+
+  def _start_module_loading(self):
+    pool = QThreadPool.globalInstance()
+
+    for mode in ("2D", "3D"):
+      task = ModuleLoadTask(mode)
+      task.signals.finished.connect(self._on_modules_loaded)
+      self._module_tasks[mode] = task
+      pool.start(task)
+
+    self.loading_label.setText("Загрузка библиотек 2D и 3D…")
+    self.loading_label.show()
+
+  def _on_modules_loaded(self, mode, error):
+    self._module_tasks.pop(mode, None)
+
+    if error is None:
+      self._module_states[mode] = "ready"
+    else:
+      self._module_states[mode] = "error"
+
+    pending = [
+        project for project in self._pending_projects
+        if project.get("mode") == mode
+    ]
+    self._pending_projects = [
+        project for project in self._pending_projects
+        if project.get("mode") != mode
+    ]
+
+    if error is not None:
+      if pending:
+        QMessageBox.critical(
+            self,
+            f"Ошибка загрузки {mode}",
+            f"Не удалось подготовить библиотеки режима {mode}.\\n\\n{error}"
+        )
+    else:
+      for project in pending:
+        self._open_project_window(project)
+
+    loading_modes = [
+        item for item, state in self._module_states.items()
+        if state == "loading"
+    ]
+    if loading_modes:
+      self.loading_label.setText(
+          "Загрузка библиотек: " + ", ".join(loading_modes)
+    )
+      self.loading_label.show()
+    else:
+      self.loading_label.hide()
 
   def _show_empty_state(self):
     self.toolbar.hide()
@@ -246,6 +308,39 @@ class ProjectManagerWindow(QMainWindow):
         )
         return
 
+      mode = project.get("mode")
+      state = self._module_states.get(mode)
+      if state == "loading":
+        if not any(
+            item.get("id") == project.get("id")
+            for item in self._pending_projects
+        ):
+          self._pending_projects.append(project)
+        self.loading_label.setText(
+            f"Подготовка библиотек {mode}. Проект откроется автоматически…"
+        )
+        self.loading_label.show()
+        return
+
+      if state == "error":
+        QMessageBox.critical(
+            self,
+            f"Ошибка загрузки {mode}",
+            f"Библиотеки режима {mode} не удалось загрузить. "
+            "Перезапустите приложение и проверьте журнал ошибок."
+        )
+        return
+
+      self._open_project_window(project)
+
+    except Exception:
+      report_exception(
+          f"Открытие проекта «{project.get('name', '?') if isinstance(project, dict) else '?'}»",
+          sys.exc_info()
+      )
+
+  def _open_project_window(self, project):
+    try:
       set_crash_context(
           f"Открытие проекта «{project.get('name', '?')}» "
           f"({project.get('mode', '?')}): создание окна"
@@ -271,7 +366,7 @@ class ProjectManagerWindow(QMainWindow):
 
     except Exception:
       report_exception(
-          f"Открытие проекта «{project.get('name', '?') if isinstance(project, dict) else '?'}»",
+          f"Открытие проекта «{project.get('name', '?')}»",
           sys.exc_info()
       )
 
