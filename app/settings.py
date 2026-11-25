@@ -1,9 +1,8 @@
 import json
+import sys
 from pathlib import Path
 
 from PySide6.QtGui import QColor
-
-from PySide6.QtCore import QStandardPaths
 
 
 DEFAULT_SETTINGS = {
@@ -20,7 +19,8 @@ DEFAULT_SETTINGS = {
         },
         "layout_sizes": {
             "editor_width": 450,
-            "parameters_panel_width": 450
+            "parameters_panel_width": 450,
+            "editor_font_size": 16
         },
         "ui_groups": {
             "border_width": 5,
@@ -32,20 +32,23 @@ DEFAULT_SETTINGS = {
     },
     "project_2d": {},
     "project_3d": {},
-    "projects_folder": None
+    "projects_folder": "Projects"
 }
+
+
+def application_dir():
+    if getattr(sys, "frozen", False):
+        return Path(sys.executable).resolve().parent
+    return Path(__file__).resolve().parents[1]
 
 
 class AppSettings:
   def __init__(self):
-    config_dir = Path(
-        QStandardPaths.writableLocation(
-            QStandardPaths.StandardLocation.AppConfigLocation
-        )
-    )
-    config_dir.mkdir(parents=True, exist_ok=True)
+    self.app_dir = application_dir()
+    self.settings_dir = self.app_dir / "Settings"
+    self.settings_dir.mkdir(parents=True, exist_ok=True)
+    self.path = self.settings_dir / "settings.json"
 
-    self.path = config_dir / "settings.json"
     loaded = self._load()
     self.data = self._merge_defaults(loaded)
     self.save()
@@ -53,7 +56,6 @@ class AppSettings:
   def _load(self):
     if not self.path.exists():
       return {}
-
     try:
       return json.loads(self.path.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
@@ -64,7 +66,6 @@ class AppSettings:
     def merge(default, current):
       if not isinstance(default, dict):
         return current if current is not None else default
-
       result = dict(default)
       if isinstance(current, dict):
         for key, value in current.items():
@@ -73,11 +74,10 @@ class AppSettings:
           else:
             result[key] = value
       return result
-
     return merge(DEFAULT_SETTINGS, loaded)
 
   def save(self):
-    self.path.parent.mkdir(parents=True, exist_ok=True)
+    self.settings_dir.mkdir(parents=True, exist_ok=True)
     temporary_path = self.path.with_suffix(".tmp")
     temporary_path.write_text(
         json.dumps(self.data, ensure_ascii=False, indent=4),
@@ -102,12 +102,22 @@ class AppSettings:
 
   @property
   def projects_folder(self):
-    value = self.data.get("projects_folder")
-    return Path(value) if value else None
+    value = self.data.get("projects_folder") or "Projects"
+    path = Path(value)
+    if not path.is_absolute():
+      path = self.app_dir / path
+    return path
 
   @projects_folder.setter
   def projects_folder(self, value):
-    self.data["projects_folder"] = str(Path(value)) if value else None
+    if value is None:
+      self.data["projects_folder"] = "Projects"
+    else:
+      path = Path(value).resolve()
+      try:
+        self.data["projects_folder"] = str(path.relative_to(self.app_dir.resolve()))
+      except ValueError:
+        self.data["projects_folder"] = str(path)
     self.save()
 
 
