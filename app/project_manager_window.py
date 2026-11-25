@@ -19,7 +19,6 @@ from PySide6.QtWidgets import (
 )
 
 from .project_store import ProjectStore
-from .project_window import ProjectWindow
 from .settings import AppSettings, apply_theme
 from .settings_dialog import SettingsDialog
 from .crash_handler import report_exception, set_crash_context
@@ -43,10 +42,8 @@ class ProjectManagerWindow(QMainWindow):
     apply_theme(self, self.settings)
 
     folder = self.settings.projects_folder
-    if folder is not None and folder.exists():
-      self._set_projects_folder(folder)
-    else:
-      self._show_empty_state()
+    folder.mkdir(parents=True, exist_ok=True)
+    self._set_projects_folder(folder)
 
   def _build_interface(self):
     central = QWidget()
@@ -253,6 +250,7 @@ class ProjectManagerWindow(QMainWindow):
           f"Открытие проекта «{project.get('name', '?')}» "
           f"({project.get('mode', '?')}): создание окна"
       )
+      from .project_window import ProjectWindow
       window = ProjectWindow(project, self.settings)
       close_manager = self.settings.get(
           "manager", "close_on_open", default=False
