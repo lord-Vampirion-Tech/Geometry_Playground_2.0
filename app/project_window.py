@@ -32,7 +32,6 @@ from .geometry import (
     Line2D, Line3D, Polygon, Circle, Sphere
 )
 from .ui import ParameterAPI
-from .rendering import Viewport2D, Viewport3D
 from .code_highlighter import PythonHighlighter
 from .crash_handler import report_exception, set_crash_context
 
@@ -349,9 +348,11 @@ class ProjectWindow(QMainWindow):
     scene_layout.addWidget(title)
 
     if self.project["mode"] == "2D":
+      from .rendering.viewport_2d import Viewport2D
       set_crash_context("Создание 2D-области PyQtGraph")
       self.viewport = Viewport2D(self.scene_container)
     else:
+      from .rendering.viewport_3d import Viewport3D
       set_crash_context("Создание 3D-области PyVista/VTK")
       self.viewport = Viewport3D(self.scene_container)
 
