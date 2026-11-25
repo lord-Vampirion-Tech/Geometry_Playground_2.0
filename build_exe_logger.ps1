@@ -8,6 +8,69 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+Add-Type -TypeDefinition @'
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Text;
+using System.Threading;
+
+public static class BuildOutputPump
+{
+    private static readonly object WriteLock = new object();
+
+    public static void Pump(Process process, string logFile)
+    {
+        using (var log = new StreamWriter(
+            new FileStream(logFile, FileMode.Append, FileAccess.Write, FileShare.Read),
+            new UTF8Encoding(false),
+            65536))
+        {
+            var stdoutThread = new Thread(() =>
+                CopyChunks(process.StandardOutput, Console.Out, log));
+            var stderrThread = new Thread(() =>
+                CopyChunks(process.StandardError, Console.Error, log));
+
+            stdoutThread.IsBackground = true;
+            stderrThread.IsBackground = true;
+
+            stdoutThread.Start();
+            stderrThread.Start();
+
+            process.WaitForExit();
+
+            stdoutThread.Join();
+            stderrThread.Join();
+
+            lock (WriteLock)
+            {
+                log.Flush();
+                Console.Out.Flush();
+                Console.Error.Flush();
+            }
+        }
+    }
+
+    private static void CopyChunks(StreamReader input, TextWriter console, StreamWriter log)
+    {
+        char[] buffer = new char[8192];
+        int count;
+
+        while ((count = input.Read(buffer, 0, buffer.Length)) > 0)
+        {
+            lock (WriteLock)
+            {
+                console.Write(buffer, 0, count);
+                console.Flush();
+
+                log.Write(buffer, 0, count);
+                log.Flush();
+            }
+        }
+    }
+}
+'@
+
 $process = New-Object System.Diagnostics.Process
 $startInfo = New-Object System.Diagnostics.ProcessStartInfo
 
@@ -22,65 +85,12 @@ $startInfo.StandardErrorEncoding = [Console]::OutputEncoding
 
 $process.StartInfo = $startInfo
 
-$writeLock = New-Object Object
-$logEncoding = New-Object System.Text.UTF8Encoding($false)
-
-$outputHandler = {
-    param($sender, $eventArgs)
-
-    if ($null -eq $eventArgs.Data) {
-        return
-    }
-
-    [System.Threading.Monitor]::Enter($writeLock)
-    try {
-        [Console]::Out.WriteLine($eventArgs.Data)
-        [System.IO.File]::AppendAllText(
-            $LogFile,
-            $eventArgs.Data + [Environment]::NewLine,
-            $logEncoding
-        )
-    }
-    finally {
-        [System.Threading.Monitor]::Exit($writeLock)
-    }
-}.GetNewClosure()
-
-$errorHandler = {
-    param($sender, $eventArgs)
-
-    if ($null -eq $eventArgs.Data) {
-        return
-    }
-
-    [System.Threading.Monitor]::Enter($writeLock)
-    try {
-        [Console]::Error.WriteLine($eventArgs.Data)
-        [System.IO.File]::AppendAllText(
-            $LogFile,
-            $eventArgs.Data + [Environment]::NewLine,
-            $logEncoding
-        )
-    }
-    finally {
-        [System.Threading.Monitor]::Exit($writeLock)
-    }
-}.GetNewClosure()
-
 try {
-    $process.add_OutputDataReceived($outputHandler)
-    $process.add_ErrorDataReceived($errorHandler)
-
     if (-not $process.Start()) {
         throw "Could not start the build process."
     }
 
-    $process.BeginOutputReadLine()
-    $process.BeginErrorReadLine()
-
-    $process.WaitForExit()
-    $process.WaitForExit()
-
+    [BuildOutputPump]::Pump($process, $LogFile)
     exit $process.ExitCode
 }
 catch {
@@ -91,11 +101,16 @@ catch {
         [System.IO.File]::AppendAllText(
             $LogFile,
             $message + [Environment]::NewLine,
-            $logEncoding
+            (New-Object System.Text.UTF8Encoding($false))
         )
     }
     catch {
         [Console]::Error.WriteLine("Could not write the logger error to the log file.")
+    }
+
+    if ($process -and -not $process.HasExited) {
+        $process.Kill()
+        $process.WaitForExit()
     }
 
     exit 1
