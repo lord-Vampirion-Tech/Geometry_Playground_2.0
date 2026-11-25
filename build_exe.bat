@@ -15,7 +15,7 @@ echo Geometry Playground 2.0 - Build log
 echo Started: %DATE% %TIME%
 echo.
 
-powershell -NoProfile -ExecutionPolicy Bypass -Command "& { & $env:ComSpec /d /c ('""' + $env:BUILD_SCRIPT + '"" __BUILD') 2>&1 | Tee-Object -FilePath $env:BUILD_LOG -Append; $code = $LASTEXITCODE; if ($null -eq $code) { $code = 1 }; exit $code }"
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0build_exe_logger.ps1" -BuildScript "%BUILD_SCRIPT%" -LogFile "%BUILD_LOG%"
 set "BUILD_EXIT_CODE=%ERRORLEVEL%"
 
 echo.
