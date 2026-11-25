@@ -11,7 +11,9 @@ set "PYTHON=%VENV_DIR%\Scripts\python.exe"
 set "PYINSTALLER=%VENV_DIR%\Scripts\pyinstaller.exe"
 set "DIST_DIR=%BUILD_DIR%\dist"
 set "WORK_DIR=%BUILD_DIR%\work"
-set "EXE_PATH=%DIST_DIR%\GeometryPlayground.exe"
+set "PACKAGE_DIR=%DIST_DIR%\Geometry Playground 2.0"
+set "BUILD_PACKAGE=%DIST_DIR%\GeometryPlayground"
+set "EXE_PATH=%PACKAGE_DIR%\GeometryPlayground.exe"
 
 echo.
 echo ============================================
@@ -72,18 +74,40 @@ if not exist "%PYINSTALLER%" (
 )
 
 echo.
-echo [5/5] Building single-file executable...
+echo [5/5] Building portable application folder...
 
 if exist "%WORK_DIR%" rmdir /s /q "%WORK_DIR%"
 if exist "%DIST_DIR%" rmdir /s /q "%DIST_DIR%"
 
-"%PYINSTALLER%" --noconfirm --clean --onefile --windowed --name GeometryPlayground --distpath "%DIST_DIR%" --workpath "%WORK_DIR%" --specpath "%BUILD_DIR%" --paths "%~dp0." --collect-all vtkmodules --collect-all pyvista --collect-all pyvistaqt --collect-all pyqtgraph --collect-all numpy --hidden-import numpy.linalg._umath_linalg --hidden-import vtkmodules.qt.QVTKRenderWindowInteractor --hidden-import vtkmodules.vtkRenderingOpenGL2 --hidden-import vtkmodules.vtkInteractionStyle --hidden-import vtkmodules.vtkRenderingFreeType --hidden-import vtkmodules.vtkRenderingUI --hidden-import vtkmodules.vtkRenderingCore --hidden-import vtkmodules.vtkRenderingAnnotation --hidden-import vtkmodules.vtkRenderingVolumeOpenGL2 --hidden-import vtkmodules.vtkIOXML "%~dp0run.py"
+"%PYINSTALLER%" --noconfirm --clean --onedir --contents-directory "_internal" --windowed --name GeometryPlayground --distpath "%DIST_DIR%" --workpath "%WORK_DIR%" --specpath "%BUILD_DIR%" --paths "%~dp0." --collect-all vtkmodules --collect-all pyvista --collect-all pyvistaqt --collect-all pyqtgraph --collect-all numpy --hidden-import numpy.linalg._umath_linalg --hidden-import vtkmodules.qt.QVTKRenderWindowInteractor --hidden-import vtkmodules.vtkRenderingOpenGL2 --hidden-import vtkmodules.vtkInteractionStyle --hidden-import vtkmodules.vtkRenderingFreeType --hidden-import vtkmodules.vtkRenderingUI --hidden-import vtkmodules.vtkRenderingCore --hidden-import vtkmodules.vtkRenderingAnnotation --hidden-import vtkmodules.vtkRenderingVolumeOpenGL2 --hidden-import vtkmodules.vtkIOXML "%~dp0run.py"
 
 if errorlevel 1 goto :error
 
-if not exist "%EXE_PATH%" (
+if not exist "%BUILD_PACKAGE%\\GeometryPlayground.exe" (
     echo [ERROR] PyInstaller finished, but the EXE file was not created.
     goto :error
+)
+
+if exist "%PACKAGE_DIR%" rmdir /s /q "%PACKAGE_DIR%"
+move "%BUILD_PACKAGE%" "%PACKAGE_DIR%" >nul
+if errorlevel 1 goto :error
+
+if not exist "%PACKAGE_DIR%\\Projects" mkdir "%PACKAGE_DIR%\\Projects"
+if not exist "%PACKAGE_DIR%\\Settings" mkdir "%PACKAGE_DIR%\\Settings"
+
+> "%PACKAGE_DIR%\\README.txt" (
+    echo Geometry Playground 2.0
+    echo.
+    echo PORTABLE VERSION
+    echo.
+    echo Run GeometryPlayground.exe to start the application.
+    echo Keep the entire folder together when moving the application.
+    echo.
+    echo Projects are stored in the Projects folder by default.
+    echo Settings and crash.log are stored in Settings.
+    echo You can choose another projects folder in application settings.
+    echo.
+    echo Do not modify or delete the _internal folder. It contains the runtime.
 )
 
 echo.
@@ -94,9 +118,9 @@ echo.
 echo Executable:
 echo "%EXE_PATH%"
 echo.
-echo Copy this single EXE to another Windows x64 computer.
-echo The first launch may take longer because one-file mode
-echo extracts its bundled files into a temporary directory.
+echo Copy the entire "Geometry Playground 2.0" folder to another Windows x64 computer.
+echo Do not separate the EXE from the _internal folder.
+echo Projects and Settings are stored beside the EXE.
 echo.
 pause
 exit /b 0
