@@ -83,7 +83,7 @@ if exist "%DIST_DIR%" rmdir /s /q "%DIST_DIR%"
 
 if errorlevel 1 goto :error
 
-if not exist "%BUILD_PACKAGE%\\GeometryPlayground.exe" (
+if not exist "%BUILD_PACKAGE%\GeometryPlayground.exe" (
     echo [ERROR] PyInstaller finished, but the EXE file was not created.
     goto :error
 )
@@ -92,10 +92,10 @@ if exist "%PACKAGE_DIR%" rmdir /s /q "%PACKAGE_DIR%"
 move "%BUILD_PACKAGE%" "%PACKAGE_DIR%" >nul
 if errorlevel 1 goto :error
 
-if not exist "%PACKAGE_DIR%\\Projects" mkdir "%PACKAGE_DIR%\\Projects"
-if not exist "%PACKAGE_DIR%\\Settings" mkdir "%PACKAGE_DIR%\\Settings"
+if not exist "%PACKAGE_DIR%\Projects" mkdir "%PACKAGE_DIR%\Projects"
+if not exist "%PACKAGE_DIR%\Settings" mkdir "%PACKAGE_DIR%\Settings"
 
-> "%PACKAGE_DIR%\\README.txt" (
+> "%PACKAGE_DIR%\README.txt" (
     echo Geometry Playground 2.0
     echo.
     echo PORTABLE VERSION
