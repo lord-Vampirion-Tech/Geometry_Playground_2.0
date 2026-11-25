@@ -1,23 +1,36 @@
 @echo off
 setlocal EnableExtensions
 
+if /i "%~1"=="__BUILD" goto :main
+
 set "LOG_FILE=%~dp0build_exe.log"
+set "BUILD_SCRIPT=%~f0"
+set "BUILD_LOG=%LOG_FILE%"
+
 > "%LOG_FILE%" echo Geometry Playground 2.0 - Build log
 >> "%LOG_FILE%" echo Started: %DATE% %TIME%
 >> "%LOG_FILE%" echo.
 
-call :main >> "%LOG_FILE%" 2>&1
+echo Geometry Playground 2.0 - Build log
+echo Started: %DATE% %TIME%
+echo.
+
+powershell -NoProfile -ExecutionPolicy Bypass -Command "& { & $env:ComSpec /d /c ('""' + $env:BUILD_SCRIPT + '"" __BUILD') 2>&1 | Tee-Object -FilePath $env:BUILD_LOG -Append; $code = $LASTEXITCODE; if ($null -eq $code) { $code = 1 }; exit $code }"
 set "BUILD_EXIT_CODE=%ERRORLEVEL%"
 
+echo.
+echo Finished: %DATE% %TIME%
 >> "%LOG_FILE%" echo.
 >> "%LOG_FILE%" echo Finished: %DATE% %TIME%
+
 if "%BUILD_EXIT_CODE%"=="0" (
+    echo Result: SUCCESS
     >> "%LOG_FILE%" echo Result: SUCCESS
 ) else (
-    >> "%LOG_FILE%" echo Result: FAILED ^(exit code %BUILD_EXIT_CODE%^)
+    echo Result: FAILED (exit code %BUILD_EXIT_CODE%)
+    >> "%LOG_FILE%" echo Result: FAILED (exit code %BUILD_EXIT_CODE%)
 )
 
-type "%LOG_FILE%"
 echo.
 echo Log saved to:
 echo "%LOG_FILE%"
