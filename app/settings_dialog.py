@@ -269,6 +269,9 @@ class SettingsDialog(QDialog):
 
   def _reset(self):
     defaults = DEFAULT_SETTINGS
+    self.folder_edit.setText(
+        str(self.settings.app_dir / defaults["projects_folder"])
+    )
 
     for key, button in self.color_buttons.items():
       self._set_color_button(
