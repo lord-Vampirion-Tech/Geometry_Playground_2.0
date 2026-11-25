@@ -1,6 +1,31 @@
 @echo off
 setlocal EnableExtensions
 
+set "LOG_FILE=%~dp0build_exe.log"
+> "%LOG_FILE%" echo Geometry Playground 2.0 - Build log
+>> "%LOG_FILE%" echo Started: %DATE% %TIME%
+>> "%LOG_FILE%" echo.
+
+call :main >> "%LOG_FILE%" 2>&1
+set "BUILD_EXIT_CODE=%ERRORLEVEL%"
+
+>> "%LOG_FILE%" echo.
+>> "%LOG_FILE%" echo Finished: %DATE% %TIME%
+if "%BUILD_EXIT_CODE%"=="0" (
+    >> "%LOG_FILE%" echo Result: SUCCESS
+) else (
+    >> "%LOG_FILE%" echo Result: FAILED ^(exit code %BUILD_EXIT_CODE%^)
+)
+
+type "%LOG_FILE%"
+echo.
+echo Log saved to:
+echo "%LOG_FILE%"
+echo.
+pause
+exit /b %BUILD_EXIT_CODE%
+
+:main
 cd /d "%~dp0"
 title Geometry Playground 2.0 - EXE Builder
 
@@ -148,7 +173,6 @@ echo Copy the entire "Geometry Playground 2.0" folder to another Windows x64 com
 echo Do not separate the EXE from the _internal folder.
 echo Projects and Settings are stored beside the EXE.
 echo.
-pause
 exit /b 0
 
 :error
@@ -158,5 +182,4 @@ echo   BUILD FAILED
 echo ============================================
 echo Check the error messages above.
 echo.
-pause
 exit /b 1
