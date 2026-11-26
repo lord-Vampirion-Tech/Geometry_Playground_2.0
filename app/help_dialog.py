@@ -113,13 +113,13 @@ class HelpDialog(QDialog):
                 margin-top: 16px;
                 margin-bottom: 7px;
             }}
-            h1 {{ font-size: 18pt; }}
+            h1 {{ font-size: 1.8em; }}
             h2 {{
-                font-size: 14pt;
+                font-size: 1.4em;
                 border-bottom: 1px solid palette(mid);
                 padding-bottom: 4px;
             }}
-            h3 {{ font-size: 11.5pt; }}
+            h3 {{ font-size: 1.15em; }}
             p, li {{ margin-top: 4px; margin-bottom: 4px; }}
             code {{
                 font-family: "{fixed_font.family()}";
@@ -908,11 +908,11 @@ cube.setOpacity(0.35)
 ### Line
 
 - `setPoints(x1, y1, z1, x2, y2, z2)` — изменить координаты обоих концов.
-- `setWidth(width)` — изменить толщину линии.
+- `setLineWidth(line_width)` — изменить толщину линии.
 
 ```python
 line.setPoints(0, 0, 0, 10, 5, 2)
-line.setWidth(4)
+line.setLineWidth(4)
 ```
 
 ### Cube
