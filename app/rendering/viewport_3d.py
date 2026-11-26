@@ -130,7 +130,7 @@ class Viewport3D(QWidget):
     if outline_mesh is not None:
       outline_actor = self.plotter.add_mesh(
           outline_mesh,
-          color="#ffffff",
+          color=getattr(obj, "OUTLINE_COLOR", "#ffffff"),
           opacity=obj.opacity,
           smooth_shading=True,
           render=False
