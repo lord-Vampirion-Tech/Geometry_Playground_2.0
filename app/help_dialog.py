@@ -794,6 +794,17 @@ circle = Circle(radius=4).draw()
 circle.setColor("#ff5252")
 ```
 
+### setLineWidth(line_width)
+
+**Параметры:** `line_width` — толщина контура в единицах координат сцены.
+
+Изменяет толщину контура у `Line`, `Circle`, `Square` и `Polygon`. При масштабировании 2D-пространства толщина масштабируется вместе с геометрией.
+
+```python
+circle.setLineWidth(0.15)
+square.setLineWidth(0.15)
+```
+
 ### setPos(x, y)
 
 **Параметры:** `x`, `y` — новые координаты.
