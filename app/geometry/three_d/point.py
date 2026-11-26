@@ -31,6 +31,7 @@ class Point(Drawable):
             self._polydata_cache = pv.Sphere(
                 radius=self.RADIUS,
                 center=(0.0, 0.0, 0.0),
+                direction=(0.0, 1.0, 0.0),
                 theta_resolution=20,
                 phi_resolution=20
             )
