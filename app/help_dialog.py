@@ -105,18 +105,18 @@ class HelpDialog(QDialog):
         browser.document().setDefaultStyleSheet(f"""
             body {{
                 color: #e8eaf0;
-                font-size: 10pt;
+                font-size: 100%;
                 line-height: 1.35;
             }}
             h1, h2, h3 {{
-                color: palette(text);
+                color: #e8eaf0;
                 margin-top: 16px;
                 margin-bottom: 7px;
             }}
             h1 {{ font-size: 1.8em; }}
             h2 {{
                 font-size: 1.4em;
-                border-bottom: 1px solid palette(mid);
+                border-bottom: 1px solid #454b56;
                 padding-bottom: 4px;
             }}
             h3 {{ font-size: 1.15em; }}
@@ -167,6 +167,7 @@ class HelpDialog(QDialog):
         font.setPointSize(max(7, min(24, base_size + self._zoom_level)))
         for browser in self._browsers:
             browser.setFont(font)
+            browser.document().setDefaultFont(font)
 
     @staticmethod
     def _intro_markdown():
