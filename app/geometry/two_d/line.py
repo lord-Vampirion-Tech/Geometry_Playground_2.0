@@ -24,4 +24,4 @@ class Line(Drawable2D):
         self.update_draw()
 
     def setWidth(self, width):
-        self.setLineWidth(width)
+        self.setLineWidth(float(width) * 0.075)
