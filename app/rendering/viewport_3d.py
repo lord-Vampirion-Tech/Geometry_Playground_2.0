@@ -114,17 +114,18 @@ class Viewport3D(QWidget):
 
   def add_object(self, obj):
     is_point = obj.__class__.__name__ == "Point"
+    is_sphere = obj.__class__.__name__ == "Sphere"
     actor = self.plotter.add_mesh(
         obj.to_polydata(),
         color=obj.color,
         opacity=obj.opacity,
-        show_edges=not is_point and obj.__class__.__name__ in {"Cube", "BoundingCube", "Sphere"},
+        show_edges=not (is_point or is_sphere) and obj.__class__.__name__ in {"Cube", "BoundingCube"},
         edge_color="#ffffff",
         line_width=getattr(obj, "line_width", 1),
         render=False
     )
     outline_actor = None
-    if is_point:
+    if is_point or is_sphere:
       outline_mesh = pv.Sphere(
           radius=1.06,
           center=(0.0, 0.0, 0.0),
@@ -143,6 +144,8 @@ class Viewport3D(QWidget):
 
     if getattr(obj, "SCALE_GEOMETRY", False):
       actor.SetScale(obj.radius, obj.radius, obj.radius)
+      if outline_actor is not None:
+        outline_actor.SetScale(obj.radius, obj.radius, obj.radius)
 
     if hasattr(obj, "RADIUS"):
       actor.SetPosition(obj.x, obj.y, obj.z)
@@ -188,10 +191,12 @@ class Viewport3D(QWidget):
     if hasattr(obj, "RADIUS"):
       mesh_actor.SetPosition(obj.x, obj.y, obj.z)
       if isinstance(actor, tuple):
-        if obj.__class__.__name__ == "Point":
+        if obj.__class__.__name__ in {"Point", "Sphere"}:
           if len(actor) > 1 and actor[1] is not None:
             actor[1].SetPosition(obj.x, obj.y, obj.z)
             actor[1].prop.opacity = getattr(obj, "opacity", 1.0)
+            if getattr(obj, "SCALE_GEOMETRY", False):
+              actor[1].SetScale(obj.radius, obj.radius, obj.radius)
           if len(actor) > 2 and actor[2] is not None:
             actor[2].SetPosition(obj.x, obj.y, obj.z)
             actor[2].GetTextProperty().SetOpacity(
