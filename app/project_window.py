@@ -1,4 +1,5 @@
 import io
+import math
 import sys
 import traceback
 
@@ -91,6 +92,7 @@ class ProjectWindow(QMainWindow):
     self.resize(int(size[0]), int(size[1]))
 
     self.execution_context = {"__name__": "__main__"}
+    self.help_dialog = None
     self.geometry_objects = []
     self._ui_key_bindings = {}
     self._ui_pressed_keys = set()
@@ -467,7 +469,14 @@ class ProjectWindow(QMainWindow):
     dialog.exec()
 
   def open_help(self):
-    HelpDialog(self.project["mode"], self).exec()
+    if self.help_dialog is None:
+      self.help_dialog = HelpDialog(self.project["mode"])
+      self.help_dialog.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
+      self.help_dialog.destroyed.connect(lambda: setattr(self, "help_dialog", None))
+
+    self.help_dialog.show()
+    self.help_dialog.raise_()
+    self.help_dialog.activateWindow()
 
   def _apply_ui_group_settings(self):
     if self.parameter_api is None:
@@ -532,6 +541,7 @@ class ProjectWindow(QMainWindow):
     namespace = {
         "__name__": "__main__",
         "ui": self.parameter_api,
+        "math": math,
     }
 
     namespace.update({
