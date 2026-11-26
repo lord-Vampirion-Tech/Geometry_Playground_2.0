@@ -189,10 +189,17 @@ class Viewport3D(QWidget):
         if obj.__class__.__name__ == "Point":
           if len(actor) > 1 and actor[1] is not None:
             actor[1].SetPosition(obj.x, obj.y, obj.z)
+            actor[1].prop.opacity = getattr(obj, "opacity", 1.0)
           if len(actor) > 2 and actor[2] is not None:
             actor[2].SetPosition(obj.x, obj.y, obj.z)
+            actor[2].GetTextProperty().SetOpacity(
+                getattr(obj, "opacity", 1.0)
+            )
         elif len(actor) > 1 and actor[1] is not None:
           actor[1].SetPosition(obj.x, obj.y, obj.z)
+          actor[1].GetTextProperty().SetOpacity(
+              getattr(obj, "opacity", 1.0)
+          )
 
       if getattr(obj, "SCALE_GEOMETRY", False):
         mesh_actor.SetScale(obj.radius, obj.radius, obj.radius)
@@ -201,8 +208,6 @@ class Viewport3D(QWidget):
 
     mesh_actor.prop.color = obj.color
     mesh_actor.prop.opacity = getattr(obj, "opacity", 1.0)
-    if isinstance(actor, tuple) and len(actor) > 1 and actor[1] is not None:
-      actor[1].prop.opacity = getattr(obj, "opacity", 1.0)
     if hasattr(obj, "line_width"):
       mesh_actor.prop.line_width = obj.line_width
 
