@@ -4,6 +4,20 @@ from PySide6.QtWidgets import QPlainTextEdit
 
 
 class CodeEditor(QPlainTextEdit):
+    MIN_FONT_SIZE = 7
+    MAX_FONT_SIZE = 40
+
+    def wheelEvent(self, event):
+        if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
+            delta = event.angleDelta().y()
+            if delta:
+                font = self.font()
+                step = 1 if delta > 0 else -1
+                font.setPointSize(max(self.MIN_FONT_SIZE, min(self.MAX_FONT_SIZE, font.pointSize() + step)))
+                self.setFont(font)
+                event.accept()
+                return
+        super().wheelEvent(event)
     def keyPressEvent(self, event):
         key = event.key()
         modifiers = event.modifiers()
