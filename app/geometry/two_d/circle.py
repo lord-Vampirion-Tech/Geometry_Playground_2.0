@@ -6,13 +6,13 @@ from .base import Drawable2D
 class Circle(Drawable2D):
     closed = True
 
-    def __init__(self, x=0, y=0, radius=8, color="#42a5f5", width=2,
+    def __init__(self, x=0, y=0, radius=8, color="#42a5f5", line_width=2,
                  segments=64, draw_callback=None, update_callback=None):
         super().__init__(draw_callback, update_callback)
         self.x, self.y = map(float, (x, y))
         self.radius = float(radius)
         self.color = color
-        self.width = float(width)
+        self.line_width = float(line_width)
         self.segments = max(12, int(segments))
 
     def get_vertices(self):
