@@ -1,3 +1,4 @@
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFontDatabase
 from PySide6.QtWidgets import (
     QDialog,
@@ -5,14 +6,29 @@ from PySide6.QtWidgets import (
     QLabel,
     QTabWidget,
     QTextBrowser,
-    QPushButton,
 )
+
+
+class HelpTextBrowser(QTextBrowser):
+    zoom_requested = Signal(int)
+
+    def wheelEvent(self, event):
+        if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
+            delta = event.angleDelta().y()
+            if delta:
+                self.zoom_requested.emit(1 if delta > 0 else -1)
+                event.accept()
+                return
+        super().wheelEvent(event)
 
 
 class HelpDialog(QDialog):
     def __init__(self, mode, parent=None):
-        super().__init__(parent)
+        super().__init__(None)
+        self.setWindowFlag(Qt.WindowType.Window, True)
         self.mode = mode
+        self._zoom_level = 0
+        self._browsers = []
 
         self.setWindowTitle("Справка — Geometry Playground 2.0")
         self.resize(980, 780)
@@ -40,46 +56,55 @@ class HelpDialog(QDialog):
         self._add_tab("Геометрия", self._geometry_markdown(mode))
         self._add_tab("Методы объектов", self._methods_markdown(mode))
 
-        close_button = QPushButton("Закрыть")
-        close_button.clicked.connect(self.accept)
-        layout.addWidget(close_button)
-
         self.setStyleSheet("""
             QLabel#helpHeading {
                 font-size: 20px;
                 font-weight: 700;
             }
             QLabel#helpSubtitle {
-                color: palette(mid);
+                color: #aab2c0;
                 padding-bottom: 3px;
             }
             QTabWidget::pane {
-                border: 1px solid palette(mid);
+                border: 1px solid #454b56;
                 border-radius: 6px;
                 top: -1px;
+                background: #20232b;
             }
             QTabBar::tab {
+                color: #e8eaf0;
+                background: #2b303b;
+                border: 1px solid #454b56;
+                border-bottom: none;
+                border-radius: 5px 5px 0 0;
                 padding: 8px 14px;
                 margin-right: 3px;
             }
-            QPushButton {
-                min-height: 30px;
-                padding: 3px 18px;
+            QTabBar::tab:hover {
+                background: #343b49;
+                border-color: #454b56;
+            }
+            QTabBar::tab:selected {
+                background: #20232b;
+                border-color: #454b56;
+                color: #ffffff;
             }
         """)
 
     def _add_tab(self, title, markdown):
-        browser = QTextBrowser()
+        browser = HelpTextBrowser()
         browser.setOpenExternalLinks(True)
         browser.setReadOnly(True)
         browser.setLineWrapMode(QTextBrowser.LineWrapMode.WidgetWidth)
 
         fixed_font = QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont)
-        fixed_font.setPointSize(max(9, fixed_font.pointSize()))
+        fixed_font.setPointSize(10)
         browser.document().setDefaultFont(self.font())
+        browser.zoom_requested.connect(self._change_zoom)
+        self._browsers.append(browser)
         browser.document().setDefaultStyleSheet(f"""
             body {{
-                color: palette(text);
+                color: #e8eaf0;
                 font-size: 10pt;
                 line-height: 1.35;
             }}
@@ -98,14 +123,16 @@ class HelpDialog(QDialog):
             p, li {{ margin-top: 4px; margin-bottom: 4px; }}
             code {{
                 font-family: "{fixed_font.family()}";
-                background-color: palette(alternate-base);
+                background-color: #20232b;
+                color: #e8eaf0;
                 padding: 2px 4px;
             }}
             pre {{
                 font-family: "{fixed_font.family()}";
-                font-size: 9pt;
-                background-color: palette(alternate-base);
-                border: 1px solid palette(mid);
+                font-size: 90%;
+                background-color: #20232b;
+                color: #e8eaf0;
+                border: 1px solid #454b56;
                 border-radius: 6px;
                 padding: 10px;
                 margin-top: 6px;
@@ -120,11 +147,11 @@ class HelpDialog(QDialog):
                 border-collapse: collapse;
             }}
             th, td {{
-                border: 1px solid palette(mid);
+                border: 1px solid #454b56;
                 padding: 5px 8px;
             }}
             blockquote {{
-                border-left: 3px solid palette(highlight);
+                border-left: 3px solid #42a5f5;
                 margin-left: 5px;
                 padding-left: 10px;
                 color: palette(mid);
@@ -132,6 +159,14 @@ class HelpDialog(QDialog):
         """)
         browser.setMarkdown(markdown)
         self.tabs.addTab(browser, title)
+
+    def _change_zoom(self, delta):
+        self._zoom_level = max(-5, min(10, self._zoom_level + delta))
+        font = self.font()
+        base_size = font.pointSize() or 10
+        font.setPointSize(max(7, min(24, base_size + self._zoom_level)))
+        for browser in self._browsers:
+            browser.setFont(font)
 
     @staticmethod
     def _intro_markdown():
@@ -165,8 +200,6 @@ def update(Time):
 **Пример: движение по окружности**
 
 ```python
-import math
-
 ball = Circle(radius=2)
 ball.draw()
 
@@ -208,19 +241,17 @@ def update(Time):
 | `Tab` | Добавить отступ |
 | `Shift + Tab` | Уменьшить отступ |
 
-## Импорт стандартных библиотек
+## Доступные модули
 
-Можно использовать стандартные модули Python, например:
+Модуль `math` подключён автоматически. Можно сразу использовать `math.sin()`, `math.cos()`, `math.pi` и остальные его функции без `import math`.
 
 ```python
-import math
-import random
-
 angle = math.pi / 4
-number = random.uniform(0, 10)
+x = math.cos(angle)
+y = math.sin(angle)
 ```
 
-Доступность сторонних пакетов зависит от окружения приложения.
+Другие стандартные модули Python импортируются обычным способом. Доступность сторонних пакетов зависит от окружения приложения.
 """
 
     @staticmethod
@@ -501,7 +532,7 @@ point.draw()
 **Как вызвать**
 
 ```python
-line = Line(x1=-5, y1=0, x2=5, y2=8, color="#00c853", width=3)
+line = Line(x1=-5, y1=0, x2=5, y2=8, color="#00c853", line_width=3)
 line.draw()
 ```
 
@@ -510,7 +541,7 @@ line.draw()
 - `x1`, `y1` — координаты начала отрезка, по умолчанию `(0, 0)`.
 - `x2`, `y2` — координаты конца отрезка, по умолчанию `(16, 0)`.
 - `color` — цвет линии, по умолчанию `"#42a5f5"`.
-- `width` — толщина линии, по умолчанию `2`.
+- `line_width` — толщина линии, по умолчанию `2`.
 
 **Возвращает:** объект `Line`.
 
@@ -550,7 +581,7 @@ square.draw()
 triangle = Polygon(
     points=[(0, 0), (10, 0), (5, 8)],
     color="#ff9800",
-    width=2
+    line_width=2
 )
 triangle.draw()
 ```
@@ -559,7 +590,7 @@ triangle.draw()
 
 - `points` — обязательный список или другой итерируемый объект координат вида `(x, y)`. Нужно минимум три точки.
 - `color` — цвет, по умолчанию `"#42a5f5"`.
-- `width` — толщина контура, по умолчанию `2`.
+- `line_width` — толщина контура, по умолчанию `2`.
 
 **Возвращает:** объект `Polygon`.
 
@@ -572,7 +603,7 @@ circle = Circle(
     x=0, y=0,
     radius=5,
     color="#42a5f5",
-    width=2,
+    line_width=2,
     segments=64
 )
 circle.draw()
@@ -776,11 +807,11 @@ point.setSize(12)
 ### Line
 
 - `setPoints(x1, y1, x2, y2)` — задать новые координаты начала и конца.
-- `setWidth(width)` — изменить толщину линии.
+- `setLineWidth(line_width)` — изменить толщину линии.
 
 ```python
 line.setPoints(-5, 0, 5, 8)
-line.setWidth(4)
+line.setLineWidth(4)
 ```
 
 ### Square
