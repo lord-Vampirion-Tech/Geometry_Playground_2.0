@@ -6,8 +6,6 @@ from ..base import Drawable
 
 class Point(Drawable):
     RADIUS = 1.0
-    OUTLINE_SCALE = 1.06
-    OUTLINE_COLOR = "#ffffff"
 
     def __init__(
         self,
@@ -43,7 +41,7 @@ class Point(Drawable):
     def to_outline_polydata(self):
         if self._outline_polydata_cache is None:
             self._outline_polydata_cache = pv.Sphere(
-                radius=self.RADIUS * self.OUTLINE_SCALE,
+                radius=self.RADIUS,
                 center=(0.0, 0.0, 0.0),
                 direction=(0.0, 1.0, 0.0),
                 theta_resolution=20,
