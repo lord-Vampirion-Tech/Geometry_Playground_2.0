@@ -128,6 +128,7 @@ class Viewport3D(QWidget):
       outline_mesh = pv.Sphere(
           radius=1.06,
           center=(0.0, 0.0, 0.0),
+          direction=(0.0, 1.0, 0.0),
           theta_resolution=20,
           phi_resolution=20
       )
@@ -138,6 +139,7 @@ class Viewport3D(QWidget):
           smooth_shading=True,
           render=False
       )
+      outline_actor.GetProperty().SetFrontfaceCulling(True)
 
     if getattr(obj, "SCALE_GEOMETRY", False):
       actor.SetScale(obj.radius, obj.radius, obj.radius)
