@@ -119,7 +119,7 @@ class Viewport3D(QWidget):
         opacity=obj.opacity,
         show_edges=not is_point and obj.__class__.__name__ in {"Cube", "BoundingCube", "Sphere"},
         edge_color="#ffffff",
-        line_width=1,
+        line_width=getattr(obj, "line_width", 1),
         render=False
     )
     outline_actor = None
@@ -208,6 +208,8 @@ class Viewport3D(QWidget):
 
     mesh_actor.prop.color = obj.color
     mesh_actor.prop.opacity = getattr(obj, "opacity", 1.0)
+    if isinstance(actor, tuple) and len(actor) > 1 and actor[1] is not None:
+      actor[1].prop.opacity = getattr(obj, "opacity", 1.0)
     if hasattr(obj, "line_width"):
       mesh_actor.prop.line_width = obj.line_width
 
