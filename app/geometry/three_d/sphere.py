@@ -23,6 +23,7 @@ class Sphere(Drawable):
         if self._polydata_cache is None:
             self._polydata_cache = pv.Sphere(
                 radius=1.0, center=(0, 0, 0),
+                direction=(0, 1, 0),
                 theta_resolution=self.theta_resolution,
                 phi_resolution=self.phi_resolution
             )
