@@ -4,14 +4,14 @@ from .base import Drawable2D
 class Polygon(Drawable2D):
     closed = True
 
-    def __init__(self, points, color="#42a5f5", width=2,
+    def __init__(self, points, color="#42a5f5", line_width=2,
                  draw_callback=None, update_callback=None):
         super().__init__(draw_callback, update_callback)
         self.points = self._normalize_points(points)
         if len(self.points) < 3:
             raise ValueError("Polygon должен содержать минимум три точки.")
         self.color = color
-        self.width = float(width)
+        self.line_width = float(line_width)
 
     @staticmethod
     def _normalize_points(points):
