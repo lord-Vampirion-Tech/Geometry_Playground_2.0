@@ -7,8 +7,10 @@ from ..base import Drawable
 
 class Line(Drawable):
     def __init__(self, x1=0, y1=0, z1=0, x2=16, y2=0, z2=0,
-                 color="#42a5f5", line_width=2, draw_callback=None, update_callback=None):
+                 color="#42a5f5", line_width=2, draw_callback=None, update_callback=None, width=None):
         super().__init__(draw_callback, update_callback)
+        if width is not None:
+            line_width = width
         self.points = np.asarray(((x1, y1, z1), (x2, y2, z2)), dtype=np.float64)
         self.color = color
         self.line_width = float(line_width)
@@ -41,12 +43,8 @@ class Line(Drawable):
         self.color = color
         self.update_draw()
 
-    def setLineWidth(self, line_width):
-        line_width = float(line_width)
-        if line_width == self.line_width:
-            return
-        self.line_width = line_width
-        self.update_draw()
+    def setWidth(self, width):
+        self.setLineWidth(width)
 
     def setOpacity(self, opacity):
         opacity = float(np.clip(opacity, 0.0, 1.0))
