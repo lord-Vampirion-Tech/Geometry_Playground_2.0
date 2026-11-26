@@ -57,6 +57,15 @@ class HelpDialog(QDialog):
         self._add_tab("Методы объектов", self._methods_markdown(mode))
 
         self.setStyleSheet("""
+            QDialog {
+                background-color: #20232b;
+                color: #e8eaf0;
+            }
+            QTextBrowser {
+                background-color: #20232b;
+                color: #e8eaf0;
+                border: none;
+            }
             QLabel#helpHeading {
                 font-size: 20px;
                 font-weight: 700;
