@@ -5,6 +5,7 @@ from ..base import Drawable
 
 class Sphere(Drawable):
     RADIUS = 1.0
+    OUTLINE_SCALE = 1.06
     SCALE_GEOMETRY = True
 
     def __init__(self, x=0, y=0, z=0, radius=8, color="#42a5f5", opacity=1.0,
@@ -18,16 +19,29 @@ class Sphere(Drawable):
         self.theta_resolution = int(theta_resolution)
         self.phi_resolution = int(phi_resolution)
         self._polydata_cache = None
+        self._outline_polydata_cache = None
 
     def to_polydata(self):
         if self._polydata_cache is None:
             self._polydata_cache = pv.Sphere(
-                radius=1.0, center=(0, 0, 0),
+                radius=self.RADIUS,
+                center=(0, 0, 0),
                 direction=(0, 1, 0),
                 theta_resolution=self.theta_resolution,
                 phi_resolution=self.phi_resolution
             )
         return self._polydata_cache
+
+    def to_outline_polydata(self):
+        if self._outline_polydata_cache is None:
+            self._outline_polydata_cache = pv.Sphere(
+                radius=self.RADIUS * self.OUTLINE_SCALE,
+                center=(0, 0, 0),
+                direction=(0, 1, 0),
+                theta_resolution=self.theta_resolution,
+                phi_resolution=self.phi_resolution
+            )
+        return self._outline_polydata_cache
 
     def setPos(self, x, y, z):
         pos = tuple(map(float, (x, y, z)))
