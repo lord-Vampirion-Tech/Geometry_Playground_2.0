@@ -96,5 +96,5 @@ class Viewport2D(QWidget):
     if getattr(obj, "closed", False) and points:
       xs.append(points[0][0])
       ys.append(points[0][1])
-    line_width = getattr(obj, "line_width", getattr(obj, "width", 2))
+    line_width = obj.line_width
     item.setData(xs, ys, pen=self._pen(obj.color, line_width))
