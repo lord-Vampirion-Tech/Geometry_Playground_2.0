@@ -656,7 +656,7 @@ line = Line(
     x1=0, y1=0, z1=0,
     x2=8, y2=5, z2=3,
     color="#00c853",
-    width=3
+    line_width=3
 )
 line.draw()
 ```
