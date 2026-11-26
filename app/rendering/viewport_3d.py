@@ -155,8 +155,6 @@ class Viewport3D(QWidget):
 
     if hasattr(obj, "RADIUS"):
       actor.SetPosition(obj.x, obj.y, obj.z)
-      if outline_actor is not None:
-        outline_actor.SetPosition(obj.x, obj.y, obj.z)
 
       if getattr(obj, "name", None):
         label = vtkBillboardTextActor3D()
