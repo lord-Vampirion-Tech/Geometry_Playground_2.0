@@ -7,6 +7,7 @@ from ..base import Drawable
 class Point(Drawable):
     RADIUS = 1.0
     OUTLINE_SCALE = 1.06
+    OUTLINE_COLOR = "#ffffff"
 
     def __init__(
         self,
