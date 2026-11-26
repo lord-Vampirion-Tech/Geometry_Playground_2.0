@@ -2,6 +2,7 @@ import math
 
 import numpy as np
 import pyvista as pv
+from vtkmodules.vtkRenderingCore import vtkBillboardTextActor3D
 from PySide6.QtCore import Qt, QEvent
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout
 from pyvistaqt import QtInteractor
@@ -147,22 +148,16 @@ class Viewport3D(QWidget):
         outline_actor.SetPosition(obj.x, obj.y, obj.z)
 
       if getattr(obj, "name", None):
-        label_data = pv.PolyData(
-            np.array([[obj.x, obj.y, obj.z]], dtype=np.float64)
-        )
-        label_data.point_data["labels"] = [obj.name]
-        label = self.plotter.add_point_labels(
-            label_data,
-            "labels",
-            show_points=False,
-            shape=None,
-            name=f"point_label_{id(obj)}",
-            render=False
-        )
+        label = vtkBillboardTextActor3D()
+        label.SetInput(str(obj.name))
+        label.SetPosition(obj.x, obj.y, obj.z)
+        label.GetTextProperty().SetColor(0.92, 0.93, 0.96)
+        label.GetTextProperty().SetFontSize(16)
+        self.plotter.renderer.AddActor(label)
         result = (
-            (actor, outline_actor, label, label_data)
+            (actor, outline_actor, label)
             if outline_actor is not None
-            else (actor, label, label_data)
+            else (actor, label)
         )
       else:
         result = (actor, outline_actor) if outline_actor is not None else actor
@@ -190,19 +185,17 @@ class Viewport3D(QWidget):
 
     if hasattr(obj, "RADIUS"):
       mesh_actor.SetPosition(obj.x, obj.y, obj.z)
-      if isinstance(actor, tuple) and len(actor) > 1 and actor[1] is not None:
-        actor[1].SetPosition(obj.x, obj.y, obj.z)
+      if isinstance(actor, tuple):
+        if obj.__class__.__name__ == "Point":
+          if len(actor) > 1 and actor[1] is not None:
+            actor[1].SetPosition(obj.x, obj.y, obj.z)
+          if len(actor) > 2 and actor[2] is not None:
+            actor[2].SetPosition(obj.x, obj.y, obj.z)
+        elif len(actor) > 1 and actor[1] is not None:
+          actor[1].SetPosition(obj.x, obj.y, obj.z)
 
       if getattr(obj, "SCALE_GEOMETRY", False):
         mesh_actor.SetScale(obj.radius, obj.radius, obj.radius)
-
-      if isinstance(actor, tuple) and len(actor) > 2:
-        label_data = actor[3] if len(actor) > 3 else actor[2]
-        label_points = label_data.GetPoints()
-        label_points.SetPoint(0, obj.x, obj.y, obj.z)
-        label_points.GetData().Modified()
-        label_points.Modified()
-        label_data.Modified()
     else:
       obj.to_polydata()
 
