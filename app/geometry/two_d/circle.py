@@ -6,11 +6,11 @@ from .base import Drawable2D
 class Circle(Drawable2D):
     closed = True
 
-    def __init__(self, x=0, y=0, radius=8, color="#42a5f5", line_width=2,
+    def __init__(self, x=0, y=0, radius=8, color="#42a5f5", line_width=0.15,
                  segments=64, draw_callback=None, update_callback=None, width=None):
         super().__init__(draw_callback, update_callback)
         if width is not None:
-            line_width = width
+            line_width = float(width) * 0.075
         self.x, self.y = map(float, (x, y))
         self.radius = float(radius)
         self.color = color
