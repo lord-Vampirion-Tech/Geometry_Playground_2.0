@@ -155,6 +155,10 @@ class Viewport3D(QWidget):
 
     if hasattr(obj, "RADIUS"):
       actor.SetPosition(obj.x, obj.y, obj.z)
+      if outline_actor is not None:
+        outline_actor.SetPosition(obj.x, obj.y, obj.z)
+        if getattr(obj, "SCALE_GEOMETRY", False):
+          outline_actor.SetScale(obj.radius, obj.radius, obj.radius)
 
       if getattr(obj, "name", None):
         label = vtkBillboardTextActor3D()
@@ -198,6 +202,9 @@ class Viewport3D(QWidget):
         if len(actor) > 1 and actor[1] is not None:
           outline_actor = actor[1]
           if hasattr(obj, "to_outline_polydata"):
+            outline_actor.SetPosition(obj.x, obj.y, obj.z)
+            if getattr(obj, "SCALE_GEOMETRY", False):
+              outline_actor.SetScale(obj.radius, obj.radius, obj.radius)
             outline_actor.GetProperty().SetOpacity(
                 getattr(obj, "opacity", 1.0)
             )
