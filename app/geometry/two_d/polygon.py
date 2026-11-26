@@ -5,8 +5,10 @@ class Polygon(Drawable2D):
     closed = True
 
     def __init__(self, points, color="#42a5f5", line_width=2,
-                 draw_callback=None, update_callback=None):
+                 draw_callback=None, update_callback=None, width=None):
         super().__init__(draw_callback, update_callback)
+        if width is not None:
+            line_width = width
         self.points = self._normalize_points(points)
         if len(self.points) < 3:
             raise ValueError("Polygon должен содержать минимум три точки.")
