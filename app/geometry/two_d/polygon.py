@@ -4,11 +4,11 @@ from .base import Drawable2D
 class Polygon(Drawable2D):
     closed = True
 
-    def __init__(self, points, color="#42a5f5", line_width=2,
+    def __init__(self, points, color="#42a5f5", line_width=0.15,
                  draw_callback=None, update_callback=None, width=None):
         super().__init__(draw_callback, update_callback)
         if width is not None:
-            line_width = width
+            line_width = float(width) * 0.075
         self.points = self._normalize_points(points)
         if len(self.points) < 3:
             raise ValueError("Polygon должен содержать минимум три точки.")
