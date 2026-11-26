@@ -113,26 +113,21 @@ class Viewport3D(QWidget):
       self.plotter.render()
 
   def add_object(self, obj):
-    is_point = obj.__class__.__name__ == "Point"
-    is_sphere = obj.__class__.__name__ == "Sphere"
+    outline_factory = getattr(obj, "to_outline_polydata", None)
+    outline_mesh = outline_factory() if callable(outline_factory) else None
+
     actor = self.plotter.add_mesh(
         obj.to_polydata(),
         color=obj.color,
         opacity=obj.opacity,
-        show_edges=not (is_point or is_sphere) and obj.__class__.__name__ in {"Cube", "BoundingCube"},
+        show_edges=obj.__class__.__name__ in {"Cube", "BoundingCube"},
         edge_color="#ffffff",
         line_width=getattr(obj, "line_width", 1),
         render=False
     )
+
     outline_actor = None
-    if is_point or is_sphere:
-      outline_mesh = pv.Sphere(
-          radius=1.06,
-          center=(0.0, 0.0, 0.0),
-          direction=(0.0, 1.0, 0.0),
-          theta_resolution=20,
-          phi_resolution=20
-      )
+    if outline_mesh is not None:
       outline_actor = self.plotter.add_mesh(
           outline_mesh,
           color="#ffffff",
@@ -191,20 +186,21 @@ class Viewport3D(QWidget):
     if hasattr(obj, "RADIUS"):
       mesh_actor.SetPosition(obj.x, obj.y, obj.z)
       if isinstance(actor, tuple):
-        if obj.__class__.__name__ in {"Point", "Sphere"}:
-          if len(actor) > 1 and actor[1] is not None:
-            actor[1].SetPosition(obj.x, obj.y, obj.z)
-            actor[1].prop.opacity = getattr(obj, "opacity", 1.0)
+        if len(actor) > 1 and actor[1] is not None:
+          outline_actor = actor[1]
+          if hasattr(obj, "to_outline_polydata"):
+            outline_actor.SetPosition(obj.x, obj.y, obj.z)
+            outline_actor.prop.opacity = getattr(obj, "opacity", 1.0)
             if getattr(obj, "SCALE_GEOMETRY", False):
-              actor[1].SetScale(obj.radius, obj.radius, obj.radius)
-          if len(actor) > 2 and actor[2] is not None:
-            actor[2].SetPosition(obj.x, obj.y, obj.z)
-            actor[2].GetTextProperty().SetOpacity(
+              outline_actor.SetScale(obj.radius, obj.radius, obj.radius)
+          elif len(actor) > 1:
+            actor[1].SetPosition(obj.x, obj.y, obj.z)
+            actor[1].GetTextProperty().SetOpacity(
                 getattr(obj, "opacity", 1.0)
             )
-        elif len(actor) > 1 and actor[1] is not None:
-          actor[1].SetPosition(obj.x, obj.y, obj.z)
-          actor[1].GetTextProperty().SetOpacity(
+        if len(actor) > 2 and actor[2] is not None:
+          actor[2].SetPosition(obj.x, obj.y, obj.z)
+          actor[2].GetTextProperty().SetOpacity(
               getattr(obj, "opacity", 1.0)
           )
 
