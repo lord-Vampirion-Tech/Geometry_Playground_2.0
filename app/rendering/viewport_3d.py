@@ -3,7 +3,7 @@ import math
 import numpy as np
 import pyvista as pv
 from vtkmodules.vtkRenderingCore import vtkActor, vtkBillboardTextActor3D, vtkPolyDataMapper
-from vtkmodules.vtkFiltersCore import vtkPolyDataSilhouette
+from vtkmodules.vtkFiltersHybrid import vtkPolyDataSilhouette
 from PySide6.QtCore import Qt, QEvent
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout
 from pyvistaqt import QtInteractor
