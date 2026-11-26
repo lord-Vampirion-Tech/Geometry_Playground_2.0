@@ -5,7 +5,7 @@ from ..base import Drawable
 
 
 class Point(Drawable):
-    RADIUS = 1.0
+    RADIUS = 0.1
 
     def __init__(
         self,
