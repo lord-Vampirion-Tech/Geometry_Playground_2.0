@@ -2,5 +2,4 @@
 .build/
 __pycache__/
 
-**/.build/dist/
 **/.build/work/
