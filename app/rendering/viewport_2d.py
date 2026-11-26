@@ -36,7 +36,7 @@ class Viewport2D(QWidget):
     key = (color, float(width))
     pen = self._pens.get(key)
     if pen is None:
-      pen = pg.mkPen(color, width=width)
+      pen = pg.mkPen(color, width=width, cosmetic=False)
       self._pens[key] = pen
     return pen
 
@@ -72,7 +72,7 @@ class Viewport2D(QWidget):
     if getattr(obj, "closed", False) and points:
       xs.append(points[0][0])
       ys.append(points[0][1])
-    width = getattr(obj, "line_width", getattr(obj, "width", 2))
+    width = obj.line_width
     return self.graph.plot(xs, ys, pen=self._pen(obj.color, width))
 
   def update_object(self, obj, item):
