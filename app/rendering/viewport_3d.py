@@ -112,21 +112,39 @@ class Viewport3D(QWidget):
       self.plotter.render()
 
   def add_object(self, obj):
+    is_point = obj.__class__.__name__ == "Point"
     actor = self.plotter.add_mesh(
         obj.to_polydata(),
         color=obj.color,
         opacity=obj.opacity,
-        show_edges=obj.__class__.__name__ in {"Point", "Cube", "BoundingCube", "Sphere"},
+        show_edges=not is_point and obj.__class__.__name__ in {"Cube", "BoundingCube", "Sphere"},
         edge_color="#ffffff",
         line_width=1,
         render=False
     )
+    outline_actor = None
+    if is_point:
+      outline_mesh = pv.Sphere(
+          radius=1.06,
+          center=(0.0, 0.0, 0.0),
+          theta_resolution=20,
+          phi_resolution=20
+      )
+      outline_actor = self.plotter.add_mesh(
+          outline_mesh,
+          color="#ffffff",
+          opacity=obj.opacity,
+          smooth_shading=True,
+          render=False
+      )
 
     if getattr(obj, "SCALE_GEOMETRY", False):
       actor.SetScale(obj.radius, obj.radius, obj.radius)
 
     if hasattr(obj, "RADIUS"):
       actor.SetPosition(obj.x, obj.y, obj.z)
+      if outline_actor is not None:
+        outline_actor.SetPosition(obj.x, obj.y, obj.z)
 
       if getattr(obj, "name", None):
         label_data = pv.PolyData(
@@ -141,9 +159,13 @@ class Viewport3D(QWidget):
             name=f"point_label_{id(obj)}",
             render=False
         )
-        result = (actor, label, label_data)
+        result = (
+            (actor, outline_actor, label, label_data)
+            if outline_actor is not None
+            else (actor, label, label_data)
+        )
       else:
-        result = actor
+        result = (actor, outline_actor) if outline_actor is not None else actor
     else:
       result = actor
 
@@ -168,12 +190,14 @@ class Viewport3D(QWidget):
 
     if hasattr(obj, "RADIUS"):
       mesh_actor.SetPosition(obj.x, obj.y, obj.z)
+      if isinstance(actor, tuple) and len(actor) > 1 and actor[1] is not None:
+        actor[1].SetPosition(obj.x, obj.y, obj.z)
 
       if getattr(obj, "SCALE_GEOMETRY", False):
         mesh_actor.SetScale(obj.radius, obj.radius, obj.radius)
 
       if isinstance(actor, tuple) and len(actor) > 2:
-        label_data = actor[2]
+        label_data = actor[3] if len(actor) > 3 else actor[2]
         label_points = label_data.GetPoints()
         label_points.SetPoint(0, obj.x, obj.y, obj.z)
         label_points.GetData().Modified()
