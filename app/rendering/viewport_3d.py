@@ -2,14 +2,14 @@ import math
 
 import numpy as np
 import pyvista as pv
-from vtkmodules.vtkRenderingCore import vtkBillboardTextActor3D
+from vtkmodules.vtkRenderingCore import vtkActor, vtkBillboardTextActor3D, vtkPolyDataMapper
+from vtkmodules.vtkFiltersCore import vtkPolyDataSilhouette
 from PySide6.QtCore import Qt, QEvent
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout
 from pyvistaqt import QtInteractor
 
 
 class Viewport3D(QWidget):
-  OUTLINE_SCALE = 1.06
   OUTLINE_COLOR = "#ffffff"
 
   def __init__(self, parent=None):
@@ -129,32 +129,29 @@ class Viewport3D(QWidget):
         render=False
     )
 
-    outline_actor = None
-    if outline_mesh is not None:
-      outline_actor = self.plotter.add_mesh(
-          outline_mesh,
-          color=self.OUTLINE_COLOR,
-          opacity=obj.opacity,
-          smooth_shading=True,
-          render=False
-      )
-      outline_actor.GetProperty().SetColor(1.0, 1.0, 1.0)
-      outline_actor.GetProperty().SetFrontfaceCulling(True)
-
     if getattr(obj, "SCALE_GEOMETRY", False):
       actor.SetScale(obj.radius, obj.radius, obj.radius)
-      if outline_actor is not None:
-        outline_actor.SetScale(
-            obj.radius * self.OUTLINE_SCALE,
-            obj.radius * self.OUTLINE_SCALE,
-            obj.radius * self.OUTLINE_SCALE
-        )
-    elif outline_actor is not None:
-      outline_actor.SetScale(
-          self.OUTLINE_SCALE,
-          self.OUTLINE_SCALE,
-          self.OUTLINE_SCALE
+
+    outline_actor = None
+    if outline_mesh is not None:
+      silhouette = vtkPolyDataSilhouette()
+      silhouette.SetInputData(outline_mesh)
+      silhouette.SetCamera(self.plotter.camera)
+      silhouette.SetProp3D(actor)
+      silhouette.SetEnableFeatureAngle(False)
+      silhouette.SetBorderEdges(True)
+
+      outline_mapper = vtkPolyDataMapper()
+      outline_mapper.SetInputConnection(silhouette.GetOutputPort())
+
+      outline_actor = vtkActor()
+      outline_actor.SetMapper(outline_mapper)
+      outline_actor.GetProperty().SetColor(1.0, 1.0, 1.0)
+      outline_actor.GetProperty().SetLineWidth(
+          getattr(obj, "line_width", 1)
       )
+      outline_actor.GetProperty().SetOpacity(obj.opacity)
+      self.plotter.renderer.AddActor(outline_actor)
 
     if hasattr(obj, "RADIUS"):
       actor.SetPosition(obj.x, obj.y, obj.z)
@@ -203,16 +200,12 @@ class Viewport3D(QWidget):
         if len(actor) > 1 and actor[1] is not None:
           outline_actor = actor[1]
           if hasattr(obj, "to_outline_polydata"):
-            outline_actor.SetPosition(obj.x, obj.y, obj.z)
-            outline_actor.prop.opacity = getattr(obj, "opacity", 1.0)
-            if getattr(obj, "SCALE_GEOMETRY", False):
-              outline_scale = obj.radius * self.OUTLINE_SCALE
-            else:
-              outline_scale = self.OUTLINE_SCALE
-            outline_actor.SetScale(
-                outline_scale, outline_scale, outline_scale
+            outline_actor.GetProperty().SetOpacity(
+                getattr(obj, "opacity", 1.0)
             )
-            outline_actor.GetProperty().SetColor(1.0, 1.0, 1.0)
+            outline_actor.GetProperty().SetLineWidth(
+                getattr(obj, "line_width", 1)
+            )
           else:
             actor[1].SetPosition(obj.x, obj.y, obj.z)
             actor[1].GetTextProperty().SetOpacity(
