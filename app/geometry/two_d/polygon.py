@@ -1,3 +1,5 @@
+import math
+
 from .base import Drawable2D
 
 
@@ -27,6 +29,53 @@ class Polygon(Drawable2D):
 
     def get_vertices(self):
         return list(self.points)
+
+    def getCenter(self):
+        area_twice = 0.0
+        cx = 0.0
+        cy = 0.0
+
+        for i, (x1, y1) in enumerate(self.points):
+            x2, y2 = self.points[(i + 1) % len(self.points)]
+            cross = x1 * y2 - x2 * y1
+            area_twice += cross
+            cx += (x1 + x2) * cross
+            cy += (y1 + y2) * cross
+
+        if math.isclose(area_twice, 0.0):
+            count = len(self.points)
+            return (
+                sum(x for x, _ in self.points) / count,
+                sum(y for _, y in self.points) / count,
+            )
+
+        return cx / (3.0 * area_twice), cy / (3.0 * area_twice)
+
+    def _rotate(self, angle, pivot):
+        angle = math.radians(float(angle))
+        px, py = self._normalize_points([pivot])[0]
+        cos_a = math.cos(angle)
+        sin_a = math.sin(angle)
+
+        points = []
+        for x, y in self.points:
+            dx = x - px
+            dy = y - py
+            points.append((
+                px + dx * cos_a - dy * sin_a,
+                py + dx * sin_a + dy * cos_a,
+            ))
+
+        self.setPoints(points)
+
+    def rotate(self, angle):
+        self._rotate(angle, self.getCenter())
+
+    def rotateAroundPoint(self, angle, index):
+        self._rotate(angle, self.points[index])
+
+    def rotateAroundCoordinates(self, angle, x, y):
+        self._rotate(angle, (x, y))
 
     def setPoint(self, index, point):
         point = self._normalize_points([point])[0]
