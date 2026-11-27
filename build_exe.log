@@ -1,0 +1,728 @@
+Geometry Playground 2.0 - Build log
+Started: 26.11.2026 16:37:19,29
+
+
+============================================
+  Geometry Playground 2.0 - EXE Builder
+============================================
+
+[1/5] Reusing build environment...
+
+[2/5] Updating pip...
+Requirement already satisfied: pip in .\.build\venv\Lib\site-packages (26.3)
+
+[3/5] Installing application dependencies...
+Requirement already satisfied: PySide6 in .\.build\venv\Lib\site-packages (from -r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 1)) (6.12.0)
+Requirement already satisfied: numpy in .\.build\venv\Lib\site-packages (from -r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 2)) (2.5.5)
+Requirement already satisfied: pyqtgraph in .\.build\venv\Lib\site-packages (from -r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 3)) (0.14.0)
+Requirement already satisfied: pyvista in .\.build\venv\Lib\site-packages (from -r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (0.49.3)
+Requirement already satisfied: pyvistaqt in .\.build\venv\Lib\site-packages (from -r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 5)) (0.14.1)
+Requirement already satisfied: PySide6_Essentials==6.12.0 in .\.build\venv\Lib\site-packages (from PySide6->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 1)) (6.12.0)
+Requirement already satisfied: PySide6_Addons==6.12.0 in .\.build\venv\Lib\site-packages (from PySide6->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 1)) (6.12.0)
+Requirement already satisfied: PySide6_WebEngine==6.12.0.140 in .\.build\venv\Lib\site-packages (from PySide6->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 1)) (6.12.0.140)
+Requirement already satisfied: PySide6_Pdf==6.12.0.140 in .\.build\venv\Lib\site-packages (from PySide6->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 1)) (6.12.0.140)
+Requirement already satisfied: shiboken6==6.12.0 in .\.build\venv\Lib\site-packages (from PySide6_Essentials==6.12.0->PySide6->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 1)) (6.12.0)
+Requirement already satisfied: colorama in .\.build\venv\Lib\site-packages (from pyqtgraph->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 3)) (0.4.6)
+Requirement already satisfied: cyclopts>=4.0.0 in .\.build\venv\Lib\site-packages (from pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (5.5.3)
+Requirement already satisfied: matplotlib>=3.0.1 in .\.build\venv\Lib\site-packages (from pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (3.11.2)
+Requirement already satisfied: pillow in .\.build\venv\Lib\site-packages (from pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (13.0.0)
+Requirement already satisfied: pooch in .\.build\venv\Lib\site-packages (from pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (1.9.0)
+Requirement already satisfied: pyvista-validation==0.2.2 in .\.build\venv\Lib\site-packages (from pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (0.2.2)
+Requirement already satisfied: scooby>=0.5.1 in .\.build\venv\Lib\site-packages (from pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (0.12.1)
+Requirement already satisfied: typing-extensions>=4.10 in .\.build\venv\Lib\site-packages (from pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (4.16.0)
+Requirement already satisfied: vtk!=9.4.0 in .\.build\venv\Lib\site-packages (from pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (9.7.2)
+Requirement already satisfied: QtPy>=2.3.0 in .\.build\venv\Lib\site-packages (from pyvistaqt->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 5)) (2.4.3)
+Requirement already satisfied: attrs>=23.1.0 in .\.build\venv\Lib\site-packages (from cyclopts>=4.0.0->pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (26.1.0)
+Requirement already satisfied: docstring-parser<4.0,>=0.15 in .\.build\venv\Lib\site-packages (from cyclopts>=4.0.0->pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (0.18.0)
+Requirement already satisfied: rich-rst<3,>=2.0.1 in .\.build\venv\Lib\site-packages (from cyclopts>=4.0.0->pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (2.2.0)
+Requirement already satisfied: rich>=13.6.0 in .\.build\venv\Lib\site-packages (from cyclopts>=4.0.0->pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (15.0.0)
+Requirement already satisfied: pygments>=2.0.0 in .\.build\venv\Lib\site-packages (from rich-rst<3,>=2.0.1->cyclopts>=4.0.0->pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (2.21.0)
+Requirement already satisfied: contourpy>=1.0.1 in .\.build\venv\Lib\site-packages (from matplotlib>=3.0.1->pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (1.4.0)
+Requirement already satisfied: cycler>=0.10 in .\.build\venv\Lib\site-packages (from matplotlib>=3.0.1->pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (0.12.1)
+Requirement already satisfied: fonttools>=4.28.2 in .\.build\venv\Lib\site-packages (from matplotlib>=3.0.1->pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (4.69.0)
+Requirement already satisfied: kiwisolver>=1.3.1 in .\.build\venv\Lib\site-packages (from matplotlib>=3.0.1->pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (1.5.1)
+Requirement already satisfied: packaging>=20.0 in .\.build\venv\Lib\site-packages (from matplotlib>=3.0.1->pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (26.4)
+Requirement already satisfied: pyparsing>=3 in .\.build\venv\Lib\site-packages (from matplotlib>=3.0.1->pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (3.3.3)
+Requirement already satisfied: python-dateutil>=2.7 in .\.build\venv\Lib\site-packages (from matplotlib>=3.0.1->pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (4.0.0)
+Requirement already satisfied: tzdata in .\.build\venv\Lib\site-packages (from python-dateutil>=2.7->matplotlib>=3.0.1->pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (2026.6)
+Requirement already satisfied: markdown-it-py>=2.2.0 in .\.build\venv\Lib\site-packages (from rich>=13.6.0->cyclopts>=4.0.0->pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (4.3.0)
+Requirement already satisfied: mdurl~=0.1 in .\.build\venv\Lib\site-packages (from markdown-it-py>=2.2.0->rich>=13.6.0->cyclopts>=4.0.0->pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (0.1.2)
+Requirement already satisfied: platformdirs>=2.5.0 in .\.build\venv\Lib\site-packages (from pooch->pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (4.14.8)
+Requirement already satisfied: requests>=2.19.0 in .\.build\venv\Lib\site-packages (from pooch->pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (2.34.2)
+Requirement already satisfied: charset_normalizer<4,>=2 in .\.build\venv\Lib\site-packages (from requests>=2.19.0->pooch->pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (3.5.3)
+Requirement already satisfied: idna<4,>=2.5 in .\.build\venv\Lib\site-packages (from requests>=2.19.0->pooch->pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (3.20)
+Requirement already satisfied: urllib3<3,>=1.26 in .\.build\venv\Lib\site-packages (from requests>=2.19.0->pooch->pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (2.8.0)
+Requirement already satisfied: certifi>=2023.5.7 in .\.build\venv\Lib\site-packages (from requests>=2.19.0->pooch->pyvista->-r C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\requirements.txt (line 4)) (2026.11.20)
+
+[4/5] Installing PyInstaller...
+Requirement already satisfied: pyinstaller<7,>=6.22 in .\.build\venv\Lib\site-packages (6.22.3)
+Requirement already satisfied: altgraph in .\.build\venv\Lib\site-packages (from pyinstaller<7,>=6.22) (0.17.5)
+Requirement already satisfied: packaging>=22.0 in .\.build\venv\Lib\site-packages (from pyinstaller<7,>=6.22) (26.4)
+Requirement already satisfied: pefile>=2022.5.30 in .\.build\venv\Lib\site-packages (from pyinstaller<7,>=6.22) (2024.8.26)
+Requirement already satisfied: pyinstaller-hooks-contrib>=2026.7 in .\.build\venv\Lib\site-packages (from pyinstaller<7,>=6.22) (2026.10)
+Requirement already satisfied: pywin32-ctypes>=0.2.1 in .\.build\venv\Lib\site-packages (from pyinstaller<7,>=6.22) (0.2.3)
+Requirement already satisfied: setuptools>=42.0.0 in .\.build\venv\Lib\site-packages (from pyinstaller<7,>=6.22) (84.2.1)
+
+[5/5] Building portable application folder...
+287 INFO: PyInstaller: 6.22.3, contrib hooks: 2026.10
+288 INFO: Python: 3.12.10
+326 INFO: Platform: Windows-11-10.0.26300-SP0
+326 INFO: Python environment: C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\.build\venv
+327 INFO: wrote C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\.build\GeometryPlayground.spec
+331 INFO: Removing temporary files and cleaning cache in C:\Users\ZifTech\AppData\Local\pyinstaller
+3138 WARNING: Failed to collect submodules for 'pyvista.trame' because importing 'pyvista.trame' raised: ModuleNotFoundError: No module named 'trame_pyvista'
+2932 WARNING: Failed to collect submodules for 'pyqtgraph.opengl' because importing 'pyqtgraph.opengl' raised: ModuleNotFoundError: No module named 'OpenGL'
+780 WARNING: Failed to collect submodules for 'numpy.f2py.tests' because importing 'numpy.f2py.tests' raised: ModuleNotFoundError: No module named 'pytest'
+20569 INFO: Module search paths (PYTHONPATH):
+['C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Scripts\\pyinstaller.exe',
+ 'C:\\Users\\ZifTech\\AppData\\Local\\Programs\\Python\\Python312\\python312.zip',
+ 'C:\\Users\\ZifTech\\AppData\\Local\\Programs\\Python\\Python312\\DLLs',
+ 'C:\\Users\\ZifTech\\AppData\\Local\\Programs\\Python\\Python312\\Lib',
+ 'C:\\Users\\ZifTech\\AppData\\Local\\Programs\\Python\\Python312',
+ 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv',
+ 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages',
+ 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0']
+21335 INFO: Appending 'datas' from .spec
+21421 INFO: checking Analysis
+21421 INFO: Building Analysis because Analysis-00.toc is non existent
+21421 INFO: Looking for Python shared library...
+21421 INFO: Using Python shared library: C:\Users\ZifTech\AppData\Local\Programs\Python\Python312\python312.dll
+21421 INFO: Running Analysis Analysis-00.toc
+21421 INFO: Target bytecode optimization level: 0
+21422 INFO: Initializing module dependency graph...
+21424 INFO: Initializing module graph hook caches...
+21507 INFO: Analyzing modules for base_library.zip ...
+23575 INFO: Processing standard module hook 'hook-encodings.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+24229 INFO: Processing standard module hook 'hook-math.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+25973 INFO: Processing standard module hook 'hook-pickle.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+28050 INFO: Processing standard module hook 'hook-heapq.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+30164 INFO: Caching module dependency graph...
+30217 INFO: Analyzing C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\run.py
+30227 INFO: Processing standard module hook 'hook-PySide6.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+30531 INFO: Processing standard module hook 'hook-shiboken6.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+30748 INFO: Processing standard module hook 'hook-PySide6.QtNetwork.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+34586 INFO: Processing standard module hook 'hook-PySide6.QtCore.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+39886 INFO: Processing standard module hook 'hook-PySide6.QtWidgets.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+45515 INFO: Processing standard module hook 'hook-PySide6.QtGui.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+91739 INFO: Processing standard module hook 'hook-platform.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+91881 INFO: Processing standard module hook 'hook-numpy.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+92710 INFO: Processing pre-safe-import-module hook 'hook-typing_extensions.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+92713 INFO: SetuptoolsInfo: initializing cached setuptools info...
+94648 INFO: Processing standard module hook 'hook-multiprocessing.util.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+94985 INFO: Processing standard module hook 'hook-xml.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+95487 INFO: Processing standard module hook 'hook-_ctypes.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+97135 INFO: Processing standard module hook 'hook-sysconfig.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+97472 INFO: Processing standard module hook 'hook-webbrowser.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+99980 INFO: Processing standard module hook 'hook-difflib.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+101407 INFO: Processing standard module hook 'hook-charset_normalizer.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+102064 INFO: Processing standard module hook 'hook-pyvista.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+103421 INFO: Processing standard module hook 'hook-vtkmodules.vtkWebCore.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+103491 INFO: Processing standard module hook 'hook-vtkmodules.vtkCommonMath.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+103550 INFO: Processing standard module hook 'hook-vtkmodules.vtkCommonTransforms.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+104578 INFO: Processing standard module hook 'hook-vtkmodules.vtkCommonDataModel.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+104744 INFO: Processing standard module hook 'hook-vtkmodules.vtkCommonExecutionModel.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+104811 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOCore.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+104938 INFO: Processing standard module hook 'hook-vtkmodules.vtkImagingCore.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+105062 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOImage.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+105085 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOXMLParser.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+105167 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOXML.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+105202 INFO: Processing standard module hook 'hook-vtkmodules.vtkCommonMisc.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+105655 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersCore.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+106222 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingCore.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+106315 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingContext2D.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+106343 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingFreeType.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+106371 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingSceneGraph.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+106390 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingVtkJS.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+106467 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOExport.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+106496 INFO: Processing standard module hook 'hook-vtkmodules.vtkWebGLExporter.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+106564 INFO: Processing standard module hook 'hook-vtkmodules.vtkCommonComputationalGeometry.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+106597 INFO: Processing standard module hook 'hook-vtkmodules.vtkCommonSystem.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+106672 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersCellGrid.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+106703 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOCellGrid.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+106779 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOLegacy.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+106818 INFO: Processing standard module hook 'hook-vtkmodules.vtkDomainsChemistry.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+106980 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersSources.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+107310 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersGeneral.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+107365 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingHyperTreeGrid.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+107423 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingLabel.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+107445 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingUI.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+107742 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingOpenGL2.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+107774 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingContextOpenGL2.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+107875 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingVolume.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+107907 INFO: Processing standard module hook 'hook-vtkmodules.vtkImagingMath.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+107944 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingVolumeOpenGL2.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+108558 INFO: Processing standard module hook 'hook-vtkmodules.vtkInteractionWidgets.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+108612 INFO: Processing standard module hook 'hook-vtkmodules.vtkViewsCore.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+108621 INFO: Processing standard module hook 'hook-vtkmodules.vtkViewsContext2D.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+108630 INFO: Processing standard module hook 'hook-vtkmodules.vtkSerializationManager.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+108641 INFO: Processing standard module hook 'hook-vtkmodules.vtkTestingSerialization.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+108668 INFO: Processing standard module hook 'hook-vtkmodules.vtkImagingColor.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+108679 INFO: Processing standard module hook 'hook-vtkmodules.vtkTestingRendering.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+108845 INFO: Processing standard module hook 'hook-vtkmodules.vtkChartsCore.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+108925 INFO: Processing standard module hook 'hook-vtkmodules.vtkInteractionStyle.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109045 INFO: Processing standard module hook 'hook-vtkmodules.vtkViewsInfovis.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109056 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingVRModels.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109101 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingVR.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109137 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingVolumeAMR.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109143 INFO: Processing standard module hook 'hook-vtkmodules.vtkPythonContext2D.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109215 INFO: Processing standard module hook 'hook-vtkmodules.vtkParallelCore.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109265 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingParallel.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109309 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingMatplotlib.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109319 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingLOD.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109362 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingLICOpenGL2.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109389 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingImage.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109427 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingGridAxes.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109451 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingExternal.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109469 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingCellGrid.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109493 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOXdmf2.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109501 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOVeraOut.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109509 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOVPIC.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109517 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOTecplotTable.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109523 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOTRUCHAS.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109540 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOSegY.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109574 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOParallelXML.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109607 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOLSDyna.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109631 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOParallelLSDyna.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109712 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOExodus.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109732 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOParallelExodus.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109839 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOGeometry.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109914 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOParallel.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109954 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOPLY.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109990 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOPIO.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110009 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOMovie.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110018 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOOggTheora.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110044 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOOMF.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110095 INFO: Processing standard module hook 'hook-vtkmodules.vtkIONetCDF.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110111 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOMotionFX.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110148 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOMINC.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110163 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOLANLX3D.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110191 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOImport.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110231 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOIOSS.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110253 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOHDF.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110262 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOH5part.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110278 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOH5Rage.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110289 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOGeoJSON.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110296 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOFLUENTCFF.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110308 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOVideo.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110315 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOFDS.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110359 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOInfovis.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110379 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOExportPDF.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110386 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingGL2PSOpenGL2.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110409 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOExportGL2PS.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110423 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOEngys.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110455 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOEnSight.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110472 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOERF.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110480 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOCityGML.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110494 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOChemistry.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110507 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOCesium3DTiles.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110513 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOCONVERGECFD.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110539 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOCGNSReader.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110546 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOAvmesh.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110551 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOAsynchronous.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110581 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOAMR.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110614 INFO: Processing standard module hook 'hook-vtkmodules.vtkInteractionImage.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110706 INFO: Processing standard module hook 'hook-vtkmodules.vtkInfovisLayout.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110736 INFO: Processing standard module hook 'hook-vtkmodules.vtkImagingStencil.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110752 INFO: Processing standard module hook 'hook-vtkmodules.vtkImagingStatistics.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110801 INFO: Processing standard module hook 'hook-vtkmodules.vtkImagingGeneral.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110817 INFO: Processing standard module hook 'hook-vtkmodules.vtkImagingOpenGL2.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110857 INFO: Processing standard module hook 'hook-vtkmodules.vtkImagingMorphological.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110882 INFO: Processing standard module hook 'hook-vtkmodules.vtkImagingFourier.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110923 INFO: Processing standard module hook 'hook-vtkmodules.vtkIOSQL.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111154 INFO: Processing standard module hook 'hook-vtkmodules.vtkRenderingAnnotation.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111216 INFO: Processing standard module hook 'hook-vtkmodules.vtkImagingHybrid.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111227 INFO: Processing standard module hook 'hook-vtkmodules.vtkGeovisCore.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111244 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersTopology.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111260 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersTensor.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111286 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersTemporal.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111306 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersSelection.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111323 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersSMP.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111338 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersPython.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111359 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersProgrammable.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111462 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersModeling.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111580 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersPoints.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111641 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersStatistics.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111672 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersParallelStatistics.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111686 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersImaging.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111762 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersExtraction.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111829 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersGeometry.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111907 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersHybrid.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111963 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersHyperTree.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111999 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersTexture.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+112103 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersParallel.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+112123 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersParallelImaging.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+112181 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersParallelDIY2.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+112290 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersGeometryPreview.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+112372 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersFlowPaths.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+112407 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersAMR.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+112454 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersGeneric.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+112461 INFO: Processing standard module hook 'hook-vtkmodules.vtkDomainsChemistryOpenGL2.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+112475 INFO: Processing standard module hook 'hook-vtkmodules.vtkCommonPython.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+112499 INFO: Processing standard module hook 'hook-vtkmodules.vtkCommonColor.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+112537 INFO: Processing standard module hook 'hook-vtkmodules.vtkImagingSources.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+112622 INFO: Processing standard module hook 'hook-vtkmodules.vtkInfovisCore.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+112638 INFO: Processing standard module hook 'hook-vtkmodules.vtkAcceleratorsVTKmCore.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+112657 INFO: Processing standard module hook 'hook-vtkmodules.vtkAcceleratorsVTKmDataModel.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+112697 INFO: Processing standard module hook 'hook-vtkmodules.vtkAcceleratorsVTKmFilters.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+112749 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersVerdict.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+112772 INFO: Processing standard module hook 'hook-vtkmodules.vtkFiltersReduction.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+114722 INFO: Processing standard module hook 'hook-xml.etree.cElementTree.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+114867 INFO: Processing pre-safe-import-module hook 'hook-platformdirs.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+114904 INFO: Processing standard module hook 'hook-platformdirs.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+115185 INFO: Processing pre-safe-import-module hook 'hook-packaging.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+115357 INFO: Processing standard module hook 'hook-urllib3.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+115645 INFO: Processing pre-safe-import-module hook 'hook-backports.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+115647 INFO: Setuptools: 'backports' appears to be a full setuptools-vendored copy - creating alias to 'setuptools._vendor.backports'!
+115667 INFO: Processing standard module hook 'hook-setuptools.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+115740 INFO: Processing pre-safe-import-module hook 'hook-distutils.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+115855 INFO: Processing pre-safe-import-module hook 'hook-jaraco.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+115857 INFO: Setuptools: 'jaraco' appears to be a full setuptools-vendored copy - creating alias to 'setuptools._vendor.jaraco'!
+115885 INFO: Processing pre-safe-import-module hook 'hook-more_itertools.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+115887 INFO: Setuptools: 'more_itertools' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.more_itertools'!
+116151 INFO: Processing standard module hook 'hook-_osx_support.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+116721 INFO: Processing standard module hook 'hook-setuptools._vendor.jaraco.text.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+116724 INFO: Processing pre-safe-import-module hook 'hook-importlib_resources.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+118018 INFO: Processing pre-safe-import-module hook 'hook-tomli.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+118020 INFO: Setuptools: 'tomli' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.tomli'!
+119391 INFO: Processing pre-safe-import-module hook 'hook-wheel.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+119401 INFO: Setuptools: 'wheel' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.wheel'!
+120567 INFO: Processing standard module hook 'hook-certifi.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+120878 INFO: Processing standard module hook 'hook-PIL.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+121040 INFO: Processing standard module hook 'hook-PIL.Image.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+122095 INFO: Processing standard module hook 'hook-PIL.ImageFilter.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+123067 INFO: Processing standard module hook 'hook-matplotlib.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+124252 INFO: Processing standard module hook 'hook-matplotlib.backend_bases.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+125709 INFO: Processing standard module hook 'hook-matplotlib.backends.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+125900 INFO: Processing standard module hook 'hook-matplotlib.pyplot.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+126120 INFO: Processing standard module hook 'hook-matplotlib.figure.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+127396 INFO: Processing standard module hook 'hook-dateutil.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+127469 INFO: Processing standard module hook 'hook-zoneinfo.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+130398 INFO: Processing pre-safe-import-module hook 'hook-gi.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+134063 INFO: Processing standard module hook 'hook-pyqtgraph.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+927 WARNING: Failed to collect submodules for 'pyqtgraph.opengl' because importing 'pyqtgraph.opengl' raised: ModuleNotFoundError: No module named 'OpenGL'
+135781 INFO: hook-pyqtgraph: selected 'PySide6' as Qt bindings because hook for 'PySide6' has been run before.
+135845 INFO: Processing standard module hook 'hook-PySide6.QtSvg.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+137282 INFO: Processing standard module hook 'hook-PySide6.QtOpenGLWidgets.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+138794 INFO: Processing standard module hook 'hook-PySide6.QtTest.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+141553 INFO: Processing standard module hook 'hook-matplotlib.backends.backend_qtagg.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+141573 INFO: Processing standard module hook 'hook-matplotlib.backends.qt_compat.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+141575 INFO: hook-matplotlib.backends.qt_compat: selected 'PySide6' as Qt bindings because hook for 'PySide6' has been run before.
+141755 INFO: Processing standard module hook 'hook-xml.dom.domreg.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+143398 INFO: Processing standard module hook 'hook-qtpy.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+143400 INFO: hook-qtpy: selected 'PySide6' as Qt bindings because hook for 'PySide6' has been run before.
+143589 INFO: Processing standard module hook 'hook-PySide6.QtDataVisualization.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+147566 INFO: Processing standard module hook 'hook-PySide6.QtOpenGL.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+154983 INFO: Analyzing hidden import 'vtkmodules.qt.QVTKRenderWindowInteractor'
+155041 INFO: Analyzing hidden import 'vtkmodules.all'
+155070 INFO: Analyzing hidden import 'vtkmodules.generate_pyi'
+155108 INFO: Analyzing hidden import 'vtkmodules.gtk'
+155121 INFO: Analyzing hidden import 'vtkmodules.gtk.GtkGLExtVTKRenderWindow'
+155156 INFO: Analyzing hidden import 'vtkmodules.gtk.GtkGLExtVTKRenderWindowInteractor'
+155181 INFO: Analyzing hidden import 'vtkmodules.gtk.GtkVTKRenderWindow'
+155212 INFO: Analyzing hidden import 'vtkmodules.gtk.GtkVTKRenderWindowInteractor'
+155236 INFO: Analyzing hidden import 'vtkmodules.numpy_interface._vtk_array_mixin'
+155259 INFO: Analyzing hidden import 'vtkmodules.numpy_interface.algorithms'
+155373 INFO: Analyzing hidden import 'vtkmodules.numpy_interface.array_overrides'
+155710 INFO: Analyzing hidden import 'vtkmodules.numpy_interface.utils'
+155745 INFO: Analyzing hidden import 'vtkmodules.numpy_interface.vtk_partitioned_array'
+155978 INFO: Analyzing hidden import 'vtkmodules.test'
+155988 INFO: Analyzing hidden import 'vtkmodules.test.BlackBox'
+156027 INFO: Analyzing hidden import 'vtkmodules.test.ErrorObserver'
+156040 INFO: Analyzing hidden import 'vtkmodules.test.Testing'
+156071 INFO: Analyzing hidden import 'vtkmodules.test.rtImageTest'
+156090 INFO: Analyzing hidden import 'vtkmodules.tk'
+156101 INFO: Analyzing hidden import 'vtkmodules.tk.vtkLoadPythonTkWidgets'
+156118 INFO: Analyzing hidden import 'vtkmodules.tk.vtkTkImageViewerWidget'
+156144 INFO: Processing pre-find-module-path hook 'hook-tkinter.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_find_module_path'
+156148 INFO: TclTkInfo: initializing cached Tcl/Tk info...
+157280 INFO: Processing standard module hook 'hook-_tkinter.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+157301 INFO: Analyzing hidden import 'vtkmodules.tk.vtkTkPhotoImage'
+157314 INFO: Analyzing hidden import 'vtkmodules.tk.vtkTkRenderWidget'
+157345 INFO: Analyzing hidden import 'vtkmodules.tk.vtkTkRenderWindowInteractor'
+157377 INFO: Analyzing hidden import 'vtkmodules.util.colors'
+157396 INFO: Analyzing hidden import 'vtkmodules.util.data_array_selection'
+157411 INFO: Analyzing hidden import 'vtkmodules.util.execution_model'
+157437 INFO: Analyzing hidden import 'vtkmodules.util.keys'
+157451 INFO: Analyzing hidden import 'vtkmodules.util.vtkImageExportToArray'
+157482 INFO: Analyzing hidden import 'vtkmodules.util.vtkImageImportFromArray'
+157500 INFO: Analyzing hidden import 'vtkmodules.util.xarray_support'
+157531 INFO: Analyzing hidden import 'vtkmodules.web'
+157545 INFO: Analyzing hidden import 'vtkmodules.web.camera'
+157589 INFO: Analyzing hidden import 'vtkmodules.web.dataset_builder'
+157649 INFO: Analyzing hidden import 'vtkmodules.web.errors'
+157659 INFO: Analyzing hidden import 'vtkmodules.web.protocols'
+157761 INFO: Analyzing hidden import 'vtkmodules.web.testing'
+C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\.build\venv\Lib\site-packages\vtkmodules\web\testing.py:687: SyntaxWarning: invalid escape sequence '\.'
+  fnamePattern = re.compile("([^\.\/\\\]+)\.py")
+157795 INFO: Analyzing hidden import 'vtkmodules.web.utils'
+157817 INFO: Analyzing hidden import 'vtkmodules.web.venv'
+157916 INFO: Analyzing hidden import 'vtkmodules.web.vtkjs_helper'
+157945 INFO: Analyzing hidden import 'vtkmodules.web.wslink'
+157959 INFO: Analyzing hidden import 'vtkmodules.wx'
+157970 INFO: Analyzing hidden import 'vtkmodules.wx.wxVTKRenderWindow'
+158007 INFO: Analyzing hidden import 'vtkmodules.wx.wxVTKRenderWindowInteractor'
+158039 INFO: Analyzing hidden import 'pyvista.__main__'
+158619 INFO: Processing standard module hook 'hook-rich.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+159888 INFO: Processing standard module hook 'hook-pygments.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+167795 INFO: Analyzing hidden import 'pyvista.conftest'
+167810 INFO: Analyzing hidden import 'pyvista.core.static'
+167821 INFO: Analyzing hidden import 'pyvista.core.static.mesh_icons'
+167832 INFO: Analyzing hidden import 'pyvista.core.utilities.docs'
+167853 INFO: Analyzing hidden import 'pyvista.errors'
+167868 INFO: Analyzing hidden import 'pyvista.examples.download_3ds'
+167883 INFO: Analyzing hidden import 'pyvista.examples.gltf'
+167903 INFO: Analyzing hidden import 'pyvista.examples.vrml'
+167919 INFO: Analyzing hidden import 'pyvista.ext._autoenum'
+167945 INFO: Analyzing hidden import 'pyvista.ext._autoinherit'
+167972 INFO: Analyzing hidden import 'pyvista.ext.plot_directive'
+168008 INFO: Analyzing hidden import 'pyvista.ext.viewer_directive'
+168026 INFO: Analyzing hidden import 'pyvista.plotting.plotting'
+168038 INFO: Analyzing hidden import 'pyvista.utilities.algorithms'
+168051 INFO: Analyzing hidden import 'pyvista.utilities.arrays'
+168053 INFO: Analyzing hidden import 'pyvista.utilities.cell_type_helper'
+168057 INFO: Analyzing hidden import 'pyvista.utilities.cells'
+168059 INFO: Analyzing hidden import 'pyvista.utilities.common'
+168062 INFO: Analyzing hidden import 'pyvista.utilities.docs'
+168065 INFO: Analyzing hidden import 'pyvista.utilities.errors'
+168068 INFO: Analyzing hidden import 'pyvista.utilities.features'
+168072 INFO: Analyzing hidden import 'pyvista.utilities.fileio'
+168075 INFO: Analyzing hidden import 'pyvista.utilities.geometric_objects'
+168078 INFO: Analyzing hidden import 'pyvista.utilities.helpers'
+168081 INFO: Analyzing hidden import 'pyvista.utilities.misc'
+168083 INFO: Analyzing hidden import 'pyvista.utilities.parametric_objects'
+168086 INFO: Analyzing hidden import 'pyvista.utilities.reader'
+168088 INFO: Analyzing hidden import 'pyvista.utilities.regression'
+168091 INFO: Analyzing hidden import 'pyvista.utilities.sphinx_gallery'
+168093 INFO: Analyzing hidden import 'pyvista.utilities.transformations'
+168096 INFO: Analyzing hidden import 'pyvista.utilities.wrappers'
+168098 INFO: Analyzing hidden import 'pyvista.utilities.xvfb'
+168106 INFO: Analyzing hidden import 'pyqtgraph.PlotData'
+168130 INFO: Analyzing hidden import 'pyqtgraph.configfile'
+168179 INFO: Analyzing hidden import 'pyqtgraph.dockarea'
+168238 INFO: Analyzing hidden import 'pyqtgraph.examples'
+168276 INFO: Analyzing hidden import 'pyqtgraph.examples.Arrow'
+168292 INFO: Analyzing hidden import 'pyqtgraph.examples.AxisItem_label_overlap'
+168308 INFO: Analyzing hidden import 'pyqtgraph.examples.BarGraphItem'
+168321 INFO: Analyzing hidden import 'pyqtgraph.examples.BoxplotItem'
+168339 INFO: Analyzing hidden import 'pyqtgraph.examples.CLIexample'
+168350 INFO: Analyzing hidden import 'pyqtgraph.examples.ColorBarItem'
+168368 INFO: Analyzing hidden import 'pyqtgraph.examples.ColorButton'
+168381 INFO: Analyzing hidden import 'pyqtgraph.examples.ColorGradientPlots'
+168402 INFO: Analyzing hidden import 'pyqtgraph.examples.ConsoleWidget'
+168413 INFO: Analyzing hidden import 'pyqtgraph.examples.CustomGraphItem'
+168431 INFO: Analyzing hidden import 'pyqtgraph.examples.DataSlicing'
+168445 INFO: Analyzing hidden import 'pyqtgraph.examples.DataTreeWidget'
+168463 INFO: Analyzing hidden import 'pyqtgraph.examples.DateAxisItem'
+168474 INFO: Analyzing hidden import 'pyqtgraph.examples.DateAxisItem_QtDesigner'
+168488 INFO: Analyzing hidden import 'pyqtgraph.examples.DiffTreeWidget'
+168504 INFO: Analyzing hidden import 'pyqtgraph.examples.Draw'
+168517 INFO: Analyzing hidden import 'pyqtgraph.examples.ErrorBarItem'
+168530 INFO: Analyzing hidden import 'pyqtgraph.examples.FillBetweenItem'
+168544 INFO: Analyzing hidden import 'pyqtgraph.examples.Flowchart'
+168822 INFO: Analyzing hidden import 'pyqtgraph.examples.FlowchartCustomNode'
+168841 INFO: Analyzing hidden import 'pyqtgraph.examples.GLBarGraphItem'
+169227 INFO: Analyzing hidden import 'pyqtgraph.examples.GLGradientLegendItem'
+169239 INFO: Analyzing hidden import 'pyqtgraph.examples.GLGraphItem'
+169253 INFO: Analyzing hidden import 'pyqtgraph.examples.GLImageItem'
+169269 INFO: Analyzing hidden import 'pyqtgraph.examples.GLIsosurface'
+169284 INFO: Analyzing hidden import 'pyqtgraph.examples.GLLinePlotItem'
+169298 INFO: Analyzing hidden import 'pyqtgraph.examples.GLMeshItem'
+169316 INFO: Analyzing hidden import 'pyqtgraph.examples.GLPainterItem'
+169335 INFO: Analyzing hidden import 'pyqtgraph.examples.GLScatterPlotItem'
+169353 INFO: Analyzing hidden import 'pyqtgraph.examples.GLSurfacePlot'
+169371 INFO: Analyzing hidden import 'pyqtgraph.examples.GLTextItem'
+169386 INFO: Analyzing hidden import 'pyqtgraph.examples.GLViewWidget'
+169399 INFO: Analyzing hidden import 'pyqtgraph.examples.GLVolumeItem'
+169415 INFO: Analyzing hidden import 'pyqtgraph.examples.GLshaders'
+169431 INFO: Analyzing hidden import 'pyqtgraph.examples.GradientEditor'
+169443 INFO: Analyzing hidden import 'pyqtgraph.examples.GradientWidget'
+169457 INFO: Analyzing hidden import 'pyqtgraph.examples.GraphItem'
+169469 INFO: Analyzing hidden import 'pyqtgraph.examples.GraphicsLayout'
+169484 INFO: Analyzing hidden import 'pyqtgraph.examples.GraphicsScene'
+169497 INFO: Analyzing hidden import 'pyqtgraph.examples.HistogramLUT'
+169512 INFO: Analyzing hidden import 'pyqtgraph.examples.ImageItem'
+169525 INFO: Analyzing hidden import 'pyqtgraph.examples.ImageView'
+169542 INFO: Analyzing hidden import 'pyqtgraph.examples.InfiniteLine'
+169610 INFO: Analyzing hidden import 'pyqtgraph.examples.InteractiveParameter'
+169629 INFO: Analyzing hidden import 'pyqtgraph.examples.JoystickButton'
+169644 INFO: Analyzing hidden import 'pyqtgraph.examples.Legend'
+169660 INFO: Analyzing hidden import 'pyqtgraph.examples.LogPlotTest'
+169674 INFO: Analyzing hidden import 'pyqtgraph.examples.MatrixDisplayExample'
+169690 INFO: Analyzing hidden import 'pyqtgraph.examples.MouseSelection'
+169706 INFO: Analyzing hidden import 'pyqtgraph.examples.MultiDataPlot'
+169722 INFO: Analyzing hidden import 'pyqtgraph.examples.MultiPlotSpeedTest'
+169738 INFO: Analyzing hidden import 'pyqtgraph.examples.MultiplePlotAxes'
+169753 INFO: Analyzing hidden import 'pyqtgraph.examples.NonUniformImage'
+169790 INFO: Analyzing hidden import 'pyqtgraph.examples.PColorMeshItem'
+169806 INFO: Analyzing hidden import 'pyqtgraph.examples.PanningPlot'
+169819 INFO: Analyzing hidden import 'pyqtgraph.examples.PlotAutoRange'
+169833 INFO: Analyzing hidden import 'pyqtgraph.examples.PlotSpeedTest'
+169853 INFO: Analyzing hidden import 'pyqtgraph.examples.PlotWidget'
+169869 INFO: Analyzing hidden import 'pyqtgraph.examples.Plotting'
+169887 INFO: Analyzing hidden import 'pyqtgraph.examples.ProgressDialog'
+169900 INFO: Analyzing hidden import 'pyqtgraph.examples.ROIExamples'
+169921 INFO: Analyzing hidden import 'pyqtgraph.examples.ROItypes'
+169938 INFO: Analyzing hidden import 'pyqtgraph.examples.RemoteGraphicsView'
+169954 INFO: Analyzing hidden import 'pyqtgraph.examples.RemoteSpeedTest'
+169972 INFO: Analyzing hidden import 'pyqtgraph.examples.RunExampleApp'
+169984 INFO: Analyzing hidden import 'pyqtgraph.examples.ScaleBar'
+169996 INFO: Analyzing hidden import 'pyqtgraph.examples.ScatterPlot'
+170017 INFO: Analyzing hidden import 'pyqtgraph.examples.ScatterPlotSpeedTest'
+170035 INFO: Analyzing hidden import 'pyqtgraph.examples.ScatterPlotWidget'
+170051 INFO: Analyzing hidden import 'pyqtgraph.examples.SimplePlot'
+170062 INFO: Analyzing hidden import 'pyqtgraph.examples.SpinBox'
+170079 INFO: Analyzing hidden import 'pyqtgraph.examples.Symbols'
+170093 INFO: Analyzing hidden import 'pyqtgraph.examples.TableWidget'
+170106 INFO: Analyzing hidden import 'pyqtgraph.examples.TreeWidget'
+170120 INFO: Analyzing hidden import 'pyqtgraph.examples.VideoSpeedTest'
+170147 INFO: Analyzing hidden import 'pyqtgraph.examples.VideoTemplate_generic'
+170173 INFO: Analyzing hidden import 'pyqtgraph.examples.ViewBox'
+170189 INFO: Analyzing hidden import 'pyqtgraph.examples.ViewBoxFeatures'
+170204 INFO: Analyzing hidden import 'pyqtgraph.examples.ViewLimits'
+170216 INFO: Analyzing hidden import 'pyqtgraph.examples.__main__'
+170227 INFO: Analyzing hidden import 'pyqtgraph.examples._buildParamTypes'
+170245 INFO: Analyzing hidden import 'pyqtgraph.examples._paramtreecfg'
+170265 INFO: Analyzing hidden import 'pyqtgraph.examples.beeswarm'
+170277 INFO: Analyzing hidden import 'pyqtgraph.examples.colorMaps'
+170293 INFO: Analyzing hidden import 'pyqtgraph.examples.colorMapsLinearized'
+170310 INFO: Analyzing hidden import 'pyqtgraph.examples.console_exception_inspection'
+170333 INFO: Analyzing hidden import 'pyqtgraph.examples.contextMenu'
+170348 INFO: Analyzing hidden import 'pyqtgraph.examples.crosshair'
+170364 INFO: Analyzing hidden import 'pyqtgraph.examples.customGraphicsItem'
+170379 INFO: Analyzing hidden import 'pyqtgraph.examples.customPlot'
+170397 INFO: Analyzing hidden import 'pyqtgraph.examples.designerExample'
+170408 INFO: Analyzing hidden import 'pyqtgraph.examples.dockarea'
+170426 INFO: Analyzing hidden import 'pyqtgraph.examples.exampleLoaderTemplate_generic'
+170432 INFO: Analyzing hidden import 'pyqtgraph.examples.fractal'
+170448 INFO: Analyzing hidden import 'pyqtgraph.examples.glow'
+170471 INFO: Analyzing hidden import 'pyqtgraph.examples.hdf5'
+170491 INFO: Analyzing hidden import 'pyqtgraph.examples.histogram'
+170505 INFO: Analyzing hidden import 'pyqtgraph.examples.imageAnalysis'
+170524 INFO: Analyzing hidden import 'pyqtgraph.examples.infiniteline_performance'
+170537 INFO: Analyzing hidden import 'pyqtgraph.examples.isocurve'
+170551 INFO: Analyzing hidden import 'pyqtgraph.examples.jupyter_console_example'
+170570 INFO: Analyzing hidden import 'pyqtgraph.examples.linkedViews'
+170582 INFO: Analyzing hidden import 'pyqtgraph.examples.logAxis'
+170597 INFO: Analyzing hidden import 'pyqtgraph.examples.multiplePlotSpeedTest'
+170613 INFO: Analyzing hidden import 'pyqtgraph.examples.multiprocess'
+170628 INFO: Analyzing hidden import 'pyqtgraph.examples.optics'
+170662 INFO: Analyzing hidden import 'pyqtgraph.examples.optics_demos'
+170681 INFO: Analyzing hidden import 'pyqtgraph.examples.parallelize'
+170697 INFO: Analyzing hidden import 'pyqtgraph.examples.parametertree'
+170718 INFO: Analyzing hidden import 'pyqtgraph.examples.relativity'
+170766 INFO: Analyzing hidden import 'pyqtgraph.examples.relativity_demo'
+170780 INFO: Analyzing hidden import 'pyqtgraph.examples.scrollingPlots'
+170800 INFO: Analyzing hidden import 'pyqtgraph.examples.syntax'
+170822 INFO: Analyzing hidden import 'pyqtgraph.examples.template'
+170835 INFO: Analyzing hidden import 'pyqtgraph.examples.test_examples'
+170862 INFO: Analyzing hidden import 'pyqtgraph.examples.text'
+170876 INFO: Analyzing hidden import 'pyqtgraph.examples.verlet_chain'
+170896 INFO: Analyzing hidden import 'pyqtgraph.examples.verlet_chain_demo'
+170916 INFO: Analyzing hidden import 'pyqtgraph.frozenSupport'
+170935 INFO: Analyzing hidden import 'pyqtgraph.multiprocess.bootstrap'
+170949 INFO: Analyzing hidden import 'pyqtgraph.util.garbage_collector'
+170965 INFO: Analyzing hidden import 'pyqtgraph.util.get_resolution'
+170977 INFO: Analyzing hidden import 'pyqtgraph.util.glinfo'
+170993 INFO: Analyzing hidden import 'numpy._configtool'
+171004 INFO: Analyzing hidden import 'numpy._core._exceptions'
+171026 INFO: Analyzing hidden import 'numpy._core._multiarray_tests'
+171026 INFO: Analyzing hidden import 'numpy._core._operand_flag_tests'
+171027 INFO: Analyzing hidden import 'numpy._core._rational_tests'
+171027 INFO: Analyzing hidden import 'numpy._core._simd'
+171039 INFO: Analyzing hidden import 'numpy._core._struct_ufunc_tests'
+171040 INFO: Analyzing hidden import 'numpy._core._umath_tests'
+171056 INFO: Analyzing hidden import 'numpy._core.cversions'
+171067 INFO: Analyzing hidden import 'numpy._pyinstaller'
+171069 INFO: Analyzing hidden import 'numpy._pyinstaller.hook-numpy'
+171144 INFO: Processing pre-safe-import-module hook 'hook-importlib_metadata.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+171146 INFO: Setuptools: 'importlib_metadata' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.importlib_metadata'!
+171191 INFO: Processing standard module hook 'hook-setuptools._vendor.importlib_metadata.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+171337 INFO: Processing pre-safe-import-module hook 'hook-zipp.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+171339 INFO: Setuptools: 'zipp' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.zipp'!
+171509 INFO: Processing standard module hook 'hook-win32ctypes.core.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+173244 INFO: Analyzing hidden import 'numpy._typing._extended_precision'
+173257 INFO: Analyzing hidden import 'numpy._utils._pep440'
+173288 INFO: Analyzing hidden import 'numpy.conftest'
+173320 INFO: Analyzing hidden import 'numpy.core._dtype'
+173338 INFO: Analyzing hidden import 'numpy.core._dtype_ctypes'
+173355 INFO: Analyzing hidden import 'numpy.core._internal'
+173370 INFO: Analyzing hidden import 'numpy.core._multiarray_umath'
+173389 INFO: Analyzing hidden import 'numpy.core.arrayprint'
+173401 INFO: Analyzing hidden import 'numpy.core.defchararray'
+173413 INFO: Analyzing hidden import 'numpy.core.einsumfunc'
+173424 INFO: Analyzing hidden import 'numpy.core.fromnumeric'
+173439 INFO: Analyzing hidden import 'numpy.core.function_base'
+173450 INFO: Analyzing hidden import 'numpy.core.getlimits'
+173462 INFO: Analyzing hidden import 'numpy.core.multiarray'
+173475 INFO: Analyzing hidden import 'numpy.core.numeric'
+173488 INFO: Analyzing hidden import 'numpy.core.numerictypes'
+173498 INFO: Analyzing hidden import 'numpy.core.overrides'
+173510 INFO: Analyzing hidden import 'numpy.core.records'
+173522 INFO: Analyzing hidden import 'numpy.core.shape_base'
+173533 INFO: Analyzing hidden import 'numpy.f2py.__main__'
+173545 INFO: Analyzing hidden import 'numpy.f2py._src_pyf'
+173569 INFO: Analyzing hidden import 'numpy.fft.tests'
+173571 INFO: Analyzing hidden import 'numpy.fft.tests.test_helper'
+173592 INFO: Analyzing hidden import 'numpy.fft.tests.test_pocketfft'
+173653 INFO: Analyzing hidden import 'numpy.lib._user_array_impl'
+173678 INFO: Analyzing hidden import 'numpy.lib.tests'
+173679 INFO: Analyzing hidden import 'numpy.lib.tests.test__datasource'
+173711 INFO: Analyzing hidden import 'numpy.lib.tests.test__iotools'
+173742 INFO: Analyzing hidden import 'numpy.lib.tests.test__version'
+173756 INFO: Analyzing hidden import 'numpy.lib.tests.test_array_utils'
+173769 INFO: Analyzing hidden import 'numpy.lib.tests.test_arraypad'
+173854 INFO: Analyzing hidden import 'numpy.lib.tests.test_arraysetops'
+173931 INFO: Analyzing hidden import 'numpy.lib.tests.test_arrayterator'
+173946 INFO: Analyzing hidden import 'numpy.lib.tests.test_format'
+174004 INFO: Analyzing hidden import 'numpy.lib.tests.test_function_base'
+174318 INFO: Analyzing hidden import 'numpy.lib.tests.test_histograms'
+174378 INFO: Analyzing hidden import 'numpy.lib.tests.test_index_tricks'
+174428 INFO: Analyzing hidden import 'numpy.lib.tests.test_io'
+174629 INFO: Analyzing hidden import 'numpy.lib.tests.test_loadtxt'
+174699 INFO: Analyzing hidden import 'numpy.lib.tests.test_mixins'
+174725 INFO: Analyzing hidden import 'numpy.lib.tests.test_nanfunctions'
+174837 INFO: Analyzing hidden import 'numpy.lib.tests.test_packbits'
+174900 INFO: Analyzing hidden import 'numpy.lib.tests.test_polynomial'
+174939 INFO: Analyzing hidden import 'numpy.lib.tests.test_recfunctions'
+175045 INFO: Analyzing hidden import 'numpy.lib.tests.test_regression'
+175075 INFO: Analyzing hidden import 'numpy.lib.tests.test_shape_base'
+175141 INFO: Analyzing hidden import 'numpy.lib.tests.test_stride_tricks'
+175201 INFO: Analyzing hidden import 'numpy.lib.tests.test_twodim_base'
+175255 INFO: Analyzing hidden import 'numpy.lib.tests.test_type_check'
+175297 INFO: Analyzing hidden import 'numpy.lib.tests.test_ufunclike'
+175318 INFO: Analyzing hidden import 'numpy.lib.tests.test_utils'
+175335 INFO: Analyzing hidden import 'numpy.lib.user_array'
+175347 INFO: Analyzing hidden import 'numpy.linalg.lapack_lite'
+175364 INFO: Analyzing hidden import 'numpy.linalg.tests'
+175365 INFO: Analyzing hidden import 'numpy.linalg.tests.test_deprecations'
+175381 INFO: Analyzing hidden import 'numpy.linalg.tests.test_linalg'
+175565 INFO: Analyzing hidden import 'numpy.linalg.tests.test_regression'
+175593 INFO: Analyzing hidden import 'numpy.ma.tests'
+175594 INFO: Analyzing hidden import 'numpy.ma.tests.test_arrayobject'
+175608 INFO: Analyzing hidden import 'numpy.ma.tests.test_core'
+175993 INFO: Analyzing hidden import 'numpy.ma.tests.test_deprecations'
+176010 INFO: Analyzing hidden import 'numpy.ma.tests.test_extras'
+176170 INFO: Analyzing hidden import 'numpy.ma.tests.test_mrecords'
+176217 INFO: Analyzing hidden import 'numpy.ma.tests.test_old_ma'
+176299 INFO: Analyzing hidden import 'numpy.ma.tests.test_regression'
+176318 INFO: Analyzing hidden import 'numpy.ma.tests.test_subclassing'
+176354 INFO: Analyzing hidden import 'numpy.matrixlib.tests'
+176355 INFO: Analyzing hidden import 'numpy.matrixlib.tests.test_defmatrix'
+176397 INFO: Analyzing hidden import 'numpy.matrixlib.tests.test_interaction'
+176429 INFO: Analyzing hidden import 'numpy.matrixlib.tests.test_masked_matrix'
+176455 INFO: Analyzing hidden import 'numpy.matrixlib.tests.test_matrix_linalg'
+176473 INFO: Analyzing hidden import 'numpy.matrixlib.tests.test_multiarray'
+176488 INFO: Analyzing hidden import 'numpy.matrixlib.tests.test_numeric'
+176499 INFO: Analyzing hidden import 'numpy.matrixlib.tests.test_regression'
+176515 INFO: Analyzing hidden import 'numpy.polynomial.tests'
+176516 INFO: Analyzing hidden import 'numpy.polynomial.tests.test_chebyshev'
+176581 INFO: Analyzing hidden import 'numpy.polynomial.tests.test_classes'
+176631 INFO: Analyzing hidden import 'numpy.polynomial.tests.test_hermite'
+176678 INFO: Analyzing hidden import 'numpy.polynomial.tests.test_hermite_e'
+176724 INFO: Analyzing hidden import 'numpy.polynomial.tests.test_laguerre'
+176770 INFO: Analyzing hidden import 'numpy.polynomial.tests.test_legendre'
+176816 INFO: Analyzing hidden import 'numpy.polynomial.tests.test_polynomial'
+176870 INFO: Analyzing hidden import 'numpy.polynomial.tests.test_polyutils'
+176887 INFO: Analyzing hidden import 'numpy.polynomial.tests.test_printing'
+176980 INFO: Analyzing hidden import 'numpy.polynomial.tests.test_symbol'
+177001 INFO: Analyzing hidden import 'numpy.random.tests'
+177002 INFO: Analyzing hidden import 'numpy.random.tests.data'
+177002 INFO: Analyzing hidden import 'numpy.random.tests.test_direct'
+177049 INFO: Analyzing hidden import 'numpy.random.tests.test_extending'
+177117 INFO: Analyzing hidden import 'numpy.random.tests.test_generator_mt19937'
+177287 INFO: Analyzing hidden import 'numpy.random.tests.test_generator_mt19937_regressions'
+177316 INFO: Analyzing hidden import 'numpy.random.tests.test_random'
+177426 INFO: Analyzing hidden import 'numpy.random.tests.test_randomstate'
+177552 INFO: Analyzing hidden import 'numpy.random.tests.test_randomstate_regression'
+177576 INFO: Analyzing hidden import 'numpy.random.tests.test_regression'
+177599 INFO: Analyzing hidden import 'numpy.random.tests.test_seed_sequence'
+177617 INFO: Analyzing hidden import 'numpy.random.tests.test_smoke'
+177681 INFO: Analyzing hidden import 'numpy.testing.print_coercion_tables'
+177702 INFO: Analyzing hidden import 'numpy.testing.tests'
+177703 INFO: Analyzing hidden import 'numpy.testing.tests.test_utils'
+177817 INFO: Analyzing hidden import 'numpy.tests'
+177818 INFO: Analyzing hidden import 'numpy.tests.test__all__'
+177830 INFO: Analyzing hidden import 'numpy.tests.test_configtool'
+177847 INFO: Analyzing hidden import 'numpy.tests.test_ctypeslib'
+177881 INFO: Analyzing hidden import 'numpy.tests.test_lazyloading'
+177894 INFO: Analyzing hidden import 'numpy.tests.test_matlib'
+177910 INFO: Analyzing hidden import 'numpy.tests.test_numpy_config'
+178046 INFO: Analyzing hidden import 'numpy.tests.test_numpy_version'
+178061 INFO: Analyzing hidden import 'numpy.tests.test_public_api'
+178096 INFO: Analyzing hidden import 'numpy.tests.test_reloading'
+178113 INFO: Analyzing hidden import 'numpy.tests.test_scripts'
+178129 INFO: Analyzing hidden import 'numpy.tests.test_warnings'
+178146 INFO: Analyzing hidden import 'numpy.typing.mypy_plugin'
+178168 INFO: Analyzing hidden import 'numpy.typing.tests'
+178170 INFO: Analyzing hidden import 'numpy.typing.tests.test_isfile'
+178183 INFO: Analyzing hidden import 'numpy.typing.tests.test_runtime'
+178201 INFO: Analyzing hidden import 'numpy.typing.tests.test_typing'
+178223 INFO: Processing module hooks (post-graph stage)...
+178675 INFO: Processing standard module hook 'hook-matplotlib.backends.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+178676 INFO: Matplotlib backend selection method: automatic discovery of used backends
+178729 INFO: Discovered Matplotlib backend(s) via `matplotlib.use()` call in module 'pyvista.conftest': ['Agg']
+178729 INFO: The following Matplotlib backends were discovered by scanning for `matplotlib.use()` calls: ['Agg']. If your backend of choice is not in this list, either add a `matplotlib.use()` call to your code, or configure the backend collection via hook options (see: https://pyinstaller.org/en/stable/hooks-config.html#matplotlib-hooks).
+179388 INFO: Selected matplotlib backends: ['Agg']
+179388 INFO: Extra dists for selected matplotlib backends: []
+180173 INFO: Processing standard module hook 'hook-PIL.SpiderImagePlugin.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+188030 INFO: Processing standard module hook 'hook-_tkinter.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+188032 INFO: Processing standard module hook 'hook-tzdata.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+189068 INFO: Performing binary vs. data reclassification (3703 entries)
+211041 INFO: Looking for ctypes DLLs
+211278 INFO: Analyzing run-time hooks ...
+211292 INFO: Including run-time hook 'pyi_rth_inspect.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+211311 INFO: Including run-time hook 'pyi_rth_pkgutil.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+211326 INFO: Including run-time hook 'pyi_rth_multiprocessing.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+211344 INFO: Including run-time hook 'pyi_rth_setuptools.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+211359 INFO: Including run-time hook 'pyi_rth_mplconfig.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+211373 INFO: Processing pre-find-module-path hook 'hook-_pyi_rth_utils.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_find_module_path'
+211389 INFO: Processing standard module hook 'hook-_pyi_rth_utils.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks'
+211428 INFO: Including run-time hook 'pyi_rth_pyside6.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+211466 INFO: Including run-time hook 'pyi_rth_pyqtgraph_multiprocess.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\rthooks'
+211483 INFO: Including run-time hook 'pyi_rth__tkinter.py' from 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+211661 INFO: Creating base_library.zip...
+211690 INFO: Looking for dynamic libraries
+216291 INFO: Extra DLL search directories (AddDllDirectory): ['C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\shiboken6', 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\numpy.libs', 'C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\vtk.libs']
+216291 INFO: Extra DLL search directories (PATH): ['C:\\Users\\ZifTech\\Desktop\\Geometry_Playground_2.0\\.build\\venv\\Lib\\site-packages\\PySide6']
+233314 INFO: Warnings written to C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\.build\work\GeometryPlayground\warn-GeometryPlayground.txt
+233595 INFO: Graph cross-reference written to C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\.build\work\GeometryPlayground\xref-GeometryPlayground.html
+233877 INFO: checking PYZ
+233877 INFO: Building PYZ because PYZ-00.toc is non existent
+233877 INFO: Building PYZ (ZlibArchive) C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\.build\work\GeometryPlayground\PYZ-00.pyz
+236608 INFO: Building PYZ (ZlibArchive) C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\.build\work\GeometryPlayground\PYZ-00.pyz completed successfully.
+236673 INFO: checking PKG
+236673 INFO: Building PKG because PKG-00.toc is non existent
+236674 INFO: Building PKG (CArchive) GeometryPlayground.pkg
+236741 INFO: Building PKG (CArchive) GeometryPlayground.pkg completed successfully.
+236743 INFO: Bootloader C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\.build\venv\Lib\site-packages\PyInstaller\bootloader\Windows-64bit-intel\runw.exe
+236743 INFO: checking EXE
+236743 INFO: Building EXE because EXE-00.toc is non existent
+236743 INFO: Building EXE from EXE-00.toc
+236744 INFO: Copying bootloader EXE to C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\.build\work\GeometryPlayground\GeometryPlayground.exe
+236850 INFO: Copying icon to EXE
+236918 INFO: Copying 0 resources to EXE
+236918 INFO: Embedding manifest in EXE
+236970 INFO: Appending PKG archive to EXE
+237093 INFO: Fixing EXE headers
+237531 INFO: Building EXE from EXE-00.toc completed successfully.
+237583 INFO: checking COLLECT
+237583 INFO: Building COLLECT because COLLECT-00.toc is non existent
+237584 INFO: Building COLLECT COLLECT-00.toc
+244635 INFO: Building COLLECT COLLECT-00.toc completed successfully.
+244828 INFO: Build complete! The results are available in: C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\.build\dist
+
+============================================
+  BUILD SUCCESSFUL
+============================================
+
+Executable:
+"C:\Users\ZifTech\Desktop\Geometry_Playground_2.0\.build\dist\Geometry Playground 2.0\GeometryPlayground.exe"
+
+Copy the entire "Geometry Playground 2.0" folder to another Windows x64 computer.
+Do not separate the EXE from the _internal folder.
+Projects and Settings are stored beside the EXE.
+
+
+Finished: 26.11.2026 16:41:34,89
+Result: SUCCESS
+Result: FAILED (exit code 0)

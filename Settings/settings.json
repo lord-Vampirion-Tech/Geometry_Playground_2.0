@@ -1,0 +1,44 @@
+{
+    "general": {
+        "colors": {
+            "background": "#20232b",
+            "text": "#e8eaf0",
+            "accent": "#42a5f5"
+        },
+        "window_sizes": {
+            "manager": [
+                820,
+                520
+            ],
+            "project_2d": [
+                1100,
+                750
+            ],
+            "project_3d": [
+                1100,
+                750
+            ]
+        },
+        "layout_sizes": {
+            "editor_width": 450,
+            "editor_font_size": 16,
+            "parameters_panel_width": 450
+        },
+        "ui_groups": {
+            "border_width": 5,
+            "border_color": "#000000"
+        }
+    },
+    "manager": {
+        "close_on_open": false
+    },
+    "project_2d": {},
+    "project_3d": {},
+    "projects_folder": "Projects",
+    "storage_folder": "C:\\Users\\ZifTech\\Desktop\\TEST",
+    "theme": "system",
+    "font_family": "Consolas",
+    "font_size": 12,
+    "autosave_delay": 1000,
+    "last_project_id": null
+}
