@@ -28,6 +28,15 @@ class Polygon(Drawable2D):
     def get_vertices(self):
         return list(self.points)
 
+    def setPoint(self, index, point):
+        point = self._normalize_points([point])[0]
+        points = list(self.points)
+        if points[index] == point:
+            return
+        points[index] = point
+        self.points = tuple(points)
+        self.update_draw()
+
     def setPoints(self, points):
         points = self._normalize_points(points)
         if len(points) < 3:
